@@ -1,5 +1,19 @@
 [
   {
+    "date": "2025-06-16T14:54:54Z",
+    "title": "Déploiement 2628479554",
+    "message": "Modification de la mise en page de la partie dernieres mises à jour de la page d'acceil",
+    "sha": "2bbed866f49946028dd2f5ba7c7517d84610eb45",
+    "url": "https://api.github.com/repos/FrWA14/Site_FrWeb/deployments/2628479554"
+  },
+  {
+    "date": "2025-06-16T14:50:14Z",
+    "title": "Déploiement 2628455856",
+    "message": "Déplacement de vlog.json et fichiers package vers assets/json + mise à jour des scripts",
+    "sha": "99a49aadb6add3a67caa5b973649cc4f6c48c9ff",
+    "url": "https://api.github.com/repos/FrWA14/Site_FrWeb/deployments/2628455856"
+  },
+  {
     "date": "2025-06-16T14:27:21Z",
     "title": "Déploiement 2628342592",
     "message": "JS : Ajout d'une varibale permettant de choisir le nombre de mises à afficher sur la page d'acceil.",
@@ -19,19 +33,5 @@
     "message": "JS : Ajout des dernières mises à jour avec description de commit",
     "sha": "f14b19dd245ad56cb1ef777013a4ce589cb16b49",
     "url": "https://api.github.com/repos/FrWA14/Site_FrWeb/deployments/2628250392"
-  },
-  {
-    "date": "2025-06-16T13:53:40Z",
-    "title": "Déploiement 2628171013",
-    "message": " JS : ajout de vlog.js permettant d'afficher les dernieres mise à jour du depot automatiquement (en test d'integration)",
-    "sha": "8aaf5b0858ead07130533b093d201c7275ef52db",
-    "url": "https://api.github.com/repos/FrWA14/Site_FrWeb/deployments/2628171013"
-  },
-  {
-    "date": "2025-06-16T09:51:53Z",
-    "title": "Déploiement 2627162652",
-    "message": " Mise à jour du CSS : essai de la creation d'un lien entre HTML et CSS",
-    "sha": "f85700a85f489a3a0d25cf6a573bcfb09e0e208a",
-    "url": "https://api.github.com/repos/FrWA14/Site_FrWeb/deployments/2627162652"
   }
 ]
