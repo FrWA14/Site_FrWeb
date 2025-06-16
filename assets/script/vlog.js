@@ -1,3 +1,8 @@
+// assets/js/vlog.js
+
+// Défini le nombre de mises à jour à afficher
+const MAX_ENTRIES = 3;
+
 // Fonction pour formater une date ISO en français
 function formatDateFR(dateString) {
   const date = new Date(dateString);
@@ -18,8 +23,8 @@ fetch('vlog.json?t=' + Date.now())
     const container = document.getElementById('vlog-list');
     container.innerHTML = ''; // Efface le "Chargement..."
 
-    data.forEach(entry => {
-      console.log("💬 Commit :", entry.message); // Debug en console
+    data.slice(0, MAX_ENTRIES).forEach(entry => {
+      console.log("💬 Commit :", entry.message); // Debug
 
       const section = document.createElement('div');
       section.classList.add('vlog-entry');
