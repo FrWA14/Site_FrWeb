@@ -1,5 +1,3 @@
-// assets/js/vlog.js
-
 // Fonction pour formater une date ISO en français
 function formatDateFR(dateString) {
   const date = new Date(dateString);
@@ -10,25 +8,23 @@ function formatDateFR(dateString) {
   });
 }
 
-// Charger et afficher les entrées depuis vlog.json
-fetch('vlog.json')
+// Charger et afficher les entrées depuis vlog.json (avec anti-cache)
+fetch('vlog.json?t=' + Date.now())
   .then(response => {
     if (!response.ok) throw new Error('Erreur lors du chargement du fichier vlog.json');
     return response.json();
   })
   .then(data => {
     const container = document.getElementById('vlog-list');
-    container.innerHTML = ''; // Vide le contenu "Chargement..."
+    container.innerHTML = ''; // Efface le "Chargement..."
 
     data.forEach(entry => {
+      console.log("💬 Commit :", entry.message); // Debug en console
+
       const section = document.createElement('div');
       section.classList.add('vlog-entry');
 
-      const date = new Date(entry.date).toLocaleDateString('fr-FR', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric'
-      });
+      const date = formatDateFR(entry.date);
 
       section.innerHTML = `
         <p>📅 ${date}</p>
