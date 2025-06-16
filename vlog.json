@@ -1,25 +1,36 @@
 [
   {
+    "date": "2025-06-16T13:53:40Z",
+    "title": "Déploiement 2628171013",
+    "message": " JS : ajout de vlog.js permettant d'afficher les dernieres mise à jour du depot automatiquement (en test d'integration)",
+    "sha": "8aaf5b0858ead07130533b093d201c7275ef52db",
+    "url": "https://api.github.com/repos/FrWA14/Site_FrWeb/deployments/2628171013"
+  },
+  {
     "date": "2025-06-16T09:51:53Z",
     "title": "Déploiement 2627162652",
+    "message": " Mise à jour du CSS : essai de la creation d'un lien entre HTML et CSS",
     "sha": "f85700a85f489a3a0d25cf6a573bcfb09e0e208a",
     "url": "https://api.github.com/repos/FrWA14/Site_FrWeb/deployments/2627162652"
   },
   {
     "date": "2025-06-16T09:48:20Z",
     "title": "Déploiement 2627147604",
+    "message": " Mise à jour du CSS : couleur du background + centrage des image + texte banniere + ajout icone + ajout Monsieur Multimétre.gif + icone des réseaux",
     "sha": "42c70e463c041a2d97ab4f91f2ad688ccd046133",
     "url": "https://api.github.com/repos/FrWA14/Site_FrWeb/deployments/2627147604"
   },
   {
     "date": "2025-06-16T07:49:28Z",
     "title": "Déploiement 2626676258",
+    "message": "Réorganisation du projet : ajout du dossier assets",
     "sha": "72e4ca65588d05327ec24ca45db0f6de850aaf46",
     "url": "https://api.github.com/repos/FrWA14/Site_FrWeb/deployments/2626676258"
   },
   {
     "date": "2025-06-16T07:24:52Z",
     "title": "Déploiement 2626589736",
+    "message": "first commit",
     "sha": "779941875b0be2e188d3c0b0a889cbf56b4fb8b1",
     "url": "https://api.github.com/repos/FrWA14/Site_FrWeb/deployments/2626589736"
   }

@@ -11,36 +11,35 @@ function formatDateFR(dateString) {
 }
 
 // Charger et afficher les entrées depuis vlog.json
-fetch("vlog.json")
+fetch('vlog.json')
   .then(response => {
-    if (!response.ok) {
-      throw new Error("Erreur lors du chargement de vlog.json");
-    }
+    if (!response.ok) throw new Error('Erreur lors du chargement du fichier vlog.json');
     return response.json();
   })
   .then(data => {
-    const container = document.getElementById("vlog-list");
-    container.innerHTML = ""; // Nettoyer le contenu par défaut
+    const container = document.getElementById('vlog-list');
+    container.innerHTML = ''; // Vide le contenu "Chargement..."
 
     data.forEach(entry => {
-      const div = document.createElement("div");
-      div.classList.add("vlog-entry");
+      const section = document.createElement('div');
+      section.classList.add('vlog-entry');
 
-      const date = document.createElement("p");
-      date.classList.add("vlog-date");
-      date.textContent = `📅 ${formatDateFR(entry.date)}`;
+      const date = new Date(entry.date).toLocaleDateString('fr-FR', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
 
-      const title = document.createElement("p");
-      title.classList.add("vlog-title");
-      title.textContent = `🔹 ${entry.title}`;
+      section.innerHTML = `
+        <p>📅 ${date}</p>
+        <p>🔹 ${entry.title}</p>
+        ${entry.message ? `<p>💬 ${entry.message}</p>` : ''}
+      `;
 
-      div.appendChild(date);
-      div.appendChild(title);
-      container.appendChild(div);
+      container.appendChild(section);
     });
   })
   .catch(err => {
-    document.getElementById("vlog-list").textContent =
-      "❌ Impossible de charger les mises à jour.";
+    document.getElementById('vlog-list').innerHTML = '❌ Impossible de charger les mises à jour.';
     console.error(err);
   });
