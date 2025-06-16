@@ -32,8 +32,7 @@ fetch('assets/json/vlog.json?t=' + Date.now())
       const date = formatDateFR(entry.date);
 
       section.innerHTML = `
-        <p>📅 ${date}</p>
-        <p>🔹 ${entry.title}</p>
+        <p>📅 ${date} -🔹${entry.title}</p>
         ${entry.message ? `<p>💬 ${entry.message}</p>` : ''}
       `;
 
