@@ -14,7 +14,7 @@ function formatDateFR(dateString) {
 }
 
 // Charger et afficher les entrées depuis vlog.json (avec anti-cache)
-fetch('vlog.json?t=' + Date.now())
+fetch('assets/json/vlog.json?t=' + Date.now())
   .then(response => {
     if (!response.ok) throw new Error('Erreur lors du chargement du fichier vlog.json');
     return response.json();

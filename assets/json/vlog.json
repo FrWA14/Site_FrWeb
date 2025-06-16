@@ -1,5 +1,12 @@
 [
   {
+    "date": "2025-06-16T14:27:21Z",
+    "title": "Déploiement 2628342592",
+    "message": "JS : Ajout d'une varibale permettant de choisir le nombre de mises à afficher sur la page d'acceil.",
+    "sha": "3151d678cc3edbab72bcb4ac5dea19d5d9978f77",
+    "url": "https://api.github.com/repos/FrWA14/Site_FrWeb/deployments/2628342592"
+  },
+  {
     "date": "2025-06-16T14:22:25Z",
     "title": "Déploiement 2628317937",
     "message": "JS : Ajout des dernières mises à jour avec description de commit - 2",
@@ -26,12 +33,5 @@
     "message": " Mise à jour du CSS : essai de la creation d'un lien entre HTML et CSS",
     "sha": "f85700a85f489a3a0d25cf6a573bcfb09e0e208a",
     "url": "https://api.github.com/repos/FrWA14/Site_FrWeb/deployments/2627162652"
-  },
-  {
-    "date": "2025-06-16T09:48:20Z",
-    "title": "Déploiement 2627147604",
-    "message": " Mise à jour du CSS : couleur du background + centrage des image + texte banniere + ajout icone + ajout Monsieur Multimétre.gif + icone des réseaux",
-    "sha": "42c70e463c041a2d97ab4f91f2ad688ccd046133",
-    "url": "https://api.github.com/repos/FrWA14/Site_FrWeb/deployments/2627147604"
   }
 ]

@@ -41,7 +41,7 @@ async function buildVlogJson() {
       };
     }));
 
-    fs.writeFileSync('vlog.json', JSON.stringify(latest, null, 2));
+    fs.writeFileSync('assets/json/vlog.json', JSON.stringify(latest, null, 2));
     console.log('✅ vlog.json mis à jour avec les messages de commit.');
   } catch (err) {
     console.error('❌ Erreur:', err.message);

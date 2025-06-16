@@ -1,0 +1,10 @@
+# ------------------------------
+# Personnalisation FrWA site web
+# ------------------------------
+
+# Ne pas versionner les fichiers de dépendances Node
+assets/json/package-lock.json
+assets/json/package.json
+
+# (.env ou token perso)
+.env
