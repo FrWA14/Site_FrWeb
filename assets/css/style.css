@@ -1,73 +1,251 @@
+/*---------------------------- Ajout des polices d'écriture ----------------------------*/
+@import url("font-face.css");
+
+/*---------------------------- Zone Couleur background ----------------------------*/
 body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  background: #e7f2f3;
-  color: #333;
+    background-color: rgb(170, 210, 215); /* Couleur du fond de la page web */
 }
 
-.banniere {
-  position: relative;
-  text-align: center;
+/*---------------------------- Zone Centrage ----------------------------*/
+.centre {
+    text-align: center; /* Centrer les images qui sont dans la div centre */
+}
+
+/*---------------------------- Zone banniere ----------------------------*/
+.banniere{
+    height: 400px;
+    width: auto;
+    margin: 0 auto;
+    position: relative;
 }
 
 .banniere img {
-  width: 100%;
-  height: auto;
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    margin: 0 auto;
+    border-radius: 10px;
 }
 
-.banniere h1 {
-  position: absolute;
-  top: 40%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: white;
-  font-size: 3em;
-  text-shadow: 1px 1px 5px black;
+.icon_FrWA{
+    width: 50px;
+    height: auto;
+    position: absolute;
+    top: 10px;
+    left: 10px;
 }
 
-.presentation {
-  padding: 2rem;
-  text-align: center;
-  background: #f0f0f0;
+/* dimention le text au centre de la banniére */
+.texte_banniere{
+    position: absolute; /* Position absolue pour pouvoir mettre le texte au dessus de l'image */
+    top : 80px; /* Potition par rapport au haut de la page */
+    /* 4 paramétre pour centré le text en potinio absolue */
+    left: 0; /* 1*/
+    right: 0; /* 2 */
+    margin-left: auto; /* 3 */
+    margin-right: auto;/* 4 */
 }
 
-.categories {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 2rem;
-  padding: 2rem;
+.texte_banniere p {
+    color: #FFFFFF; /* Couleur du text */
+    font-family:'montserrat', sans-serif; /* Police d'écriture */
+    font-weight: bold; /* Mettre le texte en gras */
+    font-size: 80px; /* Taille de la police d'écriture */
+    text-decoration: underline; /* Souligner le texte */
 }
 
-.categorie {
-  width: 200px;
-  text-align: center;
+@media screen and (max-width: 700px) { /* Si l'écran fait mois de 700px, pour que le titre reste centré verticalement sur la banniere */
+    .texte_banniere{
+        position: absolute; /* Position absolue pour pouvoir mettre le texte au dessus de l'image */
+        top : 80px; /* Potition par rapport au haut de la page */
+        /* 4 paramétre pour centré le text en potinio absolue */
+        left: 0; /* 1*/
+        right: 0; /* 2 */
+        margin-left: auto; /* 3 */
+        margin-right: auto;/* 4 */
+    }
+    .texte_banniere p {
+        color: #FFFFFF; /* Couleur du text */
+        font-family:'montserrat', sans-serif; /* Police d'écriture */
+        font-weight: bold; /* Mettre le texte en gras */
+        font-size: 70px; /* Taille de la police d'écriture */
+        text-decoration: underline; /* Souligner le texte */
+    }
+}
+/*---------------------------- Zone ligne separation ----------------------------*/
+div.ligne_separation{
+    border-bottom:1px solid rgb(90, 90, 90);
+    margin-left: 10%;
+    margin-right: 10%;
 }
 
-.categorie img {
-  width: 100%;
-  border-radius: 10px;
-  transition: transform 0.3s;
+/*---------------------------- Zone de GIF ----------------------------*/
+.M_MultimetreGIF {
+    width: 40%;
+    height: auto;
+    max-width: 300px;
+    margin: 30px;
 }
 
-.categorie img:hover {
-  transform: scale(1.05);
+/*---------------------------- Zone de texte présentation ----------------------------*/
+.text_presentation {
+    margin-left: 20%;
+    margin-right: 20%;
+    margin-top: 25px;
+    margin-bottom: 25px;
 }
+
+.text_presentation p{
+    color: #000000;
+    font-family:'arial', sans-serif;
+    font-size: 15px;
+}
+
+/*---------------------------- Zone des 5 images ----------------------------*/
+.conteneur {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.marge1 {
+    margin-left: 10%;
+    margin-right: 10%;
+}
+
+.marge2{
+    margin-left: 22%;
+    margin-right: 22%;
+}
+
+.image_5 img {
+    transition: transform .3s;
+    width: 80%;
+    height: auto;
+    max-width: 400px;
+    max-height: 400px;
+    margin-top: 50px;
+    border-radius: 10px;
+}
+
+.image_5 img:hover {
+    transform:scale(1.15);
+}
+
+@media screen and (max-width: 800px) {
+    .conteneur {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .image_5 img {
+        width: 80%;
+        margin: 40px;
+    }
+
+    .marge2{
+        margin-left: 10%;
+        margin-right: 10%;
+    }
+}
+
+.image_5 p{
+    color: #734332;
+    font-family:'arial', sans-serif;
+    font-weight: bold;
+    font-size: 25px;
+}
+
+.image_5 a:link,
+.image_5 a:visited,
+.image_5 a:hover,
+.image_5 a:active {
+    text-decoration: none;
+}
+
+/*---------------------------- Zone réseaux sociaux ----------------------------*/
+.reseau {
+    margin-left: 10%;
+}
+
+.reseau p{
+    color: #734332;
+    text-decoration: underline;
+    font-family:'montserrat', sans-serif;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.conteuneur_icone {
+    display: flex;
+    align-items: center;
+}
+
+.conteuneur_icone img{
+    width: 50px;
+    height: 50px;
+    border-radius: 35%;
+    margin-right: 10px;
+}
+
+/*---------------------------- Zone textes normalisés ----------------------------*/
+.titre1{
+    color: #734332;
+    font-family:'arial', sans-serif;
+    font-weight: bold;
+    font-size: 35px;
+    text-decoration: underline;
+}
+
+.titre2{
+    color: #734332;
+    font-family:'arial', sans-serif;
+    font-weight: bold;
+    font-size: 25px;
+    text-decoration: underline;
+}
+
+.titre3{
+    color: #734332;
+    font-family:'arial', sans-serif;
+    font-weight: bold;
+    font-size: 20px;
+    text-decoration: underline;
+}
+
+.content p{
+    font-family:'arial', sans-serif;
+    font-weight: bold;
+    font-size: 15px;
+}
+
+span.tabulation{
+    margin-left:20px;
+}
+
+span.rouge{
+    color: red;
+}
+
+span.souligne{
+    text-decoration: underline;
+}
+
+span.rayer{
+    text-decoration: line-through;
+}
+
+/*---------------------------- Ajout de l'affichage des mise a jour git----------------------------*/
 
 .vlog {
-  padding: 2rem;
-  background: #fff;
-}
-
-footer {
-  background: #222;
-  color: #fff;
-  text-align: center;
+  background-color: #ffffff;
+  margin: 2rem 10%;
   padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 1px 1px 8px rgba(0,0,0,0.1);
 }
 
-footer a {
-  color: #ddd;
-  margin: 0 5px;
+.vlog-entry p {
+  margin: 0.5rem 0;
 }

@@ -1,73 +1,109 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FrWA Conception</title>
-  <link rel="stylesheet" href="assets/css/style.css" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- Mobile responsive -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- Base GitHub Pages
+    <base href="/Site_FrWeb/"> -->
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
+
+    <title>FrWA Conception</title>
+    <link rel="icon" href="assets/image/icone/FrWA_Conception.png" type="image/png" />
 </head>
+
 <body>
+    <header>
+        <div class="banniere">
+            <img src="assets/image/Acceil/Banniere.jpg" alt="Bannière">
+            <div class="icon_FrWA">
+                <img src="assets/image/icone/FrWA_Conception_grey.png" alt="FrWA_Conception">
+            </div>
+            <div class="texte_banniere centre">
+                <p>FrWA Conception</p>
+            </div>
+        </div>
+    </header>
 
-  <!-- Bannière -->
-  <header class="banniere">
-    <img src="assets/images/banniere.jpg" alt="Bannière du site">
-    <h1>FrWA Conception</h1>
-  </header>
+    <main>
+        <div class="centre">
+            <img class="M_MultimetreGIF" src="assets/image/gif/M.Multimetre.gif" alt="M.Multimetre" />
+        </div>
 
-  <!-- Présentation -->
-  <section class="presentation">
-    <p>Bienvenue ! Ce site présente mes projets techniques en électronique, mécanique, code, et plus. Naviguez à travers les catégories ci-dessous.</p>
-  </section>
+        <div class="ligne_separation"></div>
 
-  <!-- Catégories -->
-  <section class="categories">
-    <div class="categorie">
-      <a href="categories/electronique.html">
-        <img src="assets/images/electronique.jpg" alt="Electronique">
-        <p>Electronique</p>
-      </a>
-    </div>
-    <div class="categorie">
-      <a href="categories/mecanique.html">
-        <img src="assets/images/mecanique.jpg" alt="Mécanique">
-        <p>Mécanique</p>
-      </a>
-    </div>
-    <div class="categorie">
-      <a href="categories/code.html">
-        <img src="assets/images/code.jpg" alt="Code">
-        <p>Code</p>
-      </a>
-    </div>
-    <div class="categorie">
-      <a href="categories/projets.html">
-        <img src="assets/images/projets.jpg" alt="Projets">
-        <p>Projets</p>
-      </a>
-    </div>
-    <div class="categorie">
-      <a href="categories/cours.html">
-        <img src="assets/images/cours.jpg" alt="Cours">
-        <p>Cours</p>
-      </a>
-    </div>
-  </section>
+        <div class="text_presentation">
+            <p>Salutation à toutes et à tous,</p>
+            <p>Soyez les bienvenus, M. Multimètre sera votre guide tout au long de votre voyage sur mon site.</p>
+        </div>
 
-  <!-- Vlog -->
-  <section class="vlog">
-    <h2>Dernière mise à jour</h2>
-    <div id="vlog-container">Chargement...</div>
-  </section>
+        <div class="ligne_separation"></div>
 
-  <!-- Pied de page -->
-  <footer>
-    <p>Contact : 
-      <a href="https://www.linkedin.com/in/armand-wils-4168b21a4/" target="_blank">LinkedIn</a> – 
-      <a href="mailto:ar.wils@epmistes.net">Email</a>
-    </p>
-    <a href="en-savoir-plus.html">En savoir plus</a>
-  </footer>
+        <div class="centre">
+            <div class="conteneur marge1">
+                <div class="image_5">
+                    <a href="contenu/html/Electronique.html">
+                        <img src="assets/image/Acceil/Electronique.jpg" alt="Electronique">
+                        <p>Electronique</p>
+                    </a>
+                </div>
+                <div class="image_5">
+                    <a href="contenu/html/Mecanique.html">
+                        <img src="assets/image/Acceil/Mecanique.jpg" alt="Mecanique">
+                        <p>Mecanique</p>
+                    </a>
+                </div>
+                <div class="image_5">
+                    <a href="contenu/html/Code.html">
+                        <img src="assets/image/Acceil/Code.jpg" alt="Code">
+                        <p>Code</p>
+                    </a>
+                </div>
+            </div>
 
-  <script src="assets/js/main.js"></script>
+            <div class="conteneur marge2">
+                <div class="image_5">
+                    <a href="contenu/html/Projets.html">
+                        <img src="assets/image/Acceil/Projets.jpg" alt="Projets">
+                        <p>Projets</p>
+                    </a>
+                </div>
+                <div class="image_5">
+                    <a href="contenu/html/Cours.html">
+                        <img src="assets/image/Acceil/Cours.jpg" alt="Cours">
+                        <p>Cours</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="ligne_separation"></div>
+
+        <section class="vlog">
+          <h2 class="titre2">📝 Dernières mises à jour</h2>
+          <div id="vlog-list">Chargement des mises à jour...</div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="reseau">
+            <p>Réseaux :</p>
+            <div class="conteuneur_icone">
+                <a href="https://www.linkedin.com/in/armand-wils-4168b21a4/" target="_blank">
+                    <img src="assets/image/icone/Linkedin_logo.png" alt="LinkedIn">
+                </a>
+                <a href="mailto:ar.wils@epmistes.net" target="_blank">
+                    <img src="assets/image/icone/Mail_logo.png" alt="Mail">
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/vlog.js"></script>
 </body>
 </html>
