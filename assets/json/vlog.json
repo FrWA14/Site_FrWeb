@@ -1,5 +1,26 @@
 [
   {
+    "date": "2025-06-16T15:02:53Z",
+    "title": "Déploiement 2628518993",
+    "message": "Reparation du lien au fichier JSON avec les dernieres mise à jour du depot - 3",
+    "sha": "806cee4237e4b0818dec27ac0fe21ad3fa159f4a",
+    "url": "https://api.github.com/repos/FrWA14/Site_FrWeb/deployments/2628518993"
+  },
+  {
+    "date": "2025-06-16T15:01:33Z",
+    "title": "Déploiement 2628511929",
+    "message": "Reparation du lien au fichier JSON avec les dernieres mise à jour du depot - 2",
+    "sha": "0d768ad1f5a29e87cd8bb1d84691e4db3ecb4aea",
+    "url": "https://api.github.com/repos/FrWA14/Site_FrWeb/deployments/2628511929"
+  },
+  {
+    "date": "2025-06-16T14:59:13Z",
+    "title": "Déploiement 2628500352",
+    "message": "Reparation du lien au fichier JSON avec les dernieres mise à jour du depot",
+    "sha": "dd39140ba6ca95dcb10dd4226eed96cc547e55e9",
+    "url": "https://api.github.com/repos/FrWA14/Site_FrWeb/deployments/2628500352"
+  },
+  {
     "date": "2025-06-16T14:54:54Z",
     "title": "Déploiement 2628479554",
     "message": "Modification de la mise en page de la partie dernieres mises à jour de la page d'acceil",
@@ -12,26 +33,5 @@
     "message": "Déplacement de vlog.json et fichiers package vers assets/json + mise à jour des scripts",
     "sha": "99a49aadb6add3a67caa5b973649cc4f6c48c9ff",
     "url": "https://api.github.com/repos/FrWA14/Site_FrWeb/deployments/2628455856"
-  },
-  {
-    "date": "2025-06-16T14:27:21Z",
-    "title": "Déploiement 2628342592",
-    "message": "JS : Ajout d'une varibale permettant de choisir le nombre de mises à afficher sur la page d'acceil.",
-    "sha": "3151d678cc3edbab72bcb4ac5dea19d5d9978f77",
-    "url": "https://api.github.com/repos/FrWA14/Site_FrWeb/deployments/2628342592"
-  },
-  {
-    "date": "2025-06-16T14:22:25Z",
-    "title": "Déploiement 2628317937",
-    "message": "JS : Ajout des dernières mises à jour avec description de commit - 2",
-    "sha": "2435a6a021d6689dd4e6cf2fd1d3f833c79c628e",
-    "url": "https://api.github.com/repos/FrWA14/Site_FrWeb/deployments/2628317937"
-  },
-  {
-    "date": "2025-06-16T14:08:57Z",
-    "title": "Déploiement 2628250392",
-    "message": "JS : Ajout des dernières mises à jour avec description de commit",
-    "sha": "f14b19dd245ad56cb1ef777013a4ce589cb16b49",
-    "url": "https://api.github.com/repos/FrWA14/Site_FrWeb/deployments/2628250392"
   }
 ]

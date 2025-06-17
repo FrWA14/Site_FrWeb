@@ -6,8 +6,8 @@
     <!-- Mobile responsive -->
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-    <!-- Base GitHub Pages  -->
-    <base href="/Site_FrWeb/">
+    <!-- Base GitHub Pages
+    <base href="/Site_FrWeb/"> -->
 
     <!-- CSS -->
     <link rel="stylesheet" href="assets/css/style.css">
@@ -17,9 +17,22 @@
 </head>
 
 <body>
+
+    <!-- Toggle bouton (3 barres) -->
+    <div id="sidebar-toggle">
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+    </div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar">
+      <nav id="sidebar-content"></nav>
+    </aside>
+
     <header>
         <div class="banniere">
-            <img src="assets/image/Acceil/Banniere.jpg" alt="Bannière">
+            <img src="assets/image/accueil/Banniere.jpg" alt="Bannière">
             <div class="icon_FrWA">
                 <img src="assets/image/icone/FrWA_Conception_grey.png" alt="FrWA_Conception">
             </div>
@@ -47,19 +60,19 @@
             <div class="conteneur marge1">
                 <div class="image_5">
                     <a href="contenu/html/Electronique.html">
-                        <img src="assets/image/Acceil/Electronique.jpg" alt="Electronique">
+                        <img src="assets/image/accueil/Electronique.jpg" alt="Electronique">
                         <p>Electronique</p>
                     </a>
                 </div>
                 <div class="image_5">
                     <a href="contenu/html/Mecanique.html">
-                        <img src="assets/image/Acceil/Mecanique.jpg" alt="Mecanique">
+                        <img src="assets/image/accueil/Mecanique.jpg" alt="Mecanique">
                         <p>Mecanique</p>
                     </a>
                 </div>
                 <div class="image_5">
                     <a href="contenu/html/Code.html">
-                        <img src="assets/image/Acceil/Code.jpg" alt="Code">
+                        <img src="assets/image/accueil/Code.jpg" alt="Code">
                         <p>Code</p>
                     </a>
                 </div>
@@ -68,13 +81,13 @@
             <div class="conteneur marge2">
                 <div class="image_5">
                     <a href="contenu/html/Projets.html">
-                        <img src="assets/image/Acceil/Projets.jpg" alt="Projets">
+                        <img src="assets/image/accueil/Projets.jpg" alt="Projets">
                         <p>Projets</p>
                     </a>
                 </div>
                 <div class="image_5">
                     <a href="contenu/html/Cours.html">
-                        <img src="assets/image/Acceil/Cours.jpg" alt="Cours">
+                        <img src="assets/image/accueil/Cours.jpg" alt="Cours">
                         <p>Cours</p>
                     </a>
                 </div>
@@ -105,5 +118,6 @@
 
     <script src="assets/script/main.js"></script>
     <script src="assets/script/vlog.js"></script>
+    <script src="assets/script/sidebar.js"></script>
 </body>
 </html>

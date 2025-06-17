@@ -1,0 +1,19 @@
+[
+  {
+    "type": "folder",
+    "name": "projets",
+    "children": [
+      {
+        "type": "folder",
+        "name": "plantation_autonome",
+        "children": [
+          {
+            "type": "file",
+            "name": "plantation_autonome.html",
+            "path": "contenu/projets/plantation_autonome/plantation_autonome.html"
+          }
+        ]
+      }
+    ]
+  }
+]

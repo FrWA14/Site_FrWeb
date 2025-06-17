@@ -1,245 +1,186 @@
-/*---------------------------- Ajout des polices d'écriture ----------------------------*/
+/*---------------------------- Polices et fond ----------------------------*/
 @import url("font-face.css");
 
-/*---------------------------- Zone Couleur background ----------------------------*/
 body {
-    background-color: rgb(170, 210, 215); /* Couleur du fond de la page web */
+  background-color: rgb(170, 210, 215);
+  font-family: 'arial', sans-serif;
 }
 
-/*---------------------------- Zone Centrage ----------------------------*/
+/*---------------------------- Centrage et structure ----------------------------*/
 .centre {
-    text-align: center; /* Centrer les images qui sont dans la div centre */
+  text-align: center;
 }
 
-/*---------------------------- Zone banniere ----------------------------*/
-.banniere{
-    height: 400px;
-    width: auto;
-    margin: 0 auto;
-    position: relative;
+/*---------------------------- Banniere ----------------------------*/
+.banniere {
+  height: 400px;
+  margin: 0 auto;
+  position: relative;
 }
 
 .banniere img {
-    width: 100%;
-    height: 100%;
-    display: block;
-    object-fit: cover;
-    margin: 0 auto;
-    border-radius: 10px;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
 }
 
-.icon_FrWA{
-    width: 50px;
-    height: auto;
-    position: absolute;
-    top: 10px;
-    left: 10px;
+.icon_FrWA {
+  width: 50px;
+  position: absolute;
+  top: 10px;
+  left: 10px;
 }
 
-/* dimention le text au centre de la banniére */
-.texte_banniere{
-    position: absolute; /* Position absolue pour pouvoir mettre le texte au dessus de l'image */
-    top : 80px; /* Potition par rapport au haut de la page */
-    /* 4 paramétre pour centré le text en potinio absolue */
-    left: 0; /* 1*/
-    right: 0; /* 2 */
-    margin-left: auto; /* 3 */
-    margin-right: auto;/* 4 */
+.texte_banniere {
+  position: absolute;
+  top: 80px;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
 }
 
 .texte_banniere p {
-    color: #FFFFFF; /* Couleur du text */
-    font-family:'montserrat', sans-serif; /* Police d'écriture */
-    font-weight: bold; /* Mettre le texte en gras */
-    font-size: 80px; /* Taille de la police d'écriture */
-    text-decoration: underline; /* Souligner le texte */
+  color: #fff;
+  font-family: 'montserrat', sans-serif;
+  font-weight: bold;
+  font-size: 80px;
+  text-decoration: underline;
 }
 
-@media screen and (max-width: 700px) { /* Si l'écran fait mois de 700px, pour que le titre reste centré verticalement sur la banniere */
-    .texte_banniere{
-        position: absolute; /* Position absolue pour pouvoir mettre le texte au dessus de l'image */
-        top : 80px; /* Potition par rapport au haut de la page */
-        /* 4 paramétre pour centré le text en potinio absolue */
-        left: 0; /* 1*/
-        right: 0; /* 2 */
-        margin-left: auto; /* 3 */
-        margin-right: auto;/* 4 */
-    }
-    .texte_banniere p {
-        color: #FFFFFF; /* Couleur du text */
-        font-family:'montserrat', sans-serif; /* Police d'écriture */
-        font-weight: bold; /* Mettre le texte en gras */
-        font-size: 70px; /* Taille de la police d'écriture */
-        text-decoration: underline; /* Souligner le texte */
-    }
-}
-/*---------------------------- Zone ligne separation ----------------------------*/
-div.ligne_separation{
-    border-bottom:1px solid rgb(90, 90, 90);
-    margin-left: 10%;
-    margin-right: 10%;
+@media screen and (max-width: 700px) {
+  .texte_banniere p {
+    font-size: 70px;
+  }
 }
 
-/*---------------------------- Zone de GIF ----------------------------*/
+/*---------------------------- Séparateur ----------------------------*/
+.ligne_separation {
+  border-bottom: 1px solid rgb(90, 90, 90);
+  margin: 0 10%;
+}
+
+/*---------------------------- GIF ----------------------------*/
 .M_MultimetreGIF {
-    width: 40%;
-    height: auto;
-    max-width: 300px;
-    margin: 30px;
+  width: 40%;
+  max-width: 300px;
+  margin: 30px auto;
+  display: block;
 }
 
-/*---------------------------- Zone de texte présentation ----------------------------*/
+/*---------------------------- Présentation ----------------------------*/
 .text_presentation {
-    margin-left: 20%;
-    margin-right: 20%;
-    margin-top: 25px;
-    margin-bottom: 25px;
+  margin: 25px 20%;
 }
 
-.text_presentation p{
-    color: #000000;
-    font-family:'arial', sans-serif;
-    font-size: 15px;
+.text_presentation p {
+  color: #000;
+  font-size: 15px;
 }
 
-/*---------------------------- Zone des 5 images ----------------------------*/
+/*---------------------------- Images de section ----------------------------*/
 .conteneur {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
 }
 
 .marge1 {
-    margin-left: 10%;
-    margin-right: 10%;
+  margin: 0 10%;
 }
 
-.marge2{
-    margin-left: 22%;
-    margin-right: 22%;
+.marge2 {
+  margin: 0 22%;
 }
 
 .image_5 img {
-    transition: transform .3s;
-    width: 80%;
-    height: auto;
-    max-width: 400px;
-    max-height: 400px;
-    margin-top: 50px;
-    border-radius: 10px;
+  transition: transform .3s;
+  width: 80%;
+  max-width: 400px;
+  max-height: 400px;
+  margin-top: 50px;
+  border-radius: 10px;
 }
 
 .image_5 img:hover {
-    transform:scale(1.15);
+  transform: scale(1.15);
 }
 
-@media screen and (max-width: 800px) {
-    .conteneur {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .image_5 img {
-        width: 80%;
-        margin: 40px;
-    }
-
-    .marge2{
-        margin-left: 10%;
-        margin-right: 10%;
-    }
+.image_5 p {
+  color: #734332;
+  font-weight: bold;
+  font-size: 25px;
 }
 
-.image_5 p{
-    color: #734332;
-    font-family:'arial', sans-serif;
-    font-weight: bold;
-    font-size: 25px;
+.image_5 a {
+  text-decoration: none;
+  color: inherit;
 }
 
-.image_5 a:link,
-.image_5 a:visited,
-.image_5 a:hover,
-.image_5 a:active {
-    text-decoration: none;
+@media screen and (max-width: 700px) {
+  .conteneur {
+    flex-direction: column;
+  }
+
+  .image_5 img {
+    margin: 40px 0;
+  }
+
+  .marge2 {
+    margin: 0 10%;
+  }
 }
 
-/*---------------------------- Zone réseaux sociaux ----------------------------*/
+/*---------------------------- Réseaux ----------------------------*/
 .reseau {
-    margin-left: 10%;
+  margin-left: 10%;
 }
 
-.reseau p{
-    color: #734332;
-    text-decoration: underline;
-    font-family:'montserrat', sans-serif;
-    font-size: 18px;
-    font-weight: bold;
+.reseau p {
+  color: #734332;
+  text-decoration: underline;
+  font-family: 'montserrat', sans-serif;
+  font-size: 18px;
+  font-weight: bold;
 }
 
 .conteuneur_icone {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 
-.conteuneur_icone img{
-    width: 50px;
-    height: 50px;
-    border-radius: 35%;
-    margin-right: 10px;
+.conteuneur_icone img {
+  width: 50px;
+  height: 50px;
+  border-radius: 35%;
+  margin-right: 10px;
 }
 
-/*---------------------------- Zone textes normalisés ----------------------------*/
-.titre1{
-    color: #734332;
-    font-family:'arial', sans-serif;
-    font-weight: bold;
-    font-size: 35px;
-    text-decoration: underline;
+/*---------------------------- Textes standard ----------------------------*/
+.titre1, .titre2, .titre3 {
+  color: #734332;
+  font-family: 'arial', sans-serif;
+  font-weight: bold;
+  text-decoration: underline;
 }
 
-.titre2{
-    color: #734332;
-    font-family:'arial', sans-serif;
-    font-weight: bold;
-    font-size: 25px;
-    text-decoration: underline;
+.titre1 { font-size: 35px; }
+.titre2 { font-size: 25px; }
+.titre3 { font-size: 20px; }
+
+.content p {
+  font-weight: bold;
+  font-size: 15px;
 }
 
-.titre3{
-    color: #734332;
-    font-family:'arial', sans-serif;
-    font-weight: bold;
-    font-size: 20px;
-    text-decoration: underline;
-}
+span.tabulation { margin-left: 20px; }
+span.rouge { color: red; }
+span.souligne { text-decoration: underline; }
+span.rayer { text-decoration: line-through; }
 
-.content p{
-    font-family:'arial', sans-serif;
-    font-weight: bold;
-    font-size: 15px;
-}
-
-span.tabulation{
-    margin-left:20px;
-}
-
-span.rouge{
-    color: red;
-}
-
-span.souligne{
-    text-decoration: underline;
-}
-
-span.rayer{
-    text-decoration: line-through;
-}
-
-/*---------------------------- Ajout de l'affichage des mise a jour git----------------------------*/
-
+/*---------------------------- Vlog ----------------------------*/
 .vlog {
-  background-color: #ffffff;
+  background-color: #fff;
   margin: 2rem 10%;
   padding: 1rem;
   border-radius: 8px;
@@ -248,4 +189,74 @@ span.rayer{
 
 .vlog-entry p {
   margin: 0.5rem 0;
+}
+
+/*---------------------------- Sidebar ----------------------------*/
+#sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 260px;
+  height: 100%;
+  background-color: #1e1e1e;
+  color: white;
+  overflow-y: auto;
+  padding: 1rem;
+  transition: transform 0.3s ease-in-out;
+  z-index: 1000;
+}
+
+/* Déplacement du contenu si sidebar visible (≥ 700px) */
+body.sidebar-visible main,
+body.sidebar-visible header,
+body.sidebar-visible footer {
+  margin-left: 260px;
+  transition: margin-left 0.3s ease-in-out;
+}
+
+/* Sidebar toggle button */
+#sidebar-toggle {
+  position: fixed;
+  top: 15px;
+  left: 10px;
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  cursor: pointer;
+  z-index: 2100;
+}
+
+#sidebar-toggle .bar {
+  width: 30px;
+  height: 4px;
+  background-color: white;
+  border-radius: 2px;
+}
+
+/* MOBILE (< 700px) */
+@media screen and (max-width: 700px) {
+  #sidebar {
+    transform: translateX(-100%);
+    z-index: 2000;
+  }
+
+  #sidebar.show {
+    transform: translateX(0);
+  }
+
+  /* Le contenu reste à gauche, la sidebar passe au-dessus */
+  main, header, footer {
+    margin-left: 0 !important;
+  }
+
+  /* Affiche le bouton hamburger */
+  #sidebar-toggle {
+    display: flex;
+  }
+
+  /* Change la couleur des barres si la sidebar est ouverte */
+  #sidebar.show + #sidebar-toggle .bar {
+    background-color: black;
+  }
 }
