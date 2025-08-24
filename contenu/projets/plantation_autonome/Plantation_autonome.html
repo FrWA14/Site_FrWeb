@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <base href="/Site_FrWeb/">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FrWA Conception — Plantation autonome</title>
+  <meta name="description" content="Projet de plantation autonome : capteurs, arrosage, lumière, visualisation 3D et documentation." />
+  <link rel="icon" href="assets/image/icone/FrWA_Conception.png" type="image/png" />
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <link rel="stylesheet" href="assets/css/pageweb.css" />
+  <!-- Web component model-viewer -->
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+</head>
+
+<body>
+  <div class="container">
+    <!-- ================== Sidebar ================== -->
+    <aside id="sidebar" class="sidebar" role="navigation" aria-label="Navigation latérale">
+      <!-- Logo -->
+      <a href="index.html" aria-label="Accueil">
+        <img class="icone" src="assets/image/icone/FrWA_Conception_grey.png" alt="FrWA Conception" />
+      </a>
+
+      <!-- Arborescence (tree) -->
+      <details open>
+        <summary>Navigation</summary>
+        <ul id="fileTree">
+          <li>Chargement de l’arborescence…</li>
+        </ul>
+      </details>
+
+      <br><hr/><br> <!-- Ligne de separation -->
+
+      <!-- Sommaire -->
+      <nav class="toc" aria-label="Sommaire de la page">
+        <details open>
+          <summary>Sommaire</summary>
+          <ul>
+            <li><a href="#section1">Présentation du projet</a></li>
+            <li><a href="#section2">Liste des paramètres</a></li>
+            <li>
+              <details>
+                <summary>Choix des capteurs</summary>
+                <ul>
+                  <li><a href="#section3">Vue d’ensemble</a></li>
+                  <li><a href="#section3.1">Luminosité</a></li>
+                  <li><a href="#section3.2">Arrosage</a></li>
+                  <li><a href="#section3.3">Humidité (sol)</a></li>
+                  <li><a href="#section3.4">Température &amp; Humidité (air)</a></li>
+                  <li><a href="#section3.5">Heure</a></li>
+                  <li><a href="#section3.6">Niveau d’eau</a></li>
+                </ul>
+              </details>
+            </li>
+            <li><a href="#section4">Liste des prototypes</a></li>
+            <li><a href="#section5">Matériels utilisés</a></li>
+          </ul>
+        </details>
+      </nav>
+
+      <br><hr/><br> <!-- Ligne de separation -->
+
+      <!-- Bouton Accueil -->
+      <a class="back-home" href="index.html">Accueil</a>
+      <br><br><br>
+    </aside>
+
+    <!-- ================== Hamburger (mobile) ================== -->
+    <div class="hamburger" role="button" aria-controls="sidebar" aria-expanded="false" aria-label="Ouvrir le menu latéral" tabindex="0">
+      <div class="square"></div>
+    </div>
+
+    <!-- ================== Main content ================== -->
+    <main class="main-content" id="main">
+      <!-- Bannière -->
+      <header class="legacy-banniere" aria-label="Bannière">
+        <img src="assets/image/accueil/Banniere.jpg" alt="Bannière du site"/>
+        <div class="legacy-icon_FrWA">
+          <img src="assets/image/icone/FrWA_Conception_grey.png" alt="Logo FrWA Conception"/>
+        </div>
+        <div class="legacy-texte_banniere legacy-centre">
+          <p>Plantation autonome</p>
+        </div>
+      </header>
+
+      <!-- Intro -->
+      <section class="legacy-text_presentation" aria-labelledby="section1">
+        <h2 class="titre2" id="section1">Présentation du projet</h2>
+        <p class="texte">
+          Projet de plantation autonome pilotant l’arrosage, la lumière et la surveillance
+          de l’environnement (température/humidité air, humidité du sol, niveaux, horaire).
+        </p>
+      </section>
+
+      <div class="legacy-ligne_separation"></div>
+
+      <section aria-labelledby="section2">
+        <h2 class="titre2" id="section2">Liste des paramètres</h2>
+        <p class="texte">
+          Seuils de luminosité, hygrométrie du sol, humidité/Température de l’air, créneaux horaires,
+          niveau du réservoir, etc.
+        </p>
+      </section>
+
+      <div class="legacy-ligne_separation"></div>
+
+      <!-- Capteurs -->
+      <section aria-labelledby="section3">
+        <h2 class="titre2" id="section3">Choix des capteurs</h2>
+
+        <div class="image-centree">
+          <img class="image_interlude" src="contenu/projets/plantation_autonome/image/M.Multimetre/M._MULTIMETRE_sous_le_soleille.png" alt="Illustration capteurs et soleil" loading="lazy"/>
+        </div>
+
+        <h3 class="titre3" id="section3.1">Luminosité</h3>
+        <p class="texte">
+          <span class="tabulation">Photorésistances pour mesurer la lumière ambiante et ajuster l’éclairage.</span>
+        </p>
+        <a href="https://www.amazon.fr/" target="_blank" rel="noopener noreferrer" class="image-centree">
+          <img class="image_presentation" src="contenu/projets/plantation_autonome/image/Capteurs_lumiere.jpg" alt="Capteurs de luminosité" loading="lazy"/>
+        </a>
+
+        <div class="image-centree">
+          <img class="image_interlude" src="contenu/projets/plantation_autonome/image/M.Multimetre/M.MULTIMETRE_arrose_une_plante.png" alt="Illustration arrosage automatique" loading="lazy"/>
+        </div>
+
+        <h3 class="titre3" id="section3.2">Arrosage</h3>
+        <p class="texte">
+          Pompe 5&nbsp;V (USB) pilotée selon l’humidité du sol et des créneaux horaires.
+        </p>
+        <div class="image-centree">
+          <video controls playsinline>
+            <source src="contenu/projets/plantation_autonome/video/plantation%20autonome%20V3.mp4" type="video/mp4"/>
+            Votre navigateur ne peut pas lire cette vidéo.
+          </video>
+        </div>
+        <a href="https://www.amazon.fr/" target="_blank" rel="noopener noreferrer" class="image-centree">
+          <img class="image_presentation" src="contenu/projets/plantation_autonome/image/Pompe_aquarium.jpg" alt="Pompe d’aquarium 5V" loading="lazy"/>
+        </a>
+
+        <h3 class="titre3" id="section3.3">Humidité (sol)</h3>
+        <p class="texte">Capteurs d’humidité du sol (capacitifs de préférence) pour piloter l’arrosage.</p>
+
+        <h3 class="titre3" id="section3.4">Température &amp; Humidité (air)</h3>
+        <p class="texte">Ex. DHT11/DHT22 pour suivre l’environnement.</p>
+
+        <h3 class="titre3" id="section3.5">Heure</h3>
+        <p class="texte">RTC pour créneaux d’arrosage et journalisation.</p>
+
+        <h3 class="titre3" id="section3.6">Niveau d’eau</h3>
+        <p class="texte">Flotteur ou capteurs de niveau pour sécuriser la pompe.</p>
+      </section>
+
+      <div class="legacy-ligne_separation"></div>
+
+      <section aria-labelledby="section4">
+        <h2 class="titre2" id="section4">Liste des prototypes</h2>
+        <p class="texte">V1 ? V3 (évolutions méca/élec/logiciel).</p>
+      </section>
+
+      <div class="legacy-ligne_separation"></div>
+
+      <section aria-labelledby="section5">
+        <h2 class="titre2" id="section5">Matériels utilisés</h2>
+        <p class="texte">Capteurs, actionneurs, contrôleur, alimentation, etc.</p>
+      </section>
+
+      <div class="legacy-ligne_separation"></div>
+
+      <!-- Visualisation 3D -->
+      <div class="image-centree" aria-label="Visualisation 3D">
+        <model-viewer
+          src="contenu/projets/plantation_autonome/model_3D/Robot_CdFR_blender.glb"
+          class="model-3d"
+          auto-rotate
+          camera-controls
+          rotation-per-second="5deg"
+          background-color="#fff"
+          ar>
+        </model-viewer>
+      </div>
+
+      <!-- Réseaux -->
+      <footer class="legacy-reseau" aria-labelledby="reseaux">
+        <h2 id="reseaux" class="sr-only">Réseaux</h2>
+        <p>Réseaux :</p>
+        <div class="legacy-conteuneur_icone">
+          <a href="https://www.linkedin.com/in/armand-wils-4168b21a4/" target="_blank" rel="noopener" aria-label="LinkedIn">
+            <img src="assets/image/icone/Linkedin_logo.png" alt="LinkedIn"/>
+          </a>
+          <a href="mailto:ar.wils@epmistes.net" target="_blank" aria-label="Mail">
+            <img src="assets/image/icone/Mail_logo.png" alt="Mail"/>
+          </a>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <!-- Bouton bascule de thème -->
+  <button
+    id="themeToggle"
+    class="theme-toggle"
+    type="button"
+    aria-label="Changer de thème (clair/sombre/cyan)"
+    title="Changer de thème (clair/sombre/cyan)"
+  ></button>
+
+  <!-- ================== Scripts ================== -->
+  <script>
+  // Corrige les liens #sectionX avec <base>
+  document.addEventListener('DOMContentLoaded', () => {
+    const currentPath = location.pathname.replace(/\/+$/, '');
+    document.querySelectorAll('.toc a[href^="#"]').forEach(a => {
+      const frag = a.getAttribute('href');
+      a.setAttribute('href', currentPath + frag);
+    });
+  });
+  </script>
+  <script src="assets/js/tree.js" defer></script>
+  <script src="assets/js/menuToggle.js" defer></script>
+  <script src="assets/js/themeToggle.js" defer></script>
+</body>
+</html>

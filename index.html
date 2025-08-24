@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <base href="/Site_FrWeb/">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FrWA Conception — Accueil</title>
+  <meta name="description" content="Accueil du site FrWA Conception : électronique, mécanique, code, projets, cours et mises à jour (vlog)." />
+  <link rel="icon" href="assets/image/icone/FrWA_Conception.png" type="image/png" />
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <!-- (Optionnel) petites règles locales, sans toucher style.css -->
+  <style>
+    /* S'assure que l'UL ne casse pas la mise en page */
+    #fileTree { list-style: none; padding-left: 0; margin: 0; }
+    #fileTree li { margin: 2px 0; }
+    #fileTree summary { cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar" role="navigation" aria-label="Navigation latérale">
+    <a href="index.html" style="display:block; margin-bottom:12px; text-align:center;">
+      <img class="icone" src="assets/image/icone/FrWA_Conception_grey.png" alt="FrWA Conception" />
+    </a>
+
+      <details open>
+        <summary>Navigation</summary>
+        <ul id="fileTree">
+          <!-- Arborescence générée par JS -->
+          <li>Chargement de l’arborescence…</li>
+        </ul>
+      </details>
+    </aside>
+
+    <!-- Hamburger -->
+    <div
+      class="hamburger"
+      role="button"
+      aria-controls="sidebar"
+      aria-expanded="false"
+      aria-label="Ouvrir le menu latéral"
+      tabindex="0"
+    >
+      <div class="square"></div>
+    </div>
+
+    <!-- Contenu principal -->
+    <main class="main-content" id="main">
+      <!-- Bannière -->
+      <header class="legacy-banniere">
+        <img src="assets/image/accueil/Banniere.jpg" alt="Bannière principale" />
+        <div class="legacy-icon_FrWA">
+          <img src="assets/image/icone/FrWA_Conception_grey.png" alt="FrWA Conception" />
+        </div>
+        <div class="legacy-texte_banniere legacy-centre">
+          <p>FrWA Conception</p>
+        </div>
+      </header>
+
+      <section aria-labelledby="intro">
+        <h1 id="intro" class="sr-only">Bienvenue</h1>
+        <div class="legacy-centre">
+          <img class="legacy-M_MultimetreGIF" src="assets/image/gif/M.Multimetre.gif" alt="Mascotte M. Multimètre" />
+        </div>
+
+        <div class="legacy-ligne_separation"></div>
+
+        <div class="legacy-text_presentation">
+          <p>Salutation à toutes et à tous,</p>
+          <p>Soyez les bienvenus, M. Multimètre sera votre guide tout au long de votre voyage sur mon site.</p>
+        </div>
+
+        <div class="legacy-ligne_separation"></div>
+      </section>
+
+      <section aria-labelledby="nav-visuelle" class="legacy-centre">
+        <h2 id="nav-visuelle" class="sr-only">Navigation visuelle</h2>
+        <div class="legacy-conteneur legacy-images5-ligne">
+          <div class="legacy-image_5">
+            <a href="contenu/electronique/Electronique.html">
+              <img src="assets/image/accueil/Electronique.jpg" alt="Accéder à la section Électronique" />
+              <p>Electronique</p>
+            </a>
+          </div>
+          <div class="legacy-image_5">
+            <a href="contenu/mecanique/Mecanique.html">
+              <img src="assets/image/accueil/Mecanique.jpg" alt="Accéder à la section Mécanique" />
+              <p>Mecanique</p>
+            </a>
+          </div>
+          <div class="legacy-image_5">
+            <a href="contenu/code/Code.html">
+              <img src="assets/image/accueil/Code.jpg" alt="Accéder à la section Code" />
+              <p>Code</p>
+            </a>
+          </div>
+          <div class="legacy-image_5">
+            <a href="contenu/projets/Projets.html">
+              <img src="assets/image/accueil/Projets.jpg" alt="Accéder à la section Projets" />
+              <p>Projets</p>
+            </a>
+          </div>
+          <div class="legacy-image_5">
+            <a href="contenu/cours/Cours.html">
+              <img src="assets/image/accueil/Cours.jpg" alt="Accéder à la section Cours" />
+              <p>Cours</p>
+            </a>
+          </div>
+        </div>
+      </section>
+
+    <!-- Information sur la page web, vlog -->
+      <section class="vlog" aria-labelledby="maj">
+        <h2 id="maj">Dernières mises à jour</h2>
+        <div id="vlog-list">Chargement des mises à jour...</div>
+      </section>
+
+    <!-- Lien réseaux "sociaux" -->
+      <footer class="legacy-reseau" aria-labelledby="reseaux">
+        <h2 id="reseaux" class="sr-only">Réseaux</h2>
+        <p>Réseaux :</p>
+        <div class="legacy-conteuneur_icone">
+          <a href="https://www.linkedin.com/in/armand-wils-4168b21a4/" target="_blank" rel="noopener">
+            <img src="assets/image/icone/Linkedin_logo.png" alt="LinkedIn" />
+          </a>
+          <a href="mailto:ar.wils@epmistes.net" target="_blank" rel="noopener">
+            <img src="assets/image/icone/Mail_logo.png" alt="Email" />
+          </a>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <!-- Bouton bascule de thème -->
+  <button
+    id="themeToggle"
+    class="theme-toggle"
+    type="button"
+    aria-label="Changer de thème (clair/sombre/cyan)"
+    title="Changer de thème (clair/sombre/cyan)"
+  ></button>
+
+  <!-- Scripts -->
+  <script src="assets/js/tree.js" defer></script>
+  <script src="assets/js/vlog.js" defer></script>
+  <script src="assets/js/menuToggle.js" defer></script>
+  <script src="assets/js/themeToggle.js" defer></script>
+</body>
+</html>
