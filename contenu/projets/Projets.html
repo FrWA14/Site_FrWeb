@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <base href="/Site_FrWeb/">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FrWA Conception — Accueil</title>
+  <meta name="description" content="Accueil du site FrWA Conception : électronique, mécanique, code, projets, cours et mises à jour (vlog)." />
+  <link rel="icon" href="assets/image/icone/FrWA_Conception.png" type="image/png" />
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <link rel="stylesheet" href="assets/css/pageweb.css" />
+  <!-- (Optionnel) petites règles locales, sans toucher style.css -->
+  <style>
+    /* S'assure que l'UL ne casse pas la mise en page */
+    #fileTree { list-style: none; padding-left: 0; margin: 0; }
+    #fileTree li { margin: 2px 0; }
+    #fileTree summary { cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar" role="navigation" aria-label="Navigation latérale">
+    <a href="index.html" style="display:block; margin-bottom:12px; text-align:center;">
+      <img class="icone" src="assets/image/icone/FrWA_Conception_grey.png" alt="FrWA Conception" />
+    </a>
+
+      <details open>
+        <summary>Navigation</summary>
+        <ul id="fileTree">
+          <!-- Arborescence générée par JS -->
+          <li>Chargement de l’arborescence…</li>
+        </ul>
+      </details>
+
+      <!-- Bouton Accueil -->
+      <br><hr/><br>
+      <a class="back-home" href="index.html">Accueil</a>
+      <br><br><br>
+
+    </aside>
+
+    <!-- Hamburger -->
+    <div
+      class="hamburger"
+      role="button"
+      aria-controls="sidebar"
+      aria-expanded="false"
+      aria-label="Ouvrir le menu latéral"
+      tabindex="0"
+    >
+      <div class="square"></div>
+    </div>
+
+    <!-- Contenu principal (haut de page) -->
+    <main class="main-content" id="main">
+      <!-- Bannière -->
+      <header class="legacy-banniere">
+        <img src="assets/image/accueil/Banniere.jpg" alt="Bannière principale" />
+        <div class="legacy-icon_FrWA">
+          <img src="assets/image/icone/FrWA_Conception_grey.png" alt="FrWA Conception" />
+        </div>
+        <div class="legacy-texte_banniere legacy-centre">
+          <p>FrWA Conception</p>
+        </div>
+      </header>
+
+    <!-- Contenu de la page -->
+      <div class="legacy-image_presentation">
+        <a href="contenu/projets/plantation_autonome/Plantation_autonome.html">
+            <img src="contenu/projets/image/basilicV4.jpg" alt="">
+            <p>Plantation autonome</p>
+        </a>
+
+    <!--
+        <a href="contenu/projets/plantation_autonome/Plantation_autonome.html">
+            <img src="contenu/projets/image/basilicV4.jpg" alt="">
+            <p>Plantation autonome</p>
+        </a>
+        <a href="contenu/projets/plantation_autonome/Plantation_autonome.html">
+            <img src="contenu/projets/image/basilicV4.jpg" alt="">
+            <p>Plantation autonome</p>
+        </a>
+        <a href="contenu/projets/plantation_autonome/Plantation_autonome.html">
+            <img src="contenu/projets/image/basilicV4.jpg" alt="">
+            <p>Plantation autonome</p>
+        </a>
+        <a href="contenu/projets/plantation_autonome/Plantation_autonome.html">
+            <img src="contenu/projets/image/basilicV4.jpg" alt="">
+            <p>Plantation autonome</p>
+        </a>
+        <a href="contenu/projets/plantation_autonome/Plantation_autonome.html">
+            <img src="contenu/projets/image/basilicV4.jpg" alt="">
+            <p>Plantation autonome</p>
+        </a>
+    -->
+      </div>
+
+    <!-- Lien réseaux "sociaux" -->
+      <footer class="legacy-reseau" aria-labelledby="reseaux">
+        <h2 id="reseaux" class="sr-only">Réseaux</h2>
+        <p>Réseaux :</p>
+        <div class="legacy-conteuneur_icone">
+          <a href="https://www.linkedin.com/in/armand-wils-4168b21a4/" target="_blank" rel="noopener">
+            <img src="assets/image/icone/Linkedin_logo.png" alt="LinkedIn" />
+          </a>
+          <a href="mailto:ar.wils@epmistes.net" target="_blank" rel="noopener">
+            <img src="assets/image/icone/Mail_logo.png" alt="Email" />
+          </a>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <!-- Bouton bascule de thème -->
+  <button
+    id="themeToggle"
+    class="theme-toggle"
+    type="button"
+    aria-label="Changer de thème (clair/sombre/cyan)"
+    title="Changer de thème (clair/sombre/cyan)"
+  ></button>
+
+  <!-- Scripts -->
+  <script src="assets/js/tree.js" defer></script>
+  <script src="assets/js/vlog.js" defer></script>
+  <script src="assets/js/menuToggle.js" defer></script>
+  <script src="assets/js/themeToggle.js" defer></script>
+</body>
+</html>

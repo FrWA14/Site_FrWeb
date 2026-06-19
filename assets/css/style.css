@@ -1,0 +1,190 @@
+/* ================== Variables ================== */
+:root {
+  --taille_sidebar: 300px;
+  --marge_sidebar: 30px;
+  --hamburger_color: rgba(242, 106, 111, 0.6);
+  --image_spacing: 40px;
+
+  /* Fallback palette */
+  --bg: #ffffff;
+  --main_bg: #e8f3f5;
+  --card_bg: #ffffff;
+  --sidebar_bg: #333333;
+
+  --text_color: #111111;       /* sidebar/tree */
+  --text_color_main: #222222;  /* contenu */
+
+  --symbol_color: #888888;
+  --link: #0b67ff;
+  --accent: #f26a6f;
+  --theme_icon: #f39c12;
+
+  --radius: 10px;
+  --shadow-1: 0 1px 8px rgba(0,0,0,.08);
+  --breakpoint: 768px;
+}
+
+/* Thèmes */
+:root[data-theme="light"]{
+  --bg:#fff; --main_bg:#f4f7fb; --card_bg:#fff; --sidebar_bg:#2f2f2f;
+  --text_color:#e0e0e0; --text_color_main:#222;
+  --symbol_color:#6b6b6b; --link:#0b67ff; --accent:#f26a6f; --theme_icon:#f39c12;
+}
+:root[data-theme="dark"]{
+  --bg:#101214; --main_bg:#11181c; --card_bg:#1a1f24; --sidebar_bg:#222;
+  --text_color:#e0e0e0; --text_color_main:#e0e0e0;
+  --symbol_color:#c3c3c3; --link:#6aa9ff; --accent:#f26a6f; --theme_icon:#eaeaea;
+}
+:root[data-theme="cyan"]{
+  --bg:#e7fbff; --main_bg:#d9f5fb; --card_bg:#fff; --sidebar_bg:#245a66;
+  --text_color:#e0e0e0; --text_color_main:#0c2430;
+  --symbol_color:#3c5b61; --link:#0b67ff; --accent:#e35a74; --theme_icon:#0ea5b7;
+}
+
+/* Accessibilité */
+.sr-only{position:absolute!important;width:1px!important;height:1px!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+
+/* ================== Base ================== */
+body{
+  margin:0; padding:0; overflow-x:hidden; font-family:sans-serif;
+  color:var(--text_color_main); background:var(--bg);
+}
+.container{ display:flex; }
+
+/* ================== Sidebar ================== */
+.sidebar{
+  width:var(--taille_sidebar); height:100vh; background-color:var(--sidebar_bg);
+  color:#fff; position:fixed; top:0; left:0; z-index:1000; padding:20px;
+  overflow-y:auto; transition:left .3s ease;
+}
+
+/* Lien du logo UNIQUEMENT */
+.logo-link{ display:block; }
+
+/* Icône (partout) */
+.icone{
+  width:80px; height:auto; display:block; margin:0 auto 10px; /* centré + marge bas */
+}
+
+/* ================== Main ================== */
+.main-content{
+  background-color:var(--main_bg);
+  margin-left:calc(var(--taille_sidebar) + var(--marge_sidebar));
+  padding:20px; transition:margin-left .3s ease; width:100%;
+  color:var(--text_color_main);
+}
+.main-content a{ color:var(--link); text-decoration:none; text-underline-offset:2px; }
+.main-content a:hover{ text-decoration:underline; }
+
+/* ================== Hamburger ================== */
+.hamburger{ display:none; position:fixed; top:60px; left:20px; z-index:2001;
+  flex-direction:column; cursor:pointer; padding:15px; transition:transform .3s ease; }
+.hamburger .square{ width:40px; height:40px; background-color:var(--hamburger_color);
+  border-radius:8px; transition:transform .3s ease, background-color .3s ease; }
+@media(max-width:768px){ body.menu-open .hamburger{ transform:translateX(calc(var(--taille_sidebar) - 10px)); } }
+body.menu-open .hamburger .square{ transform:rotate(45deg); }
+
+/* Focus */
+:where(a,button,.hamburger):focus-visible,
+:where(.hamburger .square):focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:6px; }
+
+/* ================== Responsive ================== */
+@media(max-width:768px){
+  .hamburger{ display:flex; }
+  .sidebar{ left:calc(-1 * var(--taille_sidebar)); z-index:2000; }
+  .sidebar.show{ left:0; }
+  .main-content{ margin-left:0; z-index:1; padding:0; }
+}
+body.menu-open{ overflow:hidden; }
+
+/* ================== Scrollbar sidebar ================== */
+.sidebar::-webkit-scrollbar{ width:8px; }
+.sidebar::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.25); border-radius:6px; }
+.sidebar{ scrollbar-width:thin; scrollbar-color:rgba(255,255,255,.25) transparent; }
+
+/* ================== Arborescence (TREE) — UNIQUE ================== */
+/* (Ne pas dupliquer dans pageweb.css) */
+.sidebar #fileTree{ padding-left:0; margin:0; list-style:none; }
+.sidebar #fileTree ul{ margin:0; padding-left:12px; list-style:none; }
+.sidebar #fileTree > ul{ padding-left:6px; }
+.sidebar #fileTree li{
+  margin:2px 0; line-height:1.5; font-weight:normal; color:var(--text_color);
+}
+.sidebar #fileTree li::before{ content:none; } /* pas de puce générique */
+.sidebar #fileTree details{ margin:2px 0; }
+.sidebar #fileTree summary{ cursor:pointer; font-weight:bold; list-style:none; color:var(--text_color); }
+.sidebar #fileTree a{ color:var(--text_color); text-decoration:none; }
+.sidebar #fileTree a:hover{ color:var(--link); text-decoration:underline; }
+/* (optionnel si tu ajoutes .is-file côté JS)
+.sidebar #fileTree li.is-file::before{ content:"--> "; color:var(--symbol_color); margin-right:2px; font-size:1.05em; }
+*/
+
+/* ================== Liens dans la sidebar (hors tree) ================== */
+.sidebar a{ color:var(--text_color); text-decoration:none; }
+.sidebar a:hover{ color:var(--link); text-decoration:underline; }
+
+/* ================== Legacy (bannière & hub) ================== */
+.legacy-centre{ text-align:center; }
+.legacy-banniere{ position:relative; height:200px; width:100%; margin-bottom:20px; }
+.legacy-banniere img{ width:100%; height:100%; object-fit:cover; border-radius:var(--radius); }
+@media(max-width:768px){ .legacy-banniere{ width:100vw; margin:0; } }
+.legacy-icon_FrWA{ position:absolute; top:10px; left:10px; width:50px; }
+@media(max-width:768px){ .legacy-icon_FrWA{ left:50px; } }
+.legacy-texte_banniere{ position:absolute; top:0; left:0; right:0; margin:auto; }
+.legacy-texte_banniere p{ color:#fff; font-size:60px; font-weight:bold; text-decoration:underline; }
+
+.legacy-M_MultimetreGIF{ width:26%; max-width:195px; margin:30px; }
+.legacy-ligne_separation{ border-bottom:1px solid var(--symbol_color); margin:30px 10%; opacity:.5; }
+.legacy-text_presentation{ margin:25px 20%; }
+.legacy-text_presentation p{ font-size:15px; color:var(--text_color_main); font-weight:bold; line-height:1.5; }
+
+/* Hub 5 images */
+.legacy-conteneur.legacy-images5-ligne{ display:flex; justify-content:center; flex-wrap:wrap; gap:100px; margin:30px 5%; }
+.legacy-image_5{ width:300px; text-align:center; }
+.legacy-image_5 img{ width:100%; max-width:300px; border-radius:var(--radius); transition:transform .3s; box-shadow:var(--shadow-1); }
+.legacy-image_5 img:hover{ transform:scale(1.1); }
+.legacy-image_5 p{ margin-top:10px; font-size:18px; font-weight:bold; color:var(--text_color_main); }
+.legacy-image_5 a{ text-decoration:none; }
+@media(max-width:600px){
+  .legacy-image_5{ width:80%; }
+  .legacy-conteneur.legacy-images5-ligne{ gap:min(8vw,40px); margin:24px 4%; }
+}
+
+/* ================== Réseaux / Vlog ================== */
+.legacy-reseau{ margin:40px 10%; }
+.legacy-reseau p{ font-size:18px; font-weight:bold; color:var(--text_color_main); text-decoration:underline; }
+.legacy-conteuneur_icone{ display:flex; align-items:center; gap:15px; }
+.legacy-conteuneur_icone img{ width:50px; height:50px; border-radius:35%; }
+
+.vlog{
+  background-color:var(--card_bg); margin:2rem 10%; padding:1rem;
+  border-radius:var(--radius); box-shadow:var(--shadow-1); color:var(--text_color_main);
+}
+.vlog-entry{ padding:.6rem .8rem; border-left:3px solid var(--accent); background:rgba(242,106,111,.06); border-radius:6px; margin:.6rem 0; }
+.vlog-entry p{ margin:.5rem 0; }
+
+/* Préférence système (si aucun choix utilisateur) */
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme]){
+    --bg:#101214; --main_bg:#11181c; --card_bg:#1a1f24; --sidebar_bg:#222;
+    --text_color:#9EFFFF; --text_color_main:#e0e0e0;
+    --symbol_color:#c3c3c3; --link:#6aa9ff; --accent:#f26a6f; --theme_icon:#eaeaea;
+  }
+}
+
+/* Réduction animations */
+@media (prefers-reduced-motion: reduce){ *{ transition:none!important; animation:none!important; } }
+
+/* ================== Bouton thème ================== */
+.theme-toggle{
+  position:fixed; right:18px; bottom:18px; z-index:2100;
+  width:44px; height:44px; border:none; border-radius:999px;
+  background:var(--card_bg); color:var(--theme_icon);
+  box-shadow:0 2px 12px rgba(0,0,0,.18);
+  cursor:pointer; display:grid; place-items:center; font-size:18px;
+}
+.theme-toggle:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; }
+.theme-toggle svg{
+  width:24px; height:24px; display:block;
+  stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;
+}
