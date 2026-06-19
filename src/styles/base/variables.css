@@ -1,0 +1,159 @@
+/**
+ * Variables CSS - Palette de couleurs et dimensions
+ * Inspiré du style ingénieur/tech avec les couleurs du logo et de la mascotte
+ */
+
+:root {
+    /* ===== THEME SOMBRE (par défaut) ===== */
+    
+    /* Couleurs principales */
+    --color-primary: #2d5a5a;
+    --color-primary-light: #3d7a7a;
+    --color-primary-dark: #1d4a4a;
+    
+    --color-secondary: #a8b5b5;
+    --color-secondary-light: #c8d5d5;
+    --color-secondary-dark: #889595;
+    
+    --color-accent: #e67e22;
+    --color-accent-light: #f39c12;
+    --color-accent-dark: #d35400;
+    
+    /* Couleurs de fond */
+    --bg-primary: #0a0f0f;
+    --bg-secondary: #121a1a;
+    --bg-tertiary: #1a2424;
+    --bg-card: #1e2a2a;
+    
+    /* Couleurs de texte */
+    --text-primary: #e8f0f0;
+    --text-secondary: #a8b5b5;
+    --text-muted: #6a7a7a;
+    --text-accent: #4ecdc4;
+    
+    /* Couleurs d'état */
+    --color-success: #27ae60;
+    --color-warning: #f39c12;
+    --color-error: #e74c3c;
+    --color-info: #3498db;
+    
+    /* Dimensions */
+    --sidebar-width: 280px;
+    --sidebar-collapsed-width: 60px;
+    --header-height: 60px;
+    --content-max-width: 1200px;
+    
+    /* Espacements */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+    --spacing-2xl: 48px;
+    
+    /* Bordures */
+    --border-radius-sm: 4px;
+    --border-radius-md: 8px;
+    --border-radius-lg: 12px;
+    --border-radius-xl: 16px;
+    
+    /* Ombres */
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.5);
+    --shadow-glow: 0 0 20px rgba(78, 205, 196, 0.3);
+    
+    /* Transitions */
+    --transition-fast: 150ms ease;
+    --transition-normal: 250ms ease;
+    --transition-slow: 400ms ease;
+    
+    /* Fonts */
+    --font-family-primary: 'Segoe UI', 'Roboto', sans-serif;
+    --font-family-mono: 'Fira Code', 'Consolas', monospace;
+    
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-md: 1rem;
+    --font-size-lg: 1.25rem;
+    --font-size-xl: 1.5rem;
+    --font-size-2xl: 2rem;
+    --font-size-3xl: 2.5rem;
+    
+    /* Z-index layers */
+    --z-sidebar: 100;
+    --z-header: 90;
+    --z-modal: 200;
+    --z-tooltip: 150;
+
+    /* Alias utilisés par certains composants (footer, page d'accueil) */
+    --surface-color: var(--bg-card);
+    --border-color: var(--bg-tertiary);
+    --accent-color: var(--text-accent);
+}
+
+/* ===== THEME CLAIR ===== */
+[data-theme="light"] {
+    --color-primary: #2d5a5a;
+    --color-primary-light: #3d7a7a;
+    --color-primary-dark: #1d4a4a;
+    
+    --color-secondary: #5a6868;
+    --color-secondary-light: #7a8888;
+    --color-secondary-dark: #3a4848;
+    
+    --color-accent: #e67e22;
+    --color-accent-light: #f39c12;
+    --color-accent-dark: #d35400;
+    
+    /* Couleurs de fond - Clair (blanc cassé/beige) */
+    --bg-primary: #f8f6f3;
+    --bg-secondary: #fdfcfa;
+    --bg-tertiary: #ece9e4;
+    --bg-card: #fdfcfa;
+    
+    /* Couleurs de texte - Clair */
+    --text-primary: #1a2424;
+    --text-secondary: #4a5858;
+    --text-muted: #7a8888;
+    --text-accent: #2d5a5a;
+    
+    /* Ombres - Clair */
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.16);
+    --shadow-glow: 0 0 20px rgba(45, 90, 90, 0.2);
+}
+
+/* ===== THEME CYAN ===== */
+[data-theme="cyan"] {
+    --color-primary: #0891b2;
+    --color-primary-light: #22d3ee;
+    --color-primary-dark: #0e7490;
+    
+    --color-secondary: #67e8f9;
+    --color-secondary-light: #a5f3fc;
+    --color-secondary-dark: #06b6d4;
+    
+    --color-accent: #f59e0b;
+    --color-accent-light: #fbbf24;
+    --color-accent-dark: #d97706;
+    
+    /* Couleurs de fond - Cyan */
+    --bg-primary: #042f2e;
+    --bg-secondary: #083344;
+    --bg-tertiary: #0c4a4e;
+    --bg-card: #115e59;
+    
+    /* Couleurs de texte - Cyan */
+    --text-primary: #ecfeff;
+    --text-secondary: #a5f3fc;
+    --text-muted: #67e8f9;
+    --text-accent: #22d3ee;
+    
+    /* Ombres - Cyan */
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.6);
+    --shadow-glow: 0 0 20px rgba(34, 211, 238, 0.4);
+}

@@ -1,0 +1,104 @@
+/**
+ * Colors - Couleurs et thèmes additionnels
+ */
+
+/* Utilitaires de couleur de fond */
+.bg-primary { background-color: var(--bg-primary); }
+.bg-secondary { background-color: var(--bg-secondary); }
+.bg-tertiary { background-color: var(--bg-tertiary); }
+.bg-card { background-color: var(--bg-card); }
+
+/* Utilitaires de couleur de texte */
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-muted { color: var(--text-muted); }
+.text-accent { color: var(--text-accent); }
+
+/* Bordures */
+.border { border: 1px solid var(--bg-tertiary); }
+.border-primary { border-color: var(--color-primary); }
+.border-accent { border-color: var(--color-accent); }
+
+/* Gradients */
+.gradient-primary {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+}
+
+.gradient-accent {
+    background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-dark) 100%);
+}
+
+.gradient-tech {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--text-accent) 100%);
+}
+
+/* Effet néon/glow */
+.glow {
+    box-shadow: var(--shadow-glow);
+}
+
+.glow-text {
+    text-shadow: 0 0 10px var(--text-accent);
+}
+
+/* Couleurs de statut */
+.status-success { color: var(--color-success); }
+.status-warning { color: var(--color-warning); }
+.status-error { color: var(--color-error); }
+.status-info { color: var(--color-info); }
+
+/* Badges de statut */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+    border-radius: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-primary {
+    background: var(--color-primary);
+    color: var(--text-primary);
+}
+
+.badge-accent {
+    background: var(--color-accent);
+    color: white;
+}
+
+.badge-success {
+    background: var(--color-success);
+    color: white;
+}
+
+.badge-warning {
+    background: var(--color-warning);
+    color: var(--bg-primary);
+}
+
+.badge-error {
+    background: var(--color-error);
+    color: white;
+}
+
+/* Diviseur */
+.divider {
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        var(--bg-tertiary) 20%,
+        var(--bg-tertiary) 80%,
+        transparent 100%
+    );
+    margin: var(--spacing-lg) 0;
+}
+
+.divider-vertical {
+    width: 1px;
+    height: 100%;
+    background: var(--bg-tertiary);
+}

@@ -1,0 +1,328 @@
+/* =========================================
+   Page d'accueil - Styles spécifiques
+   ========================================= */
+
+/* Conteneur principal */
+.home-page {
+    padding: 0 !important;
+}
+
+/* =========================================
+   Bannière principale
+   ========================================= */
+
+.home-banner {
+    position: relative;
+    width: 100%;
+    height: 350px;
+    overflow: hidden;
+    border-radius: var(--border-radius-lg);
+    margin-bottom: 2rem;
+}
+
+.home-banner > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.7);
+}
+
+.home-banner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.home-banner-logo {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.5));
+}
+
+.home-banner-title {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #ffffff;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    margin: 0;
+    letter-spacing: 2px;
+}
+
+/* =========================================
+   Section Bienvenue
+   ========================================= */
+
+.home-welcome {
+    padding: 2rem;
+}
+
+.home-welcome-content {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.home-mascot {
+    flex-shrink: 0;
+}
+
+.home-mascot img {
+    width: 150px;
+    height: auto;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+}
+
+.home-intro {
+    flex: 1;
+}
+
+.home-intro .lead {
+    font-size: 1.3rem;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.home-intro p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin: 0;
+}
+
+.home-intro strong {
+    color: var(--accent-color);
+}
+
+/* =========================================
+   Grille des sections
+   ========================================= */
+
+.home-sections {
+    padding: 2rem;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.section-title::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 3px;
+    background: var(--accent-color);
+    margin: 0.5rem auto 0;
+    border-radius: 2px;
+}
+
+.sections-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.section-card {
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: block;
+}
+
+.section-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+    border-color: var(--accent-color);
+}
+
+.section-card-image {
+    width: 100%;
+    height: 180px;
+    overflow: hidden;
+}
+
+.section-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.section-card:hover .section-card-image img {
+    transform: scale(1.1);
+}
+
+.section-card-content {
+    padding: 1.25rem;
+}
+
+.section-card-content h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 0.5rem 0;
+    transition: color 0.3s ease;
+}
+
+.section-card:hover .section-card-content h3 {
+    color: var(--accent-color);
+}
+
+.section-card-content p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* =========================================
+   Section Mises à jour / Vlog
+   ========================================= */
+
+.home-updates {
+    padding: 2rem;
+    background: var(--surface-color);
+    border-radius: var(--border-radius-lg);
+    margin: 2rem;
+}
+
+.updates-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.update-item {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1.25rem;
+    background: var(--bg-primary);
+    border-radius: var(--border-radius-md);
+    border-left: 3px solid var(--accent-color);
+    transition: all 0.2s ease;
+}
+
+.update-item:hover {
+    background: var(--bg-secondary);
+    transform: translateX(4px);
+}
+
+.update-date {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 60px;
+    text-align: center;
+}
+
+.update-day {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent-color);
+    line-height: 1;
+}
+
+.update-month {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.update-year {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.update-content {
+    flex: 1;
+}
+
+.update-content h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 0.5rem 0;
+}
+
+.update-content p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* =========================================
+   Responsive
+   ========================================= */
+
+@media (max-width: 768px) {
+    .home-banner {
+        height: 250px;
+        border-radius: 0;
+    }
+
+    .home-banner-logo {
+        width: 80px;
+        height: 80px;
+    }
+
+    .home-banner-title {
+        font-size: 1.8rem;
+    }
+
+    .home-welcome-content {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .home-mascot img {
+        width: 100px;
+    }
+
+    .home-intro .lead {
+        font-size: 1.1rem;
+    }
+
+    .sections-grid {
+        grid-template-columns: 1fr;
+        padding: 0 1rem;
+    }
+
+    .home-updates {
+        margin: 1rem;
+        padding: 1.5rem;
+    }
+
+    .update-item {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .update-date {
+        flex-direction: row;
+        gap: 0.5rem;
+        justify-content: flex-start;
+    }
+}

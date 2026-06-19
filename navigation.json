@@ -1,0 +1,103 @@
+{
+  "generated": "2026-06-12 17:15:56",
+  "children": [
+{
+  "name": "code",
+  "displayName": "Code",
+  "path": "pages/code",
+  "type": "folder",
+  "children": [
+{
+  "name": "Code.html",
+  "displayName": "Code",
+  "path": "pages/code/Code.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cours",
+  "displayName": "Cours",
+  "path": "pages/cours",
+  "type": "folder",
+  "children": [
+{
+  "name": "Cours.html",
+  "displayName": "Cours",
+  "path": "pages/cours/Cours.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "electronique",
+  "displayName": "Electronique",
+  "path": "pages/electronique",
+  "type": "folder",
+  "children": [
+{
+  "name": "Electronique.html",
+  "displayName": "Electronique",
+  "path": "pages/electronique/Electronique.html",
+  "type": "file"
+},
+{
+  "name": "ne555_astable",
+  "displayName": "Ne555 Astable",
+  "path": "pages/electronique/ne555_astable",
+  "type": "folder",
+  "children": [
+{
+  "name": "NE555_astable.html",
+  "displayName": "Ne555 Astable",
+  "path": "pages/electronique/ne555_astable/NE555_astable.html",
+  "type": "file"
+}
+]
+}
+]
+},
+{
+  "name": "mecanique",
+  "displayName": "Mecanique",
+  "path": "pages/mecanique",
+  "type": "folder",
+  "children": [
+{
+  "name": "Mecanique.html",
+  "displayName": "Mecanique",
+  "path": "pages/mecanique/Mecanique.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "projets",
+  "displayName": "Projets",
+  "path": "pages/projets",
+  "type": "folder",
+  "children": [
+{
+  "name": "Projets.html",
+  "displayName": "Projets",
+  "path": "pages/projets/Projets.html",
+  "type": "file"
+},
+{
+  "name": "plantation_autonome",
+  "displayName": "Plantation Autonome",
+  "path": "pages/projets/plantation_autonome",
+  "type": "folder",
+  "children": [
+{
+  "name": "Plantation_autonome.html",
+  "displayName": "Plantation Autonome",
+  "path": "pages/projets/plantation_autonome/Plantation_autonome.html",
+  "type": "file"
+}
+]
+}
+]
+}
+]
+}

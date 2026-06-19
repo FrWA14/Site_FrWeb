@@ -1,0 +1,121 @@
+/**
+ * Typography - Styles de texte
+ */
+
+body {
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-md);
+    color: var(--text-primary);
+    background-color: var(--bg-primary);
+}
+
+h1 {
+    font-size: var(--font-size-3xl);
+    margin-bottom: var(--spacing-lg);
+    color: var(--text-primary);
+    position: relative;
+}
+
+h1::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-accent), var(--text-accent));
+    margin-top: var(--spacing-sm);
+    border-radius: 2px;
+}
+
+h2 {
+    font-size: var(--font-size-2xl);
+    margin-bottom: var(--spacing-md);
+    color: var(--text-primary);
+}
+
+h3 {
+    font-size: var(--font-size-xl);
+    margin-bottom: var(--spacing-md);
+    color: var(--text-secondary);
+}
+
+h4 {
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--spacing-sm);
+    color: var(--text-secondary);
+}
+
+p {
+    margin-bottom: var(--spacing-md);
+    color: var(--text-secondary);
+}
+
+.lead {
+    font-size: var(--font-size-lg);
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-xl);
+}
+
+a {
+    color: var(--text-accent);
+    transition: color var(--transition-fast);
+}
+
+a:hover {
+    color: var(--color-accent);
+}
+
+code {
+    background-color: var(--bg-tertiary);
+    padding: 2px 6px;
+    border-radius: var(--border-radius-sm);
+    font-size: 0.9em;
+    color: var(--text-accent);
+}
+
+pre {
+    background-color: var(--bg-tertiary);
+    padding: var(--spacing-md);
+    border-radius: var(--border-radius-md);
+    overflow-x: auto;
+    margin-bottom: var(--spacing-md);
+    border-left: 3px solid var(--color-primary);
+}
+
+pre code {
+    background: none;
+    padding: 0;
+}
+
+blockquote {
+    border-left: 4px solid var(--color-accent);
+    padding-left: var(--spacing-md);
+    margin: var(--spacing-md) 0;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+strong {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+em {
+    color: var(--text-accent);
+}
+
+small {
+    font-size: var(--font-size-sm);
+    color: var(--text-muted);
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-accent {
+    color: var(--text-accent);
+}
+
+.text-muted {
+    color: var(--text-muted);
+}

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FrWA Conception</title>
+    
+    <!-- Styles modulaires -->
+    <link rel="stylesheet" href="src/styles/base/variables.css">
+    <link rel="stylesheet" href="src/styles/base/reset.css">
+    <link rel="stylesheet" href="src/styles/base/typography.css">
+    <link rel="stylesheet" href="src/styles/layout/grid.css">
+    <link rel="stylesheet" href="src/styles/layout/sidebar.css">
+    <link rel="stylesheet" href="src/styles/layout/content.css">
+    <link rel="stylesheet" href="src/styles/layout/footer.css">
+    <link rel="stylesheet" href="src/styles/components/navigation.css">
+    <link rel="stylesheet" href="src/styles/components/buttons.css">
+    <link rel="stylesheet" href="src/styles/components/cards.css">
+    <link rel="stylesheet" href="src/styles/components/page-elements.css">
+    <link rel="stylesheet" href="src/styles/components/media-viewer.css">
+    <link rel="stylesheet" href="src/styles/components/lightbox.css">
+    <link rel="stylesheet" href="src/styles/components/theme-switcher.css">
+    <link rel="stylesheet" href="src/styles/theme/colors.css">
+    <link rel="stylesheet" href="src/styles/theme/animations.css">
+    <link rel="stylesheet" href="src/styles/pages/home.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <a href="#" class="sidebar-header" id="home-link">
+                <img src="src/assets/images/icone/FrWA_Conception.png" alt="FrWA Conception" class="logo logo-dark">
+                <img src="src/assets/images/icone/FrWA_Conception_grey.png" alt="FrWA Conception" class="logo logo-light">
+            </a>
+            <nav class="nav-tree" id="nav-tree">
+                <!-- Navigation générée automatiquement -->
+            </nav>
+            <div class="sidebar-footer">
+                <div class="mascot-container">
+                    <img src="src/assets/images/gif/M.Multimetre.gif" alt="M. Multimètre" class="mascot">
+                </div>
+                <div class="social-links">
+                    <a href="https://www.linkedin.com/in/armand-wils-4168b21a4/" target="_blank" rel="noopener" title="LinkedIn">
+                        <img src="src/assets/images/icone/Linkedin_logo.png" alt="LinkedIn">
+                    </a>
+                    <a href="mailto:ar.wils@epmistes.net" target="_blank" rel="noopener" title="Email">
+                        <img src="src/assets/images/icone/Mail_logo.png" alt="Email">
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Toggle button for mobile -->
+        <button class="sidebar-toggle" id="sidebar-toggle">
+            <span class="toggle-icon"></span>
+        </button>
+
+        <!-- Main Content -->
+        <main class="main-content" id="main-content">
+            <header class="content-header">
+                <div class="breadcrumb" id="breadcrumb"></div>
+                <div class="theme-switcher">
+                    <button class="theme-btn" id="theme-btn" title="Changer de thème">
+                        <span class="theme-icon" id="theme-icon"></span>
+                        <span class="theme-label" id="theme-label">Sombre</span>
+                    </button>
+                    <div class="theme-dropdown" id="theme-dropdown">
+                        <button class="theme-option" data-theme="dark">
+                            <span class="option-icon">&#9790;</span>
+                            <span>Sombre</span>
+                        </button>
+                        <button class="theme-option" data-theme="light">
+                            <span class="option-icon">&#9788;</span>
+                            <span>Clair</span>
+                        </button>
+                        <button class="theme-option" data-theme="cyan">
+                            <span class="option-icon">&#10052;</span>
+                            <span>Cyan</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+            <article class="content-body" id="content-body">
+                <div class="page-content home-page">
+                    <!-- Bannière d'accueil -->
+                    <div class="home-banner">
+                        <img src="src/assets/images/accueil/Banniere.jpg" alt="Bannière FrWA Conception">
+                        <div class="home-banner-overlay">
+                            <h1 class="home-banner-title">FrWA Conception</h1>
+                        </div>
+                    </div>
+
+                    <!-- Section Bienvenue -->
+                    <section class="home-welcome">
+                        <div class="home-welcome-content">
+                            <div class="home-mascot">
+                                <img src="src/assets/images/gif/M.Multimetre.gif" alt="M. Multimètre - Mascotte">
+                            </div>
+
+                            <div class="home-intro">
+                                <p class="lead">Salutation à toutes et à tous,</p>
+                                <p>
+                                    Soyez les bienvenus, <strong>M. Multimètre</strong> sera votre guide tout au long 
+                                    de votre voyage sur mon site.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="divider"></div>
+                    </section>
+
+                    <!-- Navigation visuelle par sections -->
+                    <section class="home-sections">
+                        <h2 class="section-title">Explorer les sections</h2>
+                        
+                        <div class="sections-grid">
+                            <a href="#pages/electronique/Electronique.html" class="section-card">
+                                <div class="section-card-image">
+                                    <img src="src/assets/images/accueil/Electronique.jpg" alt="Électronique">
+                                </div>
+                                <div class="section-card-content">
+                                    <h3>Électronique</h3>
+                                    <p>Circuits, composants et montages électroniques</p>
+                                </div>
+                            </a>
+
+                            <a href="#pages/mecanique/Mecanique.html" class="section-card">
+                                <div class="section-card-image">
+                                    <img src="src/assets/images/accueil/Mecanique.jpg" alt="Mécanique">
+                                </div>
+                                <div class="section-card-content">
+                                    <h3>Mécanique</h3>
+                                    <p>Conception mécanique et modélisation 3D</p>
+                                </div>
+                            </a>
+
+                            <a href="#pages/code/Code.html" class="section-card">
+                                <div class="section-card-image">
+                                    <img src="src/assets/images/accueil/Code.jpg" alt="Code">
+                                </div>
+                                <div class="section-card-content">
+                                    <h3>Code</h3>
+                                    <p>Programmation et développement logiciel</p>
+                                </div>
+                            </a>
+
+                            <a href="#pages/projets/Projets.html" class="section-card">
+                                <div class="section-card-image">
+                                    <img src="src/assets/images/accueil/Projets.jpg" alt="Projets">
+                                </div>
+                                <div class="section-card-content">
+                                    <h3>Projets</h3>
+                                    <p>Réalisations complètes et expérimentations</p>
+                                </div>
+                            </a>
+
+                            <a href="#pages/cours/Cours.html" class="section-card">
+                                <div class="section-card-image">
+                                    <img src="src/assets/images/accueil/Cours.jpg" alt="Cours">
+                                </div>
+                                <div class="section-card-content">
+                                    <h3>Cours</h3>
+                                    <p>Tutoriels et ressources pédagogiques</p>
+                                </div>
+                            </a>
+                        </div>
+                    </section>
+
+                    <!-- Section Vlog / Mises à jour -->
+                    <section class="home-updates">
+                        <h2 class="section-title">Dernières mises à jour</h2>
+                        
+                        <div class="updates-list">
+                            <div class="update-item">
+                                <div class="update-date">
+                                    <span class="update-day">03</span>
+                                    <span class="update-month">Déc</span>
+                                    <span class="update-year">2025</span>
+                                </div>
+                                <div class="update-content">
+                                    <h4>Deuxième refonte totale du site !</h4>
+                                    <p>Nouvelle architecture modulaire, nouveau design moderne avec thèmes (sombre, clair, cyan), navigation automatique, galeries avec lightbox et visualiseur 3D intégré.</p>
+                                </div>
+                            </div>
+
+                            <div class="update-item">
+                                <div class="update-date">
+                                    <span class="update-day">24</span>
+                                    <span class="update-month">Août</span>
+                                    <span class="update-year">2025</span>
+                                </div>
+                                <div class="update-content">
+                                    <h4>🔹 Deploiement 2628518993</h4>
+                                    <p>Ajout des liens sur la page d'accueil</p>
+                                </div>
+                            </div>
+
+                            <div class="update-item">
+                                <div class="update-date">
+                                    <span class="update-day">23</span>
+                                    <span class="update-month">Août</span>
+                                    <span class="update-year">2025</span>
+                                </div>
+                                <div class="update-content">
+                                    <h4>🔹 Deploiement 2628518993</h4>
+                                    <p>Correction des chemins de fichier locaux sur le serveur</p>
+                                </div>
+                            </div>
+
+                            <div class="update-item">
+                                <div class="update-date">
+                                    <span class="update-day">22</span>
+                                    <span class="update-month">Août</span>
+                                    <span class="update-year">2025</span>
+                                </div>
+                                <div class="update-content">
+                                    <h4>🔹 Deploiement 2628518993</h4>
+                                    <p>Ajout de thèmes de couleurs</p>
+                                </div>
+                            </div>
+
+                            <div class="update-item">
+                                <div class="update-date">
+                                    <span class="update-day">--</span>
+                                    <span class="update-month">---</span>
+                                    <span class="update-year">----</span>
+                                </div>
+                                <div class="update-content">
+                                    <h4>Plus de mises à jour à venir...</h4>
+                                    <p>Restez connectés pour découvrir les prochains projets et tutoriels !</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </article>
+            <footer class="content-footer">
+                <div class="footer-content">
+                    <span class="footer-label">Réseaux :</span>
+                    <div class="footer-links">
+                        <a href="https://www.linkedin.com/in/armand-wils-4168b21a4/" target="_blank" rel="noopener" title="LinkedIn">
+                            <img src="src/assets/images/icone/Linkedin_logo.png" alt="LinkedIn">
+                            <span>LinkedIn</span>
+                        </a>
+                        <a href="mailto:ar.wils@epmistes.net" target="_blank" rel="noopener" title="Email">
+                            <img src="src/assets/images/icone/Mail_logo.png" alt="Email">
+                            <span>Mail</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="footer-copyright">
+                    <span>© 2024 FrWA Conception - Tous droits réservés</span>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Model Viewer pour les modèles 3D -->
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
+
+    <!-- Scripts modulaires -->
+    <script src="src/js/config/site-config.js"></script>
+    <script src="src/js/utils/dom-helpers.js"></script>
+    <script src="src/js/utils/path-utils.js"></script>
+    <script src="src/js/navigation/tree-builder.js"></script>
+    <script src="src/js/navigation/tree-renderer.js"></script>
+    <script src="src/js/navigation/breadcrumb.js"></script>
+    <script src="src/js/core/content-loader.js"></script>
+    <script src="src/js/core/router.js"></script>
+    <script src="src/js/ui/sidebar-toggle.js"></script>
+    <script src="src/js/ui/lightbox.js"></script>
+    <script src="src/js/ui/theme-manager.js"></script>
+    <script src="src/js/app.js"></script>
+</body>
+</html>

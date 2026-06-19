@@ -1,0 +1,410 @@
+<!-- Accès: #pages/template/guide-styles.html -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Guide des Styles - FrWA Conception</title>
+</head>
+<body>
+    <div class="page-content">
+        <h1>📖 Guide des Styles</h1>
+        
+        <p class="lead">
+            Ce guide présente tous les composants et styles disponibles pour créer vos pages.
+            Utilisez ce document comme référence pour maintenir une cohérence visuelle.
+        </p>
+
+        <div class="card-alert info">
+            <div class="card-body">
+                <strong>💡 Astuce :</strong> Inspectez le code source de cette page pour copier les éléments dont vous avez besoin.
+            </div>
+        </div>
+
+        <!-- ===== TYPOGRAPHIE ===== -->
+        <h2>Typographie</h2>
+
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Titres</h4>
+            </div>
+            <div class="card-body">
+                <h1>Titre H1 - Titre Principal</h1>
+                <h2>Titre H2 - Section Principale</h2>
+                <h3>Titre H3 - Sous-section</h3>
+                <h4>Titre H4 - Paragraphe important</h4>
+                <h5>Titre H5 - Détail</h5>
+                <h6>Titre H6 - Note</h6>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Texte</h4>
+            </div>
+            <div class="card-body">
+                <p class="lead">Texte d'introduction avec la classe <code>.lead</code> - Plus grand et accentué.</p>
+                <p>Paragraphe normal avec du texte standard pour le contenu principal de vos pages.</p>
+                <p class="text-muted">Texte atténué avec <code>.text-muted</code></p>
+                <p class="text-accent">Texte accentué avec <code>.text-accent</code></p>
+                <p><strong>Texte en gras</strong> et <em>texte en italique</em></p>
+                <p>Lien normal : <a href="#">Cliquez ici</a></p>
+                <p>Code inline : <code>const variable = "valeur";</code></p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Listes</h4>
+            </div>
+            <div class="card-body">
+                <div class="grid grid-2">
+                    <div>
+                        <h5>Liste à puces</h5>
+                        <ul>
+                            <li>Premier élément</li>
+                            <li>Deuxième élément</li>
+                            <li>Troisième élément</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h5>Liste numérotée</h5>
+                        <ol>
+                            <li>Première étape</li>
+                            <li>Deuxième étape</li>
+                            <li>Troisième étape</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- ===== BOUTONS ===== -->
+        <h2>Boutons</h2>
+
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Types de boutons</h4>
+            </div>
+            <div class="card-body">
+                <p>
+                    <button class="btn btn-primary">Primaire</button>
+                    <button class="btn btn-secondary">Secondaire</button>
+                    <button class="btn btn-accent">Accent</button>
+                    <button class="btn btn-ghost">Ghost</button>
+                </p>
+                <pre><code>&lt;button class="btn btn-primary"&gt;Primaire&lt;/button&gt;
+&lt;button class="btn btn-secondary"&gt;Secondaire&lt;/button&gt;
+&lt;button class="btn btn-accent"&gt;Accent&lt;/button&gt;
+&lt;button class="btn btn-ghost"&gt;Ghost&lt;/button&gt;</code></pre>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Tailles</h4>
+            </div>
+            <div class="card-body">
+                <p>
+                    <button class="btn btn-primary btn-sm">Petit</button>
+                    <button class="btn btn-primary">Normal</button>
+                    <button class="btn btn-primary btn-lg">Grand</button>
+                </p>
+                <pre><code>&lt;button class="btn btn-primary btn-sm"&gt;Petit&lt;/button&gt;
+&lt;button class="btn btn-primary"&gt;Normal&lt;/button&gt;
+&lt;button class="btn btn-primary btn-lg"&gt;Grand&lt;/button&gt;</code></pre>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- ===== BADGES ===== -->
+        <h2>Badges</h2>
+
+        <div class="card">
+            <div class="card-body">
+                <p>
+                    <span class="badge badge-primary">Primary</span>
+                    <span class="badge badge-secondary">Secondary</span>
+                    <span class="badge badge-accent">Accent</span>
+                    <span class="badge badge-success">Success</span>
+                    <span class="badge badge-warning">Warning</span>
+                    <span class="badge badge-error">Error</span>
+                    <span class="badge badge-info">Info</span>
+                </p>
+                <pre><code>&lt;span class="badge badge-primary"&gt;Primary&lt;/span&gt;
+&lt;span class="badge badge-success"&gt;Success&lt;/span&gt;
+&lt;span class="badge badge-warning"&gt;Warning&lt;/span&gt;
+&lt;span class="badge badge-error"&gt;Error&lt;/span&gt;</code></pre>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- ===== CARTES ===== -->
+        <h2>Cartes</h2>
+
+        <h3>Carte standard</h3>
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Titre de la carte</h4>
+            </div>
+            <div class="card-body">
+                <p>Contenu de la carte. Les cartes peuvent contenir du texte, des images, des boutons...</p>
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-primary btn-sm">Action</button>
+            </div>
+        </div>
+
+        <pre><code>&lt;div class="card"&gt;
+    &lt;div class="card-header"&gt;
+        &lt;h4 class="card-title"&gt;Titre&lt;/h4&gt;
+    &lt;/div&gt;
+    &lt;div class="card-body"&gt;
+        Contenu...
+    &lt;/div&gt;
+    &lt;div class="card-footer"&gt;
+        &lt;button class="btn btn-primary btn-sm"&gt;Action&lt;/button&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+
+        <h3>Feature Cards</h3>
+        <div class="feature-grid">
+            <div class="feature-card hover-lift">
+                <div class="card-icon">🚀</div>
+                <h3>Fonctionnalité 1</h3>
+                <p>Description de la fonctionnalité avec texte explicatif.</p>
+            </div>
+            <div class="feature-card hover-lift">
+                <div class="card-icon">⚡</div>
+                <h3>Fonctionnalité 2</h3>
+                <p>Description de la fonctionnalité avec texte explicatif.</p>
+            </div>
+            <div class="feature-card hover-lift">
+                <div class="card-icon">🎨</div>
+                <h3>Fonctionnalité 3</h3>
+                <p>Description de la fonctionnalité avec texte explicatif.</p>
+            </div>
+        </div>
+
+        <pre><code>&lt;div class="feature-grid"&gt;
+    &lt;div class="feature-card hover-lift"&gt;
+        &lt;div class="card-icon"&gt;🚀&lt;/div&gt;
+        &lt;h3&gt;Titre&lt;/h3&gt;
+        &lt;p&gt;Description&lt;/p&gt;
+    &lt;/div&gt;
+    ...
+&lt;/div&gt;</code></pre>
+
+        <div class="divider"></div>
+
+        <!-- ===== ALERTES ===== -->
+        <h2>Alertes</h2>
+
+        <div class="card-alert info">
+            <div class="card-body">
+                <strong>ℹ️ Information :</strong> Message d'information avec <code>.card-alert.info</code>
+            </div>
+        </div>
+
+        <div class="card-alert success">
+            <div class="card-body">
+                <strong>✅ Succès :</strong> Message de succès avec <code>.card-alert.success</code>
+            </div>
+        </div>
+
+        <div class="card-alert warning">
+            <div class="card-body">
+                <strong>⚠️ Attention :</strong> Message d'avertissement avec <code>.card-alert.warning</code>
+            </div>
+        </div>
+
+        <div class="card-alert error">
+            <div class="card-body">
+                <strong>❌ Erreur :</strong> Message d'erreur avec <code>.card-alert.error</code>
+            </div>
+        </div>
+
+        <pre><code>&lt;div class="card-alert info"&gt;
+    &lt;div class="card-body"&gt;
+        &lt;strong&gt;ℹ️ Information :&lt;/strong&gt; Votre message ici.
+    &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+
+        <div class="divider"></div>
+
+        <!-- ===== GRILLES ===== -->
+        <h2>Grilles</h2>
+
+        <h3>Grille 2 colonnes</h3>
+        <div class="grid grid-2">
+            <div class="card"><div class="card-body">Colonne 1</div></div>
+            <div class="card"><div class="card-body">Colonne 2</div></div>
+        </div>
+
+        <h3>Grille 3 colonnes</h3>
+        <div class="grid grid-3">
+            <div class="card"><div class="card-body">Col 1</div></div>
+            <div class="card"><div class="card-body">Col 2</div></div>
+            <div class="card"><div class="card-body">Col 3</div></div>
+        </div>
+
+        <h3>Grille 4 colonnes</h3>
+        <div class="grid grid-4">
+            <div class="card"><div class="card-body">1</div></div>
+            <div class="card"><div class="card-body">2</div></div>
+            <div class="card"><div class="card-body">3</div></div>
+            <div class="card"><div class="card-body">4</div></div>
+        </div>
+
+        <pre><code>&lt;div class="grid grid-2"&gt;
+    &lt;div&gt;Colonne 1&lt;/div&gt;
+    &lt;div&gt;Colonne 2&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- Autres options: grid-3, grid-4 --&gt;</code></pre>
+
+        <div class="divider"></div>
+
+        <!-- ===== BANNIÈRE ===== -->
+        <h2>Bannière de page</h2>
+
+        <div class="page-banner">
+            <img src="src/assets/images/accueil/Banniere.jpg" alt="Exemple de bannière">
+            <div class="page-banner-overlay">
+                <h1 class="page-banner-title">Titre de la page</h1>
+                <span class="page-banner-subtitle">Sous-titre descriptif</span>
+            </div>
+        </div>
+
+        <pre><code>&lt;div class="page-banner"&gt;
+    &lt;img src="chemin/vers/image.jpg" alt="Bannière"&gt;
+    &lt;div class="page-banner-overlay"&gt;
+        &lt;h1 class="page-banner-title"&gt;Titre&lt;/h1&gt;
+        &lt;span class="page-banner-subtitle"&gt;Sous-titre&lt;/span&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+
+        <div class="divider"></div>
+
+        <!-- ===== GALERIE ===== -->
+        <h2>Galerie d'images</h2>
+
+        <div class="image-gallery">
+            <img src="src/assets/images/accueil/Code.jpg" alt="Image 1">
+            <img src="src/assets/images/accueil/Cours.jpg" alt="Image 2">
+            <img src="src/assets/images/accueil/Electronique.jpg" alt="Image 3">
+            <img src="src/assets/images/accueil/Mecanique.jpg" alt="Image 4">
+        </div>
+
+        <pre><code>&lt;div class="image-gallery"&gt;
+    &lt;img src="image1.jpg" alt="Description"&gt;
+    &lt;img src="image2.jpg" alt="Description"&gt;
+    &lt;img src="image3.jpg" alt="Description"&gt;
+&lt;/div&gt;</code></pre>
+
+        <div class="divider"></div>
+
+        <!-- ===== PROJET CARDS ===== -->
+        <h2>Cartes de projet</h2>
+
+        <div class="project-grid">
+            <a href="#" class="project-card">
+                <img src="src/assets/images/accueil/Projets.jpg" alt="Projet" class="project-card-image">
+                <div class="project-card-content">
+                    <h3 class="project-card-title">Nom du Projet</h3>
+                    <p class="project-card-description">
+                        Description courte du projet expliquant ses objectifs principaux.
+                    </p>
+                    <div class="project-card-tags">
+                        <span class="badge badge-primary">Tag 1</span>
+                        <span class="badge badge-secondary">Tag 2</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <pre><code>&lt;div class="project-grid"&gt;
+    &lt;a href="#lien" class="project-card"&gt;
+        &lt;img src="image.jpg" class="project-card-image"&gt;
+        &lt;div class="project-card-content"&gt;
+            &lt;h3 class="project-card-title"&gt;Titre&lt;/h3&gt;
+            &lt;p class="project-card-description"&gt;Description&lt;/p&gt;
+            &lt;div class="project-card-tags"&gt;
+                &lt;span class="badge badge-primary"&gt;Tag&lt;/span&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/a&gt;
+&lt;/div&gt;</code></pre>
+
+        <div class="divider"></div>
+
+        <!-- ===== PAGE EN CONSTRUCTION ===== -->
+        <h2>Page en construction</h2>
+
+        <div class="construction-page">
+            <img src="src/assets/images/M.Multimetre/M.M_stop.png" alt="En construction">
+            <h2>Section en construction</h2>
+            <p>Message explicatif pour les visiteurs.</p>
+        </div>
+
+        <pre><code>&lt;div class="construction-page"&gt;
+    &lt;img src="src/assets/images/M.Multimetre/M.M_stop.png" alt="En construction"&gt;
+    &lt;h2&gt;Titre&lt;/h2&gt;
+    &lt;p&gt;Message&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+
+        <div class="divider"></div>
+
+        <!-- ===== CODE ===== -->
+        <h2>Blocs de code</h2>
+
+        <div class="card-code">
+            <div class="card-body">
+                <pre><code>// Exemple de code JavaScript
+function hello(name) {
+    console.log(`Bonjour, ${name}!`);
+    return true;
+}
+
+hello("FrWA");</code></pre>
+            </div>
+        </div>
+
+        <pre><code>&lt;div class="card-code"&gt;
+    &lt;div class="card-body"&gt;
+        &lt;pre&gt;&lt;code&gt;Votre code ici&lt;/code&gt;&lt;/pre&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+
+        <div class="divider"></div>
+
+        <!-- ===== UTILITAIRES ===== -->
+        <h2>Classes utilitaires</h2>
+
+        <div class="card">
+            <div class="card-body">
+                <h4>Alignement de texte</h4>
+                <p class="text-left">Texte aligné à gauche <code>.text-left</code></p>
+                <p class="text-center">Texte centré <code>.text-center</code></p>
+                <p class="text-right">Texte aligné à droite <code>.text-right</code></p>
+                
+                <h4>Effets de survol</h4>
+                <p><code>.hover-lift</code> - Élève l'élément au survol</p>
+                <p><code>.hover-glow</code> - Ajoute un effet de lueur au survol</p>
+                
+                <h4>Séparateur</h4>
+                <p>Utilisez <code>&lt;div class="divider"&gt;&lt;/div&gt;</code> pour créer un séparateur horizontal.</p>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <p class="text-center text-muted">
+            <small>FrWA Conception - Guide des Styles v1.0</small>
+        </p>
+    </div>
+</body>
+</html>

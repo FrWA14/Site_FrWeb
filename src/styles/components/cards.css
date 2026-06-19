@@ -1,0 +1,130 @@
+/**
+ * Cards - Composants de cartes
+ */
+
+.card {
+    background: var(--bg-card);
+    border: 1px solid var(--bg-tertiary);
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    transition: all var(--transition-normal);
+}
+
+.card:hover {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-md);
+}
+
+.card-header {
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-bottom: 1px solid var(--bg-tertiary);
+    background: var(--bg-tertiary);
+}
+
+.card-title {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.card-body {
+    padding: var(--spacing-lg);
+}
+
+.card-footer {
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-top: 1px solid var(--bg-tertiary);
+    background: var(--bg-tertiary);
+}
+
+/* Card avec image */
+.card-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+/* Card horizontale */
+.card-horizontal {
+    display: flex;
+}
+
+.card-horizontal .card-image {
+    width: 200px;
+    height: auto;
+}
+
+.card-horizontal .card-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Card stat/info */
+.stat-card {
+    text-align: center;
+    padding: var(--spacing-xl);
+}
+
+.stat-value {
+    font-size: var(--font-size-3xl);
+    font-weight: 700;
+    color: var(--text-accent);
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: var(--font-size-sm);
+    color: var(--text-muted);
+    margin-top: var(--spacing-sm);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Card interactive */
+.card-interactive {
+    cursor: pointer;
+}
+
+.card-interactive:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-glow);
+}
+
+/* Card code */
+.card-code {
+    font-family: var(--font-family-mono);
+    background: var(--bg-primary);
+    border-left: 3px solid var(--color-primary);
+}
+
+.card-code .card-body {
+    padding: var(--spacing-md);
+}
+
+/* Card alert/notification */
+.card-alert {
+    border-left: 4px solid;
+    border-radius: var(--border-radius-sm);
+}
+
+.card-alert.info {
+    border-left-color: var(--color-info);
+    background: rgba(52, 152, 219, 0.1);
+}
+
+.card-alert.success {
+    border-left-color: var(--color-success);
+    background: rgba(39, 174, 96, 0.1);
+}
+
+.card-alert.warning {
+    border-left-color: var(--color-warning);
+    background: rgba(243, 156, 18, 0.1);
+}
+
+.card-alert.error {
+    border-left-color: var(--color-error);
+    background: rgba(231, 76, 60, 0.1);
+}
