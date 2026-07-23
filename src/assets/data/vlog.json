@@ -1,4 +1,10 @@
-[
+[ {
+    "date": "2026-06-20T13:14:27Z",
+    "title": "Déploiement NC",
+    "message": "Mise à jour du vlog via un .json et de l'affichage de la page principale. Supression des dossiers de l'ancien architecture du site.",
+    "sha": "NC",
+    "url": "https://api.github.com/repos/FrWA14/Site_FrWeb/deployments/NC"
+  },
   {
     "date": "2026-06-19T10:19:52Z",
     "title": "Déploiement NC",

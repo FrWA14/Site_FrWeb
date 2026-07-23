@@ -57,6 +57,9 @@ const App = {
         
         // Lightbox pour les galeries
         Lightbox.init();
+
+        // Vlog - mises à jour dynamiques depuis vlog.json
+        VlogManager.init('vlog-updates-list');
     },
 
     /**

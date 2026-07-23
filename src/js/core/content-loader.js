@@ -216,6 +216,11 @@ const ContentLoader = {
     showHome() {
         if (this.container && this.homeContent) {
             this.container.innerHTML = this.homeContent;
+            // Le snapshot homeContent contient le div#vlog-updates-list vide (snapshot avant fetch).
+            // On relance VlogManager pour repeupler le div après chaque restauration de l'accueil.
+            if (typeof VlogManager !== 'undefined') {
+                VlogManager.init('vlog-updates-list');
+            }
         }
     },
 
