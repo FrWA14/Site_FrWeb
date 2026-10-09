@@ -135,44 +135,83 @@ const ContentLoader = {
      * Corrige les chemins relatifs dans le contenu
      */
     fixRelativePaths(pagePath) {
-        const basePath = PathUtils.getBasePath();
         const pageDir = PathUtils.getParent(pagePath);
-        
-        // Images
-        const images = this.container.querySelectorAll('img[src]');
-        images.forEach(img => {
-            const src = img.getAttribute('src');
-            if (src && !src.startsWith('http') && !src.startsWith('/') && !src.startsWith('data:')) {
-                // Si le chemin commence par 'src/' ou 'pages/', c'est un chemin depuis la racine du site
-                if (src.startsWith('src/') || src.startsWith('pages/')) {
-                    img.src = basePath + src;
-                } else {
-                    // Sinon c'est un chemin relatif au dossier de la page
-                    img.src = basePath + PathUtils.join(pageDir, src);
-                }
-            }
+
+        // Médias : images, vidéos (src + poster), sources audio/vidéo, modèles 3D, iframes...
+        const mediaAttributes = ['src', 'poster', 'data-src'];
+        mediaAttributes.forEach(attr => {
+            this.container.querySelectorAll(`[${attr}]`).forEach(el => {
+                if (el.tagName === 'SCRIPT') return; // géré par executeScripts
+                el.setAttribute(attr, this.resolvePath(el.getAttribute(attr), pageDir));
+            });
         });
+
+        // srcset : liste "chemin largeur, chemin largeur"
+        this.container.querySelectorAll('[srcset]').forEach(el => {
+            const srcset = el.getAttribute('srcset')
+                .split(',')
+                .map(entry => {
+                    const [url, ...descriptor] = entry.trim().split(/\s+/);
+                    return [this.resolvePath(url, pageDir), ...descriptor].join(' ');
+                })
+                .join(', ');
+            el.setAttribute('srcset', srcset);
+        });
+
+        // Vidéos : recharge pour prendre en compte les <source> corrigées
+        this.container.querySelectorAll('video').forEach(video => video.load());
 
         // Liens
         const links = this.container.querySelectorAll('a[href]');
         links.forEach(link => {
             const href = link.getAttribute('href');
-            if (href && !href.startsWith('http') && !href.startsWith('#') && !href.startsWith('/')) {
-                const fullPath = PathUtils.join(pageDir, href);
-                link.href = '#' + fullPath;
-                
-                // Ajoute un listener pour la navigation interne
-                if (PathUtils.isHtmlFile(href)) {
-                    link.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        const event = new CustomEvent('navigate', {
-                            detail: { path: fullPath }
-                        });
-                        document.dispatchEvent(event);
-                    });
-                }
+            if (!href || this.isExternalPath(href) || href.startsWith('#')) return;
+
+            // Fichier non HTML (PDF, image, archive...) : lien direct vers le fichier
+            if (!PathUtils.isHtmlFile(href)) {
+                link.setAttribute('href', this.resolvePath(href, pageDir));
+                return;
             }
+
+            // Page HTML : navigation interne
+            const fullPath = this.isRootPath(href) ? PathUtils.normalize(href) : PathUtils.join(pageDir, href);
+            link.href = '#' + fullPath;
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const event = new CustomEvent('navigate', {
+                    detail: { path: fullPath }
+                });
+                document.dispatchEvent(event);
+            });
         });
+    },
+
+    /**
+     * Vérifie si un chemin est absolu ou externe (http, /, data:, mailto:...)
+     */
+    isExternalPath(path) {
+        return /^([a-z][a-z0-9+.-]*:|\/)/i.test(path);
+    },
+
+    /**
+     * Vérifie si un chemin part de la racine du site (src/... ou pages/...)
+     */
+    isRootPath(path) {
+        return path.startsWith('src/') || path.startsWith('pages/');
+    },
+
+    /**
+     * Convertit un chemin écrit dans une page en chemin utilisable depuis index.html
+     */
+    resolvePath(path, pageDir) {
+        if (!path || this.isExternalPath(path) || path.startsWith('#')) return path;
+
+        const basePath = PathUtils.getBasePath();
+        if (this.isRootPath(path)) {
+            return basePath + path;
+        }
+        // Sinon c'est un chemin relatif au dossier de la page
+        return basePath + PathUtils.join(pageDir, path);
     },
 
     /**
@@ -250,7 +289,7 @@ const ContentLoader = {
                 <h2>Page non trouvée</h2>
                 <p>La page <code>${path}</code> n'a pas pu être chargée.</p>
                 <p class="error-details">${error.message}</p>
-                <a href="#" class="btn btn-primary" onclick="ContentLoader.showHome(); return false;">
+                <a href="#" class="btn btn-primary" onclick="document.dispatchEvent(new CustomEvent('navigate', { detail: { isHome: true } })); return false;">
                     Retour à l'accueil
                 </a>
             </div>

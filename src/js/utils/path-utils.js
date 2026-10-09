@@ -46,10 +46,24 @@ const PathUtils = {
      * Normalise un chemin
      */
     normalize(path) {
-        return path
+        const cleaned = path
             .replace(/\\/g, '/')
             .replace(/\/+/g, '/')
             .replace(/\/$/, '');
+
+        // Résout les segments "." et ".."
+        const isAbsolute = cleaned.startsWith('/');
+        const segments = [];
+        cleaned.split('/').forEach(segment => {
+            if (segment === '' || segment === '.') return;
+            if (segment === '..') {
+                segments.pop();
+            } else {
+                segments.push(segment);
+            }
+        });
+
+        return (isAbsolute ? '/' : '') + segments.join('/');
     },
 
     /**
