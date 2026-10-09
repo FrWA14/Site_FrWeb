@@ -1,0 +1,101 @@
+<!--
+    MODÈLE DE PAGE - FrWA Conception
+    Accès : #pages/template/exemple-page/Exemple_page.html
+
+    Pour créer une page :
+      1. Copiez tout ce dossier (exemple-page/) dans pages/<section>/
+         et renommez-le, par ex. pages/electronique/mon-montage/
+      2. Renommez ce fichier, par ex. Mon_montage.html
+         (le nom du fichier devient le nom affiché dans le menu)
+      3. Placez vos médias dans assets/ et référencez-les en chemin relatif :
+         assets/images/..., assets/videos/..., assets/modeles-3d/..., assets/fichiers/...
+         Noms en minuscules, sans espaces ni accents.
+      4. Lancez ./generate-navigation.sh (ou generate-navigation.ps1)
+      5. Ajoutez une carte vers la page dans la page de section
+         (avec une vignette copiée dans le assets/ de la section)
+
+    Supprimez les blocs dont vous n'avez pas besoin.
+-->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>[TITRE] - FrWA Conception</title>
+</head>
+<body>
+    <div class="page-content">
+        <!-- Bannière -->
+        <div class="page-banner">
+            <img src="assets/images/banniere.jpg" alt="[TITRE]">
+            <div class="page-banner-overlay">
+                <h1 class="page-banner-title">[TITRE]</h1>
+                <span class="page-banner-subtitle">[SOUS-TITRE]</span>
+            </div>
+        </div>
+
+        <!-- Tags -->
+        <div class="flex gap-sm">
+            <span class="badge badge-primary">[Tag 1]</span>
+            <span class="badge badge-secondary">[Tag 2]</span>
+        </div>
+
+        <p class="lead">
+            [Description courte de la page]
+        </p>
+
+        <div class="divider"></div>
+
+        <!-- Texte -->
+        <h2>[Section]</h2>
+        <p>[Contenu]</p>
+
+        <div class="divider"></div>
+
+        <!-- Galerie : cliquer sur une image l'ouvre en grand -->
+        <h2>Galerie</h2>
+        <div class="gallery-with-captions">
+            <div class="gallery-item">
+                <img src="assets/images/banniere.jpg" alt="[Description]">
+                <div class="gallery-item-caption">[Légende]</div>
+            </div>
+        </div>
+
+        <!-- Vidéo (MP4 H.264, compressée : voir le README) -->
+        <!--
+        <h2>Vidéo</h2>
+        <div class="video-container">
+            <video controls poster="assets/images/[apercu].jpg">
+                <source src="assets/videos/[video].mp4" type="video/mp4">
+                Votre navigateur ne supporte pas la lecture de vidéos.
+            </video>
+            <div class="video-caption">[Légende]</div>
+        </div>
+        -->
+
+        <!-- Modèle 3D (.glb) -->
+        <!--
+        <h2>Modèle 3D</h2>
+        <div class="model-viewer-container">
+            <model-viewer src="assets/modeles-3d/[modele].glb" alt="[Description]"
+                camera-controls auto-rotate shadow-intensity="1" touch-action="pan-y">
+            </model-viewer>
+            <div class="model-viewer-caption">[Légende]</div>
+        </div>
+        -->
+
+        <!-- Fichier à télécharger (PDF, code, schéma...) -->
+        <!--
+        <p><a href="assets/fichiers/[fichier].pdf" class="btn btn-secondary" download>📄 Télécharger [fichier]</a></p>
+        -->
+
+        <div class="divider"></div>
+
+        <!-- Retour vers la page de section -->
+        <p class="text-center">
+            <a href="../[Section].html" class="btn btn-primary">
+                ← Retour
+            </a>
+        </p>
+    </div>
+</body>
+</html>

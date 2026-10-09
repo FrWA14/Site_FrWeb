@@ -69,7 +69,7 @@ const ContentLoader = {
         }
 
         const html = await response.text();
-        const content = this.extractContent(html);
+        const content = this.extractContent(html, path);
         
         // Met en cache
         this.cache.set(path, content);
@@ -80,7 +80,7 @@ const ContentLoader = {
     /**
      * Extrait le contenu principal d'une page HTML
      */
-    extractContent(html) {
+    extractContent(html, path) {
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, 'text/html');
         
@@ -90,7 +90,12 @@ const ContentLoader = {
         if (!content) content = doc.querySelector('main');
         if (!content) content = doc.querySelector('article');
         if (!content) content = doc.body;
-        
+
+        // Corrige les chemins avant insertion : le document analysé par DOMParser
+        // ne charge aucune ressource, on évite ainsi des requêtes vers de mauvaises adresses
+        this.fixRelativePaths(content, path);
+        this.optimizeMedia(content);
+
         return content.innerHTML;
     },
 
@@ -109,9 +114,6 @@ const ContentLoader = {
                 ${content}
             </div>
         `;
-
-        // Corrige les chemins relatifs des images
-        this.fixRelativePaths(path);
 
         // Exécute les scripts éventuels de la page (innerHTML ne les exécute pas)
         this.executeScripts(path);
@@ -134,20 +136,20 @@ const ContentLoader = {
     /**
      * Corrige les chemins relatifs dans le contenu
      */
-    fixRelativePaths(pagePath) {
+    fixRelativePaths(root, pagePath) {
         const pageDir = PathUtils.getParent(pagePath);
 
         // Médias : images, vidéos (src + poster), sources audio/vidéo, modèles 3D, iframes...
         const mediaAttributes = ['src', 'poster', 'data-src'];
         mediaAttributes.forEach(attr => {
-            this.container.querySelectorAll(`[${attr}]`).forEach(el => {
+            root.querySelectorAll(`[${attr}]`).forEach(el => {
                 if (el.tagName === 'SCRIPT') return; // géré par executeScripts
                 el.setAttribute(attr, this.resolvePath(el.getAttribute(attr), pageDir));
             });
         });
 
         // srcset : liste "chemin largeur, chemin largeur"
-        this.container.querySelectorAll('[srcset]').forEach(el => {
+        root.querySelectorAll('[srcset]').forEach(el => {
             const srcset = el.getAttribute('srcset')
                 .split(',')
                 .map(entry => {
@@ -158,11 +160,8 @@ const ContentLoader = {
             el.setAttribute('srcset', srcset);
         });
 
-        // Vidéos : recharge pour prendre en compte les <source> corrigées
-        this.container.querySelectorAll('video').forEach(video => video.load());
-
         // Liens
-        const links = this.container.querySelectorAll('a[href]');
+        const links = root.querySelectorAll('a[href]');
         links.forEach(link => {
             const href = link.getAttribute('href');
             if (!href || this.isExternalPath(href) || href.startsWith('#')) return;
@@ -173,16 +172,22 @@ const ContentLoader = {
                 return;
             }
 
-            // Page HTML : navigation interne
+            // Page HTML : navigation interne (le router suit le changement de hash)
             const fullPath = this.isRootPath(href) ? PathUtils.normalize(href) : PathUtils.join(pageDir, href);
-            link.href = '#' + fullPath;
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const event = new CustomEvent('navigate', {
-                    detail: { path: fullPath }
-                });
-                document.dispatchEvent(event);
-            });
+            link.setAttribute('href', '#' + fullPath);
+        });
+    },
+
+    /**
+     * Chargement différé des médias (sauf si la page précise déjà le comportement)
+     */
+    optimizeMedia(root) {
+        root.querySelectorAll('img:not([loading])').forEach(img => {
+            img.setAttribute('loading', 'lazy');
+            img.setAttribute('decoding', 'async');
+        });
+        root.querySelectorAll('video:not([preload])').forEach(video => {
+            video.setAttribute('preload', 'metadata');
         });
     },
 

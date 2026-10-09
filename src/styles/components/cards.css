@@ -45,6 +45,15 @@
     object-fit: cover;
 }
 
+/* Image en tête d'une feature card */
+.feature-card-image {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: var(--border-radius-md);
+    margin-bottom: var(--spacing-md);
+}
+
 /* Card horizontale */
 .card-horizontal {
     display: flex;

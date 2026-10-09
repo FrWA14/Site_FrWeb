@@ -94,7 +94,9 @@
 
 .video-container video {
     width: 100%;
+    max-height: 80vh; /* les vidéos verticales restent visibles en entier */
     display: block;
+    background: #000;
 }
 
 .video-caption {

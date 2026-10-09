@@ -24,6 +24,15 @@ const VlogManager = {
     },
 
     /**
+     * Échappe le texte pour l'insérer sans risque dans du HTML
+     */
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    },
+
+    /**
      * Génère le HTML d'un item de mise à jour
      */
     buildItem(entry) {
@@ -36,8 +45,8 @@ const VlogManager = {
                     <span class="update-year">${year}</span>
                 </div>
                 <div class="update-content">
-                    <h4>${entry.title || 'Mise à jour'}</h4>
-                    ${entry.message ? `<p>${entry.message}</p>` : ''}
+                    <h4>${this.escapeHtml(entry.title || 'Mise à jour')}</h4>
+                    ${entry.message ? `<p>${this.escapeHtml(entry.message)}</p>` : ''}
                 </div>
             </div>`;
     },
