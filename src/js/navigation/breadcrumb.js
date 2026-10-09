@@ -22,8 +22,8 @@ const Breadcrumb = {
     update(path) {
         if (!this.container) return;
         
-        const segments = PathUtils.getBreadcrumb(path);
-        
+        const segments = this.buildSegments(path);
+
         DOMHelpers.empty(this.container);
         
         // Ajoute le lien home
@@ -46,6 +46,50 @@ const Breadcrumb = {
     },
 
     /**
+     * Construit les étapes du fil d'Ariane à partir des pages (et non des dossiers) :
+     * chaque dossier parent est remplacé par sa page principale
+     * ex : pages/projets/plantation_autonome/Plantation_autonome.html
+     *      -> Projets (Projets.html) / Plantation Autonome
+     */
+    buildSegments(path) {
+        const segments = [];
+        const folders = PathUtils.getSegments(path).slice(0, -1);
+        const currentPage = TreeBuilder.findRawItem(path);
+
+        // Dossiers parents, en ignorant le dossier racine "pages"
+        let folderPath = '';
+        folders.forEach((folderName, index) => {
+            folderPath = folderPath ? folderPath + '/' + folderName : folderName;
+            if (index === 0) return;
+
+            const folder = TreeBuilder.findRawItem(folderPath);
+            const folderPage = TreeBuilder.getFolderPage(folderPath);
+
+            // La page principale du dossier est la page courante : elle sera affichée en dernier
+            if (folderPage && folderPage.path === path) return;
+
+            // Dossier absent du menu (ex : template) portant le nom de la page : évite le doublon
+            const simplify = name => name.toLowerCase().replace(/\.html?$/, '').replace(/[-_\s]/g, '');
+            if (!folder && index === folders.length - 1 && simplify(folderName) === simplify(PathUtils.getSegments(path).pop())) return;
+
+            segments.push({
+                name: folderPage ? folderPage.displayName : (folder ? folder.displayName : PathUtils.pathToTitle(folderName)),
+                path: folderPage ? folderPage.path : null,
+                isLast: false
+            });
+        });
+
+        // Page courante
+        segments.push({
+            name: currentPage ? currentPage.displayName : PathUtils.pathToTitle(path),
+            path: path,
+            isLast: true
+        });
+
+        return segments;
+    },
+
+    /**
      * Crée le lien home
      */
     createHomeLink() {
@@ -60,7 +104,12 @@ const Breadcrumb = {
             textContent: '🏠'
         });
         link.appendChild(icon);
-        
+
+        const text = DOMHelpers.createElement('span', {
+            textContent: 'Accueil'
+        });
+        link.appendChild(text);
+
         link.addEventListener('click', (e) => {
             e.preventDefault();
             const event = new CustomEvent('navigate', {
@@ -76,11 +125,17 @@ const Breadcrumb = {
      * Crée un segment de breadcrumb
      */
     createSegment(segment) {
-        const isLast = segment.isLast;
-        
-        if (isLast) {
+        if (segment.isLast) {
             return DOMHelpers.createElement('span', {
                 className: 'breadcrumb-item breadcrumb-current',
+                textContent: segment.name
+            });
+        }
+
+        // Dossier sans page principale : texte simple, pas de lien vers une page inexistante
+        if (!segment.path) {
+            return DOMHelpers.createElement('span', {
+                className: 'breadcrumb-item breadcrumb-folder',
                 textContent: segment.name
             });
         }
@@ -148,6 +203,13 @@ const breadcrumbStyles = `
     .breadcrumb-home {
         display: flex;
         align-items: center;
+        gap: 6px;
+    }
+
+    .breadcrumb-folder,
+    .breadcrumb-folder:hover {
+        color: var(--text-muted);
+        cursor: default;
     }
 `;
 

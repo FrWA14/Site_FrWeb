@@ -34,6 +34,8 @@ const TreeBuilder = {
             if (response.ok) {
                 const data = await response.json();
                 console.log('Navigation loaded successfully');
+                // Structure brute (dossiers réels), utilisée par le fil d'Ariane
+                this.rawData = data;
                 return this.buildTreeFromJson(data);
             } else {
                 console.warn('navigation.json not found');
@@ -102,6 +104,14 @@ const TreeBuilder = {
             node.children = this.buildTreeFromJson(childrenArray, level + 1);
         }
 
+        // Un dossier qui ne contient qu'une seule page est remplacé par cette page :
+        // on l'affiche directement, sans dossier à ouvrir
+        if (node.type === 'folder' && node.children.length === 1 && node.children[0].type === 'file') {
+            const page = node.children[0];
+            page.level = level;
+            return page;
+        }
+
         return node;
     },
 
@@ -122,6 +132,36 @@ const TreeBuilder = {
         return [
             this.createNode('index.html', 'pages/index.html', 'file', 0)
         ];
+    },
+
+    /**
+     * Trouve un élément (dossier ou page) de navigation.json par son chemin
+     */
+    findRawItem(path, items = this.rawData ? this.rawData.children : []) {
+        for (const item of items || []) {
+            if (item.path === path) return item;
+            if (item.children) {
+                const found = this.findRawItem(path, item.children);
+                if (found) return found;
+            }
+        }
+        return null;
+    },
+
+    /**
+     * Trouve la page principale d'un dossier :
+     * index.html, sinon la page qui porte le nom du dossier, sinon sa seule page
+     */
+    getFolderPage(folderPath) {
+        const folder = this.findRawItem(folderPath);
+        if (!folder || !folder.children) return null;
+
+        const pages = folder.children.filter(child => child.type === 'file');
+        const simplify = name => name.toLowerCase().replace(/\.html?$/, '').replace(/[-_\s]/g, '');
+
+        return pages.find(page => page.name.toLowerCase() === 'index.html')
+            || pages.find(page => simplify(page.name) === simplify(folder.name))
+            || (pages.length === 1 ? pages[0] : null);
     },
 
     /**
