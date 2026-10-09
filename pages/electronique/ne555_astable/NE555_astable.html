@@ -150,8 +150,11 @@
                             <circle cx="120" cy="265" r="3" class="ne555-node"/>
                             <line x1="120" y1="265" x2="190" y2="265" class="ne555-wire" id="wire-pin62-555"/>
                             <text x="170" y="257" class="ne555-pin-label">6</text>
-                            <line x1="120" y1="265" x2="190" y2="290" class="ne555-wire" id="wire-pin2-555"/>
-                            <text x="170" y="298" class="ne555-pin-label">2</text>
+                            <!-- pin 2 reliée à la pin 6 (câblage à angle droit) -->
+                            <circle cx="160" cy="265" r="3" class="ne555-node"/>
+                            <line x1="160" y1="265" x2="160" y2="294" class="ne555-wire" id="wire-pin6-pin2"/>
+                            <line x1="160" y1="294" x2="190" y2="294" class="ne555-wire" id="wire-pin2-555"/>
+                            <text x="172" y="289" class="ne555-pin-label">2</text>
 
                             <!-- ===== C : noeud -> GND ===== -->
                             <line x1="120" y1="265" x2="120" y2="300" class="ne555-wire" id="wire-c-top"/>
@@ -173,6 +176,22 @@
                             <text x="318" y="148" class="ne555-pin-label-in" text-anchor="end">8 VCC</text>
                             <text x="318" y="180" class="ne555-pin-label-in" text-anchor="end">3 OUT</text>
                             <text x="318" y="294" class="ne555-pin-label-in" text-anchor="end">1 GND</text>
+                            <text x="318" y="244" class="ne555-pin-label-in" text-anchor="end">5 CTRL</text>
+                            <!-- pin haut -->
+                            <text x="250" y="138" class="ne555-pin-label-in" text-anchor="middle">4 RST</text>
+                            <!-- RESET (pin 4) relié à +V : sinon le 555 peut rester bloqué -->
+                            <line x1="250" y1="30" x2="250" y2="120" class="ne555-wire" id="wire-555-reset"/>
+                            <circle cx="250" cy="30" r="3" class="ne555-node"/>
+                            <!-- CTRL (pin 5) découplé par 10 nF vers GND -->
+                            <line x1="330" y1="240" x2="410" y2="240" class="ne555-wire" id="wire-555-ctrl"/>
+                            <line x1="410" y1="240" x2="410" y2="270" class="ne555-wire" id="wire-ctrl-cap"/>
+                            <g transform="translate(398,270)">
+                                <line x1="0" y1="0" x2="24" y2="0" class="ne555-cap-plate"/>
+                                <line x1="0" y1="8" x2="24" y2="8" class="ne555-cap-plate"/>
+                            </g>
+                            <text x="396" y="262" class="ne555-comp-label" text-anchor="end">10 nF</text>
+                            <line x1="410" y1="278" x2="410" y2="330" class="ne555-wire" id="wire-cap-gnd"/>
+                            <circle cx="410" cy="330" r="3" class="ne555-node"/>
 
                             <!-- VCC du 555 -->
                             <line x1="330" y1="148" x2="380" y2="148" class="ne555-wire" id="wire-555-vcc"/>
@@ -182,23 +201,30 @@
                             <line x1="330" y1="294" x2="380" y2="294" class="ne555-wire" id="wire-555-gnd"/>
                             <line x1="380" y1="294" x2="380" y2="330" class="ne555-wire" id="wire-555-gnd-down"/>
 
-                            <!-- Sortie pin3 -> Ampoule -> GND -->
-                            <line x1="330" y1="180" x2="460" y2="180" class="ne555-wire" id="wire-out"/>
-                            <line x1="460" y1="180" x2="460" y2="240" class="ne555-wire" id="wire-out-bulb"/>
+                            <!-- Sortie pin3 -> R3 -> LED -> GND -->
+                            <line x1="330" y1="180" x2="395" y2="180" class="ne555-wire" id="wire-out"/>
+                            <g transform="translate(395,172)">
+                                <rect x="0" y="0" width="40" height="16" rx="3" class="ne555-resistor"/>
+                                <text x="20" y="-6" class="ne555-comp-label" text-anchor="middle">R3 330 Ω</text>
+                            </g>
+                            <line x1="435" y1="180" x2="460" y2="180" class="ne555-wire" id="wire-r3-led"/>
+                            <line x1="460" y1="180" x2="460" y2="238" class="ne555-wire" id="wire-out-bulb"/>
 
-                            <!-- Ampoule -->
+                            <!-- LED (anode en haut, cathode vers GND) -->
                             <g transform="translate(460,260)">
                                 <circle id="ne555-bulb" cx="0" cy="0" r="22" class="ne555-bulb"/>
-                                <line x1="-12" y1="-12" x2="12" y2="12" class="ne555-bulb-filament"/>
-                                <line x1="-12" y1="12" x2="12" y2="-12" class="ne555-bulb-filament"/>
-                                <text x="38" y="5" class="ne555-comp-label">Lampe</text>
+                                <polygon points="-9,-7 9,-7 0,7" class="ne555-bulb-filament" fill="none"/>
+                                <line x1="-9" y1="7" x2="9" y2="7" class="ne555-bulb-filament"/>
+                                <text x="30" y="5" class="ne555-comp-label">LED</text>
                             </g>
                             <line x1="460" y1="282" x2="460" y2="330" class="ne555-wire" id="wire-bulb-gnd"/>
 
                         </svg>
 
                         <p class="ne555-caption">
-                            La lampe s'allume en jaune lorsque la sortie (pin 3) est à l'état haut.
+                            La LED s'allume en jaune lorsque la sortie (pin 3) est à l'état haut
+                            (R3 limite le courant ; la sortie du 555 supporte 200 mA maximum).
+                            La pin 4 (RESET) est reliée à +V et la pin 5 (CTRL) découplée par 10 nF.
                             Le condensateur se charge à travers <strong>R1 + R2</strong> pendant
                             cette phase, puis se décharge uniquement à travers <strong>R2</strong>
                             pendant la phase basse — l'oscilloscope ci-dessous trace fidèlement
