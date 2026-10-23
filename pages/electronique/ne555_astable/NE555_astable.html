@@ -79,10 +79,19 @@
                         </div>
                         <p class="ne555-hint">
                             Renseigner la fréquence choisit automatiquement R1, R2 et C parmi
-                            les valeurs normalisées (E12 pour les résistances, E6 pour les
+                            les valeurs normalisées (E12 ou E24 pour les résistances, E6 pour les
                             condensateurs), en gardant au mieux le rapport R1/R2.
                             Une valeur tapée à la main est ramenée à la valeur normalisée la plus proche.
                         </p>
+                    </div>
+
+                    <div class="ne555-field">
+                        <span class="ne555-field-title">Série des résistances du montage</span>
+                        <div class="ne555-series" role="group" aria-label="Série des résistances">
+                            <button type="button" data-series="E12" class="active" aria-pressed="true">E12</button>
+                            <button type="button" data-series="E24" aria-pressed="false">E24</button>
+                        </div>
+                        <p class="ne555-hint">E12 : 12 valeurs par décade, celles des kits courants. E24 : 24 valeurs, fréquence plus précise.</p>
                     </div>
 
                     <div class="divider" style="margin: var(--spacing-md) 0;"></div>
@@ -108,7 +117,24 @@
                             <span>Rapport cyclique</span>
                             <strong id="ne555-duty">-</strong>
                         </div>
-                        <p class="ne555-hint" id="ne555-std"></p>
+                        <div class="ne555-std">
+                            <div class="ne555-std-row ne555-std-head">
+                                <span></span><span>Idéal (calcul)</span><span id="ne555-col-real">Réel E12</span>
+                            </div>
+                            <div class="ne555-std-row">
+                                <span>R1</span><strong id="ne555-r1-ideal">-</strong><strong id="ne555-r1-real">-</strong>
+                            </div>
+                            <div class="ne555-std-row">
+                                <span>R2</span><strong id="ne555-r2-ideal">-</strong><strong id="ne555-r2-real">-</strong>
+                            </div>
+                            <div class="ne555-std-row">
+                                <span>C (E6)</span><strong id="ne555-c-ideal">-</strong><strong id="ne555-c-real">-</strong>
+                            </div>
+                            <div class="ne555-std-row ne555-result-highlight">
+                                <span>Fréquence</span><strong id="ne555-f-ideal">-</strong><strong id="ne555-f-real">-</strong>
+                            </div>
+                            <p class="ne555-hint" id="ne555-std-note"></p>
+                        </div>
                     </div>
 
                 </div>
@@ -329,6 +355,76 @@
             min-width: 1.5em;
         }
 
+        .ne555-field-title {
+            display: block;
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .ne555-series {
+            display: inline-flex;
+            border: 1px solid var(--color-primary);
+            border-radius: var(--border-radius-sm);
+            overflow: hidden;
+        }
+
+        .ne555-series button {
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            border: none;
+            padding: var(--spacing-xs) var(--spacing-lg);
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-sm);
+            cursor: pointer;
+        }
+
+        .ne555-series button + button {
+            border-left: 1px solid var(--color-primary);
+        }
+
+        .ne555-series button.active {
+            background: var(--color-primary);
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .ne555-series button:focus-visible {
+            outline: 2px solid var(--text-accent);
+            outline-offset: -2px;
+        }
+
+        .ne555-std {
+            margin-top: var(--spacing-md);
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .ne555-std-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            padding: var(--spacing-xs) 0;
+            border-bottom: 1px solid var(--bg-tertiary);
+        }
+
+        .ne555-std-row strong {
+            color: var(--text-primary);
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-xs);
+            text-align: right;
+        }
+
+        .ne555-std-head span {
+            font-size: var(--font-size-xs);
+            color: var(--text-muted);
+            text-align: right;
+        }
+
         .ne555-hint {
             font-size: var(--font-size-xs);
             color: var(--text-muted);
@@ -519,7 +615,6 @@
             const periodEl = document.getElementById('ne555-period');
             const freqEl = document.getElementById('ne555-frequency');
             const dutyEl = document.getElementById('ne555-duty');
-            const stdEl = document.getElementById('ne555-std');
 
             const bulb = document.getElementById('ne555-bulb');
             const canvas = document.getElementById('ne555-oscillo');
@@ -590,6 +685,8 @@
                 state.tHigh = tHigh;
                 state.tLow = tLow;
                 state.period = period;
+
+                updateStdTable();
             }
 
             /**
@@ -608,10 +705,13 @@
             }
 
             /**
-             * Valeurs normalisées : E12 pour les résistances (1 kΩ à 1 MΩ),
+             * Valeurs normalisées : E12 ou E24 pour les résistances (1 kΩ à 1 MΩ),
              * E6 pour les condensateurs (1 nF à 1000 µF)
              */
-            const E12 = [10, 12, 15, 18, 22, 27, 33, 39, 47, 56, 68, 82];
+            const SERIES = {
+                E12: [10, 12, 15, 18, 22, 27, 33, 39, 47, 56, 68, 82],
+                E24: [10, 11, 12, 13, 15, 16, 18, 20, 22, 24, 27, 30, 33, 36, 39, 43, 47, 51, 56, 62, 68, 75, 82, 91]
+            };
             const E6 = [10, 15, 22, 33, 47, 68];
 
             function buildSeries(mantissas, min, max) {
@@ -625,7 +725,8 @@
                 return values;
             }
 
-            const STD_R = buildSeries(E12, 1e3, 1e6);
+            let series = 'E12'; // série des résistances réellement montées
+            let STD_R = buildSeries(SERIES[series], 1e3, 1e6);
             const STD_C = buildSeries(E6, 1e-9, 1e-3);
 
             function nearest(value, series) {
@@ -633,9 +734,29 @@
                     Math.abs(Math.log(v / value)) < Math.abs(Math.log(best / value)) ? v : best);
             }
 
-            function showStandard(extra = '') {
-                stdEl.textContent = `Composants normalisés : R1 ${formatValue(state.r1, 'Ω')}, ` +
-                    `R2 ${formatValue(state.r2, 'Ω')}, C ${formatValue(state.c, 'F')}${extra}`;
+            const setText = (id, text) => { document.getElementById(id).textContent = text; };
+
+            /**
+             * Tableau idéal / réel : « idéal » = valeur exacte pour la fréquence visée
+             * (R1 et R2 dans le même rapport avec ce C, ou C exact avec ces R1 et R2)
+             */
+            function updateStdTable() {
+                const target = parseFloat(freqInput.value);
+                const f = computeFromRC(state.r1, state.r2, state.c).freq;
+                const scale = target > 0 && f > 0 ? f / target : NaN;
+
+                setText('ne555-r1-ideal', formatValue(state.r1 * scale, 'Ω'));
+                setText('ne555-r2-ideal', formatValue(state.r2 * scale, 'Ω'));
+                setText('ne555-c-ideal', formatValue(state.c * scale, 'F'));
+                setText('ne555-f-ideal', target > 0 ? formatValue(target, 'Hz') : '-');
+                setText('ne555-r1-real', formatValue(state.r1, 'Ω'));
+                setText('ne555-r2-real', formatValue(state.r2, 'Ω'));
+                setText('ne555-c-real', formatValue(state.c, 'F'));
+                setText('ne555-f-real', formatValue(f, 'Hz'));
+                setText('ne555-std-note', target > 0
+                    ? `Écart avec la fréquence visée : ${f >= target ? '+' : ''}${((f / target - 1) * 100).toFixed(1)} %. ` +
+                      'Idéal : R1 et R2 exactes pour cette fréquence avec ce C, ou C exact avec ces R1 et R2.'
+                    : 'Indiquez une fréquence souhaitée pour voir les valeurs idéales.');
             }
 
             /**
@@ -651,7 +772,6 @@
                 state[key] = nearest(value, series);
                 input.value = state[key];
                 updateResults();
-                showStandard();
             }
 
             /**
@@ -685,8 +805,6 @@
                 r2Input.value = best.r2;
                 cInput.value = best.c;
                 updateResults();
-                const gap = (best.f / targetFreq - 1) * 100;
-                showStandard(` (écart avec ${formatValue(targetFreq, 'Hz')} : ${gap >= 0 ? '+' : ''}${gap.toFixed(1)} %)`);
             }
 
             r1Input.addEventListener('input', readInputs);
@@ -695,6 +813,36 @@
             r1Input.addEventListener('change', () => snapInput(r1Input, 'r1', STD_R));
             r2Input.addEventListener('change', () => snapInput(r2Input, 'r2', STD_R));
             cInput.addEventListener('change', () => snapInput(cInput, 'c', STD_C));
+            freqInput.addEventListener('input', updateStdTable);
+
+            // ===== Série des résistances (E12 / E24), mémorisée pour toutes les pages du site =====
+            const SERIES_KEY = 'frwa-serie-resistances';
+            const seriesButtons = root.querySelectorAll('[data-series]');
+
+            function setSeries(name) {
+                series = name;
+                STD_R = buildSeries(SERIES[series], 1e3, 1e6);
+                seriesButtons.forEach(btn => {
+                    const active = btn.dataset.series === series;
+                    btn.classList.toggle('active', active);
+                    btn.setAttribute('aria-pressed', active);
+                });
+                setText('ne555-col-real', 'Réel ' + series);
+                // Les résistances du montage passent dans la nouvelle série
+                state.r1 = nearest(state.r1, STD_R);
+                state.r2 = nearest(state.r2, STD_R);
+                r1Input.value = state.r1;
+                r2Input.value = state.r2;
+                updateResults();
+            }
+
+            seriesButtons.forEach(btn => btn.addEventListener('click', () => {
+                try { localStorage.setItem(SERIES_KEY, btn.dataset.series); } catch (e) { /* sans mémorisation */ }
+                setSeries(btn.dataset.series);
+            }));
+            try {
+                if (localStorage.getItem(SERIES_KEY) === 'E24') setSeries('E24');
+            } catch (e) { /* stockage indisponible : E12 par défaut */ }
             applyFreqBtn.addEventListener('click', applyFrequency);
             freqInput.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') applyFrequency();
@@ -843,7 +991,6 @@
 
             // Initialisation
             updateResults();
-            showStandard();
             root._rafId = requestAnimationFrame(animate);
 
             // Nettoyage si la page est rechargée (évite plusieurs boucles en parallèle

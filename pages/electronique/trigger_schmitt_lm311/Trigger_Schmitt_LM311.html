@@ -107,32 +107,41 @@
                         <code>4k7</code>, <code>1M</code>.
                     </p>
 
+                    <div class="st311-field">
+                        <span class="st311-field-title">Série des résistances du montage</span>
+                        <div class="st311-series" role="group" aria-label="Série des résistances">
+                            <button type="button" data-series="E12" class="active" aria-pressed="true">E12</button>
+                            <button type="button" data-series="E24" aria-pressed="false">E24</button>
+                        </div>
+                        <p class="st311-hint">E12 : 12 valeurs par décade, celles des kits courants. E24 : 24 valeurs, seuils plus précis.</p>
+                    </div>
+
                     <div class="divider" style="margin: var(--spacing-md) 0;"></div>
 
                     <div class="st311-results">
                         <div class="st311-result-row st311-result-head">
-                            <span></span><span>Calculé</span><span>Normalisé E24</span>
+                            <span></span><span>Idéal (calcul)</span><span id="st311-col-real">Réel E12</span>
                         </div>
                         <div class="st311-result-row">
-                            <span>R1</span><strong id="st311-r1-calc">-</strong><strong id="st311-r1-e24">-</strong>
+                            <span>R1</span><strong id="st311-r1-calc">-</strong><strong id="st311-r1-real">-</strong>
                         </div>
                         <div class="st311-result-row">
-                            <span>R2</span><strong id="st311-r2-calc">-</strong><strong id="st311-r2-e24">-</strong>
+                            <span>R2</span><strong id="st311-r2-calc">-</strong><strong id="st311-r2-real">-</strong>
                         </div>
                         <div class="st311-result-row">
-                            <span>Ra</span><strong id="st311-ra-calc">-</strong><strong id="st311-ra-e24">-</strong>
+                            <span>Ra</span><strong id="st311-ra-calc">-</strong><strong id="st311-ra-real">-</strong>
                         </div>
                         <div class="st311-result-row">
-                            <span>Rb</span><strong id="st311-rb-calc">-</strong><strong id="st311-rb-e24">-</strong>
+                            <span>Rb</span><strong id="st311-rb-calc">-</strong><strong id="st311-rb-real">-</strong>
                         </div>
                         <div class="st311-result-row">
-                            <span>Rp</span><strong id="st311-rp-calc">-</strong><strong id="st311-rp-e24">-</strong>
+                            <span>Rp</span><strong id="st311-rp-calc">-</strong><strong id="st311-rp-real">-</strong>
                         </div>
                         <div class="st311-result-row">
-                            <span>Référence (entrée −)</span><strong id="st311-vref-calc">-</strong><strong id="st311-vref-e24">-</strong>
+                            <span>Référence (entrée −)</span><strong id="st311-vref-calc">-</strong><strong id="st311-vref-real">-</strong>
                         </div>
                         <div class="st311-result-row st311-result-highlight">
-                            <span>Seuils obtenus</span><strong id="st311-th-calc">-</strong><strong id="st311-th-e24">-</strong>
+                            <span>Seuils obtenus</span><strong id="st311-th-calc">-</strong><strong id="st311-th-real">-</strong>
                         </div>
                     </div>
 
@@ -300,7 +309,7 @@
         <p>
             Le calcul suppose <strong>R2 beaucoup plus grande que Rp</strong> (sinon la sortie haute
             n'atteint pas tout à fait V+) et une référence comprise entre V− + 0,5 V et V+ − 1,5 V,
-            la plage d'entrée du LM311. Les valeurs normalisées E24 décalent un peu les seuils :
+            la plage d'entrée du LM311. Les valeurs normalisées (E12 ou E24, au choix) décalent un peu les seuils :
             la colonne de droite et l'oscilloscope montrent le résultat réel avec ces valeurs.
             L'écart (Vmax − Vmin) ne peut pas dépasser V+.
         </p>
@@ -396,6 +405,38 @@
             cursor: pointer;
             color: var(--text-accent);
             margin-bottom: var(--spacing-sm);
+        }
+
+        .st311-series {
+            display: inline-flex;
+            border: 1px solid var(--color-primary);
+            border-radius: var(--border-radius-sm);
+            overflow: hidden;
+        }
+
+        .st311-series button {
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            border: none;
+            padding: var(--spacing-xs) var(--spacing-lg);
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-sm);
+            cursor: pointer;
+        }
+
+        .st311-series button + button {
+            border-left: 1px solid var(--color-primary);
+        }
+
+        .st311-series button.active {
+            background: var(--color-primary);
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .st311-series button:focus-visible {
+            outline: 2px solid var(--text-accent);
+            outline-offset: -2px;
         }
 
         .st311-hint {
@@ -642,7 +683,11 @@
             const canvas = $('st311-oscillo');
             const ctx = canvas.getContext('2d');
 
-            const E24 = [10, 11, 12, 13, 15, 16, 18, 20, 22, 24, 27, 30, 33, 36, 39, 43, 47, 51, 56, 62, 68, 75, 82, 91];
+            const SERIES = {
+                E12: [10, 12, 15, 18, 22, 27, 33, 39, 47, 56, 68, 82],
+                E24: [10, 11, 12, 13, 15, 16, 18, 20, 22, 24, 27, 30, 33, 36, 39, 43, 47, 51, 56, 62, 68, 75, 82, 91]
+            };
+            let series = 'E12'; // série des résistances réellement montées
             const PREFIXES = { p: 1e-12, n: 1e-9, u: 1e-6, 'µ': 1e-6, m: 1e-3, k: 1e3, K: 1e3, M: 1e6, G: 1e9 };
 
             /**
@@ -683,14 +728,14 @@
             const volts = v => isFinite(v) ? v.toFixed(2).replace('.', ',') + ' V' : '-';
 
             /**
-             * Valeur E24 la plus proche (en écart relatif)
+             * Valeur normalisée la plus proche dans la série choisie (en écart relatif)
              */
-            function nearestE24(r) {
+            function nearestStd(r) {
                 if (!(r > 0) || !isFinite(r)) return NaN;
                 const decade = Math.pow(10, Math.floor(Math.log10(r)) - 1);
                 let best = NaN;
                 let bestErr = Infinity;
-                [...E24.map(v => v * decade), 100 * decade].forEach(candidate => {
+                [...SERIES[series].map(v => v * decade), 100 * decade].forEach(candidate => {
                     const err = Math.abs(Math.log(candidate / r));
                     if (err < bestErr) {
                         bestErr = err;
@@ -698,6 +743,20 @@
                     }
                 });
                 return parseFloat(best.toPrecision(2));
+            }
+
+
+            /**
+             * Valeurs normalisées voisines de r dans la série choisie
+             * (la plus proche et `spread` de part et d'autre)
+             */
+            function neighbours(r, spread) {
+                const list = [];
+                for (let exp = 0; exp <= 7; exp++) {
+                    SERIES[series].forEach(m => list.push(parseFloat((m * Math.pow(10, exp - 1)).toPrecision(2))));
+                }
+                const i = list.indexOf(nearestStd(r));
+                return list.slice(Math.max(0, i - spread), i + spread + 1);
             }
 
             /**
@@ -709,7 +768,7 @@
                 return { vref, vhigh, vlow: vhigh - vcc * r1 / r2 };
             }
 
-            let design = null; // seuils réellement simulés (valeurs E24)
+            let design = null; // seuils réellement simulés (valeurs normalisées choisies)
             let sine = { amp: 6, offset: 6 };
             let vcc = 12;
             let vminus = 0;
@@ -740,7 +799,7 @@
             function clearResults() {
                 ['r1', 'r2', 'ra', 'rb', 'rp', 'vref', 'th'].forEach(name => {
                     setText('st311-' + name + '-calc', '-');
-                    setText('st311-' + name + '-e24', '-');
+                    setText('st311-' + name + '-real', '-');
                 });
             }
 
@@ -804,14 +863,24 @@
 
                 const ra = rb * (vcc - vref) / (vref - vminus);
 
-                const e24 = {
-                    r1: nearestE24(r1),
-                    r2: nearestE24(r2),
-                    ra: nearestE24(ra),
-                    rb: nearestE24(rb),
-                    rp: nearestE24(rp)
-                };
-                const real = thresholds(vcc, vminus, e24.r1, e24.r2, e24.ra, e24.rb);
+                // Combinaison de valeurs normalisées voisines qui donne les seuils les plus proches
+                // (arrondir chaque résistance séparément décale trop les seuils en E12)
+                let chosen = null;
+                let real = null;
+                let bestErr = Infinity;
+                neighbours(r2, 2).forEach(c2 => neighbours(rb, 2).forEach(cb => {
+                    neighbours(r1, 3).forEach(c1 => neighbours(ra, 3).forEach(ca => {
+                        const t = thresholds(vcc, vminus, c1, c2, ca, cb);
+                        // léger avantage aux valeurs proches de celles demandées pour R2 et Rb
+                        const err = Math.abs(t.vhigh - vhigh) + Math.abs(t.vlow - vlow) +
+                            0.002 * vcc * (Math.abs(Math.log(c2 / r2)) + Math.abs(Math.log(cb / rb)));
+                        if (err < bestErr) {
+                            bestErr = err;
+                            chosen = { r1: c1, r2: c2, ra: ca, rb: cb, rp: nearestStd(rp) };
+                            real = t;
+                        }
+                    }));
+                }));
 
                 setText('st311-r1-calc', formatValue(r1, 'Ω'));
                 setText('st311-r2-calc', formatValue(r2, 'Ω'));
@@ -820,13 +889,13 @@
                 setText('st311-rp-calc', formatValue(rp, 'Ω'));
                 setText('st311-vref-calc', volts(vref));
                 setText('st311-th-calc', volts(vlow) + ' / ' + volts(vhigh));
-                setText('st311-r1-e24', formatValue(e24.r1, 'Ω'));
-                setText('st311-r2-e24', formatValue(e24.r2, 'Ω'));
-                setText('st311-ra-e24', formatValue(e24.ra, 'Ω'));
-                setText('st311-rb-e24', formatValue(e24.rb, 'Ω'));
-                setText('st311-rp-e24', formatValue(e24.rp, 'Ω'));
-                setText('st311-vref-e24', volts(real.vref));
-                setText('st311-th-e24', volts(real.vlow) + ' / ' + volts(real.vhigh));
+                setText('st311-r1-real', formatValue(chosen.r1, 'Ω'));
+                setText('st311-r2-real', formatValue(chosen.r2, 'Ω'));
+                setText('st311-ra-real', formatValue(chosen.ra, 'Ω'));
+                setText('st311-rb-real', formatValue(chosen.rb, 'Ω'));
+                setText('st311-rp-real', formatValue(chosen.rp, 'Ω'));
+                setText('st311-vref-real', volts(real.vref));
+                setText('st311-th-real', volts(real.vlow) + ' / ' + volts(real.vhigh));
 
                 // Avertissements (le calcul reste affiché)
                 if (vref < vminus + 0.5 || vref > vcc - 1.5) {
@@ -846,8 +915,8 @@
                 // Le sinus reste-t-il dans ce que le montage accepte ?
                 const vinMax = sine.offset + sine.amp;
                 const vinMin = sine.offset - sine.amp;
-                const nodeMin = vinMin * e24.r2 / (e24.r1 + e24.r2);
-                const nodeMax = (vinMax * e24.r2 + vcc * e24.r1) / (e24.r1 + e24.r2);
+                const nodeMin = vinMin * chosen.r2 / (chosen.r1 + chosen.r2);
+                const nodeMax = (vinMax * chosen.r2 + vcc * chosen.r1) / (chosen.r1 + chosen.r2);
                 if (nodeMin < vminus - 0.3 || nodeMax > vcc + 0.3) {
                     messages.push({ text: `Avec ce sinus, l'entrée + du LM311 sort de l'alimentation (${volts(nodeMin)} à ${volts(nodeMax)}). ` +
                         (vminus === 0 ? 'Ajoutez un décalage pour que le sinus reste au-dessus de 0 V, ou passez en symétrique.' : 'Réduisez l\'amplitude.') });
@@ -855,17 +924,17 @@
 
                 showMessages(messages);
                 design = real;
-                updateSvgLabels(e24);
+                updateSvgLabels(chosen);
                 updateSineInfo();
             }
 
-            function updateSvgLabels(e24) {
+            function updateSvgLabels(chosen) {
                 setText('st311-svg-vcc', 'V+ = ' + (isFinite(vcc) ? vcc + ' V' : '?'));
-                setText('st311-svg-r1', e24 ? 'R1 ' + formatValue(e24.r1, 'Ω') : 'R1');
-                setText('st311-svg-r2', e24 ? 'R2 ' + formatValue(e24.r2, 'Ω') : 'R2');
-                setText('st311-svg-ra', e24 ? 'Ra ' + formatValue(e24.ra, 'Ω') : 'Ra');
-                setText('st311-svg-rb', e24 ? 'Rb ' + formatValue(e24.rb, 'Ω') : 'Rb');
-                setText('st311-svg-rp', e24 ? 'Rp ' + formatValue(e24.rp, 'Ω') : 'Rp');
+                setText('st311-svg-r1', chosen ? 'R1 ' + formatValue(chosen.r1, 'Ω') : 'R1');
+                setText('st311-svg-r2', chosen ? 'R2 ' + formatValue(chosen.r2, 'Ω') : 'R2');
+                setText('st311-svg-ra', chosen ? 'Ra ' + formatValue(chosen.ra, 'Ω') : 'Ra');
+                setText('st311-svg-rb', chosen ? 'Rb ' + formatValue(chosen.rb, 'Ω') : 'Rb');
+                setText('st311-svg-rp', chosen ? 'Rp ' + formatValue(chosen.rp, 'Ω') : 'Rp');
 
                 // En symétrique, Rb et la pin 4 vont à −V au lieu de la masse
                 const sym = vminus < 0;
@@ -1014,6 +1083,30 @@
                 drawOscilloscope();
                 root._rafId = requestAnimationFrame(animate);
             }
+
+            // ===== Série des résistances (E12 / E24), mémorisée pour toutes les pages du site =====
+            const SERIES_KEY = 'frwa-serie-resistances';
+            const seriesButtons = root.querySelectorAll('[data-series]');
+            try {
+                if (localStorage.getItem(SERIES_KEY) === 'E24') series = 'E24';
+            } catch (e) { /* stockage indisponible : E12 par défaut */ }
+
+            function showSeries() {
+                seriesButtons.forEach(btn => {
+                    const active = btn.dataset.series === series;
+                    btn.classList.toggle('active', active);
+                    btn.setAttribute('aria-pressed', active);
+                });
+                $('st311-col-real').textContent = 'Réel ' + series;
+            }
+
+            seriesButtons.forEach(btn => btn.addEventListener('click', () => {
+                series = btn.dataset.series;
+                try { localStorage.setItem(SERIES_KEY, series); } catch (e) { /* sans mémorisation */ }
+                showSeries();
+                update();
+            }));
+            showSeries();
 
             // Initialisation : écran déjà rempli pour voir tout de suite le résultat
             update();

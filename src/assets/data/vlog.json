@@ -1,5 +1,10 @@
 [
   {
+    "date": "2026-10-23T16:05:50Z",
+    "title": "Mise à jour du site",
+    "message": "Pages Électronique : choix E12 / E24 des résistances sur les simulations NE555, LM311 et LM3914, avec comparaison des valeurs idéales (calcul) et réelles (composants normés)."
+  },
+  {
     "date": "2026-10-23T15:54:30Z",
     "title": "Mise à jour du site",
     "message": "Modification des composants normés pour la simulation NE555 : R1, R2 et C sont choisis parmi les valeurs normalisées (E12 / E6), 2 Hz par défaut (12 kΩ, 47 kΩ, 6,8 µF)."

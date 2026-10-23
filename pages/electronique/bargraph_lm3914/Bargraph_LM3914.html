@@ -100,29 +100,38 @@
                         <code>4k7</code>, <code>1M</code>.
                     </p>
 
+                    <div class="lm3914-field">
+                        <span class="lm3914-field-title">Série des résistances du montage</span>
+                        <div class="lm3914-series" role="group" aria-label="Série des résistances">
+                            <button type="button" data-series="E12" class="active" aria-pressed="true">E12</button>
+                            <button type="button" data-series="E24" aria-pressed="false">E24</button>
+                        </div>
+                        <p class="lm3914-hint">E12 : 12 valeurs par décade, celles des kits courants. E24 : 24 valeurs, seuils plus précis.</p>
+                    </div>
+
                     <div class="divider" style="margin: var(--spacing-md) 0;"></div>
 
                     <div class="lm3914-results">
                         <div class="lm3914-result-row lm3914-result-head">
-                            <span></span><span>Calculé</span><span>Normalisé E24</span>
+                            <span></span><span>Idéal (calcul)</span><span id="lm3914-col-real">Réel E12</span>
                         </div>
                         <div class="lm3914-result-row">
-                            <span>R1 (pin 7 → 8)</span><strong id="lm3914-r1-calc">-</strong><strong id="lm3914-r1-e24">-</strong>
+                            <span>R1 (pin 7 → 8)</span><strong id="lm3914-r1-calc">-</strong><strong id="lm3914-r1-real">-</strong>
                         </div>
                         <div class="lm3914-result-row">
-                            <span>R2 (pin 8 → masse)</span><strong id="lm3914-r2-calc">-</strong><strong id="lm3914-r2-e24">-</strong>
+                            <span>R2 (pin 8 → masse)</span><strong id="lm3914-r2-calc">-</strong><strong id="lm3914-r2-real">-</strong>
                         </div>
                         <div class="lm3914-result-row" data-rlo-divider>
-                            <span>R3 (pin 7 → 4)</span><strong id="lm3914-r3-calc">-</strong><strong id="lm3914-r3-e24">-</strong>
+                            <span>R3 (pin 7 → 4)</span><strong id="lm3914-r3-calc">-</strong><strong id="lm3914-r3-real">-</strong>
                         </div>
                         <div class="lm3914-result-row" data-rlo-divider>
-                            <span>R4 (pin 4 → masse)</span><strong id="lm3914-r4-calc">-</strong><strong id="lm3914-r4-e24">-</strong>
+                            <span>R4 (pin 4 → masse)</span><strong id="lm3914-r4-calc">-</strong><strong id="lm3914-r4-real">-</strong>
                         </div>
                         <div class="lm3914-result-row">
-                            <span>Courant par LED</span><strong id="lm3914-iled-calc">-</strong><strong id="lm3914-iled-e24">-</strong>
+                            <span>Courant par LED</span><strong id="lm3914-iled-calc">-</strong><strong id="lm3914-iled-real">-</strong>
                         </div>
                         <div class="lm3914-result-row lm3914-result-highlight">
-                            <span>Vmin / Vmax obtenus</span><strong id="lm3914-range-calc">-</strong><strong id="lm3914-range-e24">-</strong>
+                            <span>Vmin / Vmax obtenus</span><strong id="lm3914-range-calc">-</strong><strong id="lm3914-range-real">-</strong>
                         </div>
                     </div>
 
@@ -352,6 +361,7 @@
         }
 
         .lm3914-field label,
+        .lm3914-field-title,
         .lm3914-controls .lm3914-label {
             display: block;
             font-size: var(--font-size-sm);
@@ -417,6 +427,38 @@
             cursor: pointer;
             color: var(--text-accent);
             margin-bottom: var(--spacing-sm);
+        }
+
+        .lm3914-series {
+            display: inline-flex;
+            border: 1px solid var(--color-primary);
+            border-radius: var(--border-radius-sm);
+            overflow: hidden;
+        }
+
+        .lm3914-series button {
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            border: none;
+            padding: var(--spacing-xs) var(--spacing-lg);
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-sm);
+            cursor: pointer;
+        }
+
+        .lm3914-series button + button {
+            border-left: 1px solid var(--color-primary);
+        }
+
+        .lm3914-series button.active {
+            background: var(--color-primary);
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .lm3914-series button:focus-visible {
+            outline: 2px solid var(--text-accent);
+            outline-offset: -2px;
         }
 
         .lm3914-hint {
@@ -804,7 +846,11 @@
             const R_LADDER = 10e3;     // échelle interne entre RHI et RLO (valeur typique)
             const LED_PINS = [1, 18, 17, 16, 15, 14, 13, 12, 11, 10];
             const LED_COLORS = ['#2ecc71', '#2ecc71', '#2ecc71', '#2ecc71', '#2ecc71', '#2ecc71', '#f1c40f', '#f1c40f', '#e74c3c', '#e74c3c'];
-            const E24 = [10, 11, 12, 13, 15, 16, 18, 20, 22, 24, 27, 30, 33, 36, 39, 43, 47, 51, 56, 62, 68, 75, 82, 91];
+            const SERIES = {
+                E12: [10, 12, 15, 18, 22, 27, 33, 39, 47, 56, 68, 82],
+                E24: [10, 11, 12, 13, 15, 16, 18, 20, 22, 24, 27, 30, 33, 36, 39, 43, 47, 51, 56, 62, 68, 75, 82, 91]
+            };
+            let series = 'E12'; // série des résistances réellement montées
             const PREFIXES = { p: 1e-12, n: 1e-9, u: 1e-6, 'µ': 1e-6, m: 1e-3, k: 1e3, K: 1e3, M: 1e6, G: 1e9 };
 
             /**
@@ -850,12 +896,12 @@
 
             const volts = v => isFinite(v) ? v.toFixed(2).replace('.', ',') + ' V' : '-';
 
-            function nearestE24(r) {
+            function nearestStd(r) {
                 if (!(r > 0) || !isFinite(r)) return NaN;
                 const decade = Math.pow(10, Math.floor(Math.log10(r)) - 1);
                 let best = NaN;
                 let bestErr = Infinity;
-                [...E24.map(v => v * decade), 100 * decade].forEach(candidate => {
+                [...SERIES[series].map(v => v * decade), 100 * decade].forEach(candidate => {
                     const err = Math.abs(Math.log(candidate / r));
                     if (err < bestErr) {
                         bestErr = err;
@@ -863,6 +909,19 @@
                     }
                 });
                 return parseFloat(best.toPrecision(2));
+            }
+
+            /**
+             * Valeurs normalisées voisines de r dans la série choisie
+             * (la plus proche et `spread` de part et d'autre)
+             */
+            function neighbours(r, spread) {
+                const list = [];
+                for (let exp = 0; exp <= 7; exp++) {
+                    SERIES[series].forEach(m => list.push(parseFloat((m * Math.pow(10, exp - 1)).toPrecision(2))));
+                }
+                const i = list.indexOf(nearestStd(r));
+                return list.slice(Math.max(0, i - spread), i + spread + 1);
             }
 
             const parallel = (a, b) => a * b / (a + b);
@@ -884,7 +943,7 @@
                 return { vhi, vlo, iled };
             }
 
-            let sim = null; // { vlo, vhi } réellement simulés (valeurs E24)
+            let sim = null; // { vlo, vhi } réellement simulés (valeurs normalisées choisies)
             let vsig = 0;
             let xmax = 6;
             let barMode = true;
@@ -942,7 +1001,7 @@
             function clearResults() {
                 ['r1', 'r2', 'r3', 'r4', 'iled', 'range'].forEach(name => {
                     setText('lm3914-' + name + '-calc', '-');
-                    setText('lm3914-' + name + '-e24', '-');
+                    setText('lm3914-' + name + '-real', '-');
                 });
                 ['r1', 'r2', 'r3', 'r4'].forEach(name => setText('lm3914-svg-' + name, name.toUpperCase()));
                 sim = null;
@@ -1000,33 +1059,45 @@
                 const r1 = VREF_INT / iR1;
                 const r2 = (vmax - VREF_INT) / (VREF_INT / r1 + I_ADJ);
 
-                const e24 = {
-                    r1: nearestE24(r1),
-                    r2: vmax > VREF_INT ? nearestE24(r2) : 0,
-                    r3: useDivider ? nearestE24(r3) : NaN,
-                    r4: useDivider ? nearestE24(r4) : NaN
-                };
+                // Combinaison de valeurs normalisées voisines qui donne Vmin, Vmax et le courant
+                // les plus proches (arrondir chaque résistance séparément décale trop en E12)
                 const ideal = evaluate(r1, r2, useDivider ? r3 : 0, useDivider ? r4 : 0);
-                const real = evaluate(e24.r1, e24.r2, useDivider ? e24.r3 : 0, useDivider ? e24.r4 : 0);
+                let chosen = null;
+                let real = null;
+                let bestErr = Infinity;
+                const r2List = vmax > VREF_INT ? neighbours(r2, 3) : [0];
+                const r3List = useDivider ? neighbours(r3, 2) : [NaN];
+                const r4List = useDivider ? neighbours(r4, 3) : [NaN];
+                neighbours(r1, 3).forEach(c1 => r2List.forEach(c2 => r3List.forEach(c3 => r4List.forEach(c4 => {
+                    const t = evaluate(c1, c2, useDivider ? c3 : 0, useDivider ? c4 : 0);
+                    const err = Math.abs(t.vhi - vmax) + Math.abs(t.vlo - vmin) +
+                        0.1 * vmax * Math.abs(Math.log(t.iled / iled)) +
+                        (useDivider ? 0.002 * vmax * Math.abs(Math.log(c3 / r3)) : 0);
+                    if (err < bestErr) {
+                        bestErr = err;
+                        chosen = { r1: c1, r2: c2, r3: c3, r4: c4 };
+                        real = t;
+                    }
+                }))));
 
                 setText('lm3914-r1-calc', formatValue(r1, 'Ω'));
-                setText('lm3914-r1-e24', formatValue(e24.r1, 'Ω'));
+                setText('lm3914-r1-real', formatValue(chosen.r1, 'Ω'));
                 setText('lm3914-r2-calc', r2 > 0 ? formatValue(r2, 'Ω') : 'fil (0 Ω)');
-                setText('lm3914-r2-e24', e24.r2 > 0 ? formatValue(e24.r2, 'Ω') : 'fil (0 Ω)');
+                setText('lm3914-r2-real', chosen.r2 > 0 ? formatValue(chosen.r2, 'Ω') : 'fil (0 Ω)');
                 setText('lm3914-r3-calc', formatValue(r3, 'Ω'));
-                setText('lm3914-r3-e24', formatValue(e24.r3, 'Ω'));
+                setText('lm3914-r3-real', formatValue(chosen.r3, 'Ω'));
                 setText('lm3914-r4-calc', formatValue(r4, 'Ω'));
-                setText('lm3914-r4-e24', formatValue(e24.r4, 'Ω'));
+                setText('lm3914-r4-real', formatValue(chosen.r4, 'Ω'));
                 setText('lm3914-iled-calc', formatValue(ideal.iled, 'A'));
-                setText('lm3914-iled-e24', formatValue(real.iled, 'A'));
+                setText('lm3914-iled-real', formatValue(real.iled, 'A'));
                 setText('lm3914-range-calc', volts(ideal.vlo) + ' / ' + volts(ideal.vhi));
-                setText('lm3914-range-e24', volts(real.vlo) + ' / ' + volts(real.vhi));
+                setText('lm3914-range-real', volts(real.vlo) + ' / ' + volts(real.vhi));
                 root.querySelectorAll('[data-rlo-divider]').forEach(row => { row.hidden = !useDivider; });
 
-                setText('lm3914-svg-r1', 'R1 ' + formatValue(e24.r1, 'Ω'));
-                setText('lm3914-svg-r2', e24.r2 > 0 ? 'R2 ' + formatValue(e24.r2, 'Ω') : 'R2 = fil');
-                setText('lm3914-svg-r3', 'R3 ' + formatValue(e24.r3, 'Ω'));
-                setText('lm3914-svg-r4', 'R4 ' + formatValue(e24.r4, 'Ω'));
+                setText('lm3914-svg-r1', 'R1 ' + formatValue(chosen.r1, 'Ω'));
+                setText('lm3914-svg-r2', chosen.r2 > 0 ? 'R2 ' + formatValue(chosen.r2, 'Ω') : 'R2 = fil');
+                setText('lm3914-svg-r3', 'R3 ' + formatValue(chosen.r3, 'Ω'));
+                setText('lm3914-svg-r4', 'R4 ' + formatValue(chosen.r4, 'Ω'));
                 $('lm3914-rlo-divider').setAttribute('visibility', useDivider ? 'visible' : 'hidden');
                 $('lm3914-rlo-gnd').setAttribute('visibility', useDivider ? 'hidden' : 'visible');
 
@@ -1182,6 +1253,30 @@
 
             Object.values(fields).forEach(input => input.addEventListener('input', update));
             document.querySelectorAll('input[name="lm3914-mode"]').forEach(radio => radio.addEventListener('change', update));
+
+            // ===== Série des résistances (E12 / E24), mémorisée pour toutes les pages du site =====
+            const SERIES_KEY = 'frwa-serie-resistances';
+            const seriesButtons = root.querySelectorAll('[data-series]');
+            try {
+                if (localStorage.getItem(SERIES_KEY) === 'E24') series = 'E24';
+            } catch (e) { /* stockage indisponible : E12 par défaut */ }
+
+            function showSeries() {
+                seriesButtons.forEach(btn => {
+                    const active = btn.dataset.series === series;
+                    btn.classList.toggle('active', active);
+                    btn.setAttribute('aria-pressed', active);
+                });
+                $('lm3914-col-real').textContent = 'Réel ' + series;
+            }
+
+            seriesButtons.forEach(btn => btn.addEventListener('click', () => {
+                series = btn.dataset.series;
+                try { localStorage.setItem(SERIES_KEY, series); } catch (e) { /* sans mémorisation */ }
+                showSeries();
+                update();
+            }));
+            showSeries();
 
             // Initialisation : molette au milieu de la plage pour voir tout de suite des LED
             update();
