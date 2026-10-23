@@ -1,5 +1,10 @@
 [
   {
+    "date": "2026-10-23T15:54:30Z",
+    "title": "Mise à jour du site",
+    "message": "Modification des composants normés pour la simulation NE555 : R1, R2 et C sont choisis parmi les valeurs normalisées (E12 / E6), 2 Hz par défaut (12 kΩ, 47 kΩ, 6,8 µF)."
+  },
+  {
     "date": "2026-10-23T15:38:14Z",
     "title": "Mise à jour du site",
     "message": "Ajout des montages LM3914 (bargraph 10 LED réglé entre Vmin et Vmax, avec molette) et LM311 (trigger de Schmitt à seuils Vmin / Vmax, avec sinus sur oscilloscope), et modification du site : cartes des sections et boutons « Retour » automatiques, vignettes rangées dans le dossier de chaque page, NE555 à 0,5 Hz par défaut."

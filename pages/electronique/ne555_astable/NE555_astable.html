@@ -47,7 +47,7 @@
                     <div class="ne555-field">
                         <label for="ne555-r1">R1 (résistance de charge)</label>
                         <div class="ne555-input-group">
-                            <input type="number" id="ne555-r1" min="100" step="100" value="10000">
+                            <input type="number" id="ne555-r1" min="1000" step="100" value="12000">
                             <span class="ne555-unit">Ω</span>
                         </div>
                     </div>
@@ -55,7 +55,7 @@
                     <div class="ne555-field">
                         <label for="ne555-r2">R2 (résistance de charge/décharge)</label>
                         <div class="ne555-input-group">
-                            <input type="number" id="ne555-r2" min="100" step="100" value="10000">
+                            <input type="number" id="ne555-r2" min="1000" step="100" value="47000">
                             <span class="ne555-unit">Ω</span>
                         </div>
                     </div>
@@ -63,7 +63,7 @@
                     <div class="ne555-field">
                         <label for="ne555-c">C (condensateur)</label>
                         <div class="ne555-input-group">
-                            <input type="number" id="ne555-c" min="0.000000001" step="0.000000001" value="0.000096">
+                            <input type="number" id="ne555-c" min="0.000000001" step="0.000000001" value="0.0000068">
                             <span class="ne555-unit">F</span>
                         </div>
                     </div>
@@ -73,13 +73,15 @@
                     <div class="ne555-field">
                         <label for="ne555-freq">Fréquence souhaitée</label>
                         <div class="ne555-input-group">
-                            <input type="number" id="ne555-freq" min="0.01" step="0.01" value="0.5" placeholder="ex: 1">
+                            <input type="number" id="ne555-freq" min="0.01" step="0.01" value="2" placeholder="ex: 1">
                             <span class="ne555-unit">Hz</span>
                             <button id="ne555-apply-freq" class="btn btn-secondary btn-sm">Appliquer</button>
                         </div>
                         <p class="ne555-hint">
-                            Renseigner la fréquence recalcule automatiquement R1, R2 et C
-                            (R1 et R2 sont conservés dans le même rapport, C est ajusté).
+                            Renseigner la fréquence choisit automatiquement R1, R2 et C parmi
+                            les valeurs normalisées (E12 pour les résistances, E6 pour les
+                            condensateurs), en gardant au mieux le rapport R1/R2.
+                            Une valeur tapée à la main est ramenée à la valeur normalisée la plus proche.
                         </p>
                     </div>
 
@@ -106,6 +108,7 @@
                             <span>Rapport cyclique</span>
                             <strong id="ne555-duty">-</strong>
                         </div>
+                        <p class="ne555-hint" id="ne555-std"></p>
                     </div>
 
                 </div>
@@ -516,6 +519,7 @@
             const periodEl = document.getElementById('ne555-period');
             const freqEl = document.getElementById('ne555-frequency');
             const dutyEl = document.getElementById('ne555-duty');
+            const stdEl = document.getElementById('ne555-std');
 
             const bulb = document.getElementById('ne555-bulb');
             const canvas = document.getElementById('ne555-oscillo');
@@ -604,28 +608,93 @@
             }
 
             /**
-             * Applique une fréquence cible : ajuste C en conservant le rapport R1/R2
+             * Valeurs normalisées : E12 pour les résistances (1 kΩ à 1 MΩ),
+             * E6 pour les condensateurs (1 nF à 1000 µF)
+             */
+            const E12 = [10, 12, 15, 18, 22, 27, 33, 39, 47, 56, 68, 82];
+            const E6 = [10, 15, 22, 33, 47, 68];
+
+            function buildSeries(mantissas, min, max) {
+                const values = [];
+                for (let exp = -12; exp <= 7; exp++) {
+                    mantissas.forEach(m => {
+                        const v = parseFloat((m * Math.pow(10, exp - 1)).toPrecision(2));
+                        if (v >= min * 0.999 && v <= max * 1.001) values.push(v);
+                    });
+                }
+                return values;
+            }
+
+            const STD_R = buildSeries(E12, 1e3, 1e6);
+            const STD_C = buildSeries(E6, 1e-9, 1e-3);
+
+            function nearest(value, series) {
+                return series.reduce((best, v) =>
+                    Math.abs(Math.log(v / value)) < Math.abs(Math.log(best / value)) ? v : best);
+            }
+
+            function showStandard(extra = '') {
+                stdEl.textContent = `Composants normalisés : R1 ${formatValue(state.r1, 'Ω')}, ` +
+                    `R2 ${formatValue(state.r2, 'Ω')}, C ${formatValue(state.c, 'F')}${extra}`;
+            }
+
+            /**
+             * Ramène une valeur tapée à la valeur normalisée la plus proche
+             * (au moment où l'on quitte le champ, pour ne pas gêner la frappe)
+             */
+            function snapInput(input, key, series) {
+                const value = parseFloat(input.value);
+                if (!(value > 0)) {
+                    input.value = state[key];
+                    return;
+                }
+                state[key] = nearest(value, series);
+                input.value = state[key];
+                updateResults();
+                showStandard();
+            }
+
+            /**
+             * Applique une fréquence cible : cherche le trio R1, R2, C normalisé
+             * le plus proche, en gardant au mieux le rapport R1/R2 actuel
              */
             function applyFrequency() {
                 const targetFreq = parseFloat(freqInput.value);
                 if (!(targetFreq > 0)) return;
 
-                const r1 = state.r1;
-                const r2 = state.r2;
+                const ratio = state.r1 / state.r2;
+                let best = null;
+                STD_C.forEach(c => {
+                    STD_R.forEach(r1 => {
+                        STD_R.forEach(r2 => {
+                            const f = computeFromRC(r1, r2, c).freq;
+                            // Fréquence d'abord, puis rapport R1/R2 conservé,
+                            // puis résistances courantes (autour de 22 kΩ)
+                            const score = Math.abs(Math.log(f / targetFreq)) +
+                                0.05 * Math.abs(Math.log(r1 / r2 / ratio)) +
+                                0.002 * (Math.abs(Math.log(r1 / 22e3)) + Math.abs(Math.log(r2 / 22e3)));
+                            if (!best || score < best.score) best = { score, r1, r2, c, f };
+                        });
+                    });
+                });
 
-                // f = 1.44 / ((R1 + 2*R2) * C)  =>  C = 1.44 / ((R1 + 2*R2) * f)
-                const c = 1.44 / ((r1 + 2 * r2) * targetFreq);
-
-                if (isFinite(c) && c > 0) {
-                    state.c = c;
-                    cInput.value = c.toPrecision(6);
-                    updateResults();
-                }
+                state.r1 = best.r1;
+                state.r2 = best.r2;
+                state.c = best.c;
+                r1Input.value = best.r1;
+                r2Input.value = best.r2;
+                cInput.value = best.c;
+                updateResults();
+                const gap = (best.f / targetFreq - 1) * 100;
+                showStandard(` (écart avec ${formatValue(targetFreq, 'Hz')} : ${gap >= 0 ? '+' : ''}${gap.toFixed(1)} %)`);
             }
 
             r1Input.addEventListener('input', readInputs);
             r2Input.addEventListener('input', readInputs);
             cInput.addEventListener('input', readInputs);
+            r1Input.addEventListener('change', () => snapInput(r1Input, 'r1', STD_R));
+            r2Input.addEventListener('change', () => snapInput(r2Input, 'r2', STD_R));
+            cInput.addEventListener('change', () => snapInput(cInput, 'c', STD_C));
             applyFreqBtn.addEventListener('click', applyFrequency);
             freqInput.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') applyFrequency();
@@ -774,6 +843,7 @@
 
             // Initialisation
             updateResults();
+            showStandard();
             root._rafId = requestAnimationFrame(animate);
 
             // Nettoyage si la page est rechargée (évite plusieurs boucles en parallèle
