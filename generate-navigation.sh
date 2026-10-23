@@ -64,6 +64,7 @@ should_exclude() {
 # ----------------------------------------------------------------------------
 # Convertit un nom de fichier/dossier en libelle affichable
 # ex: "ne555_astable" -> "Ne555 Astable"
+#     "NE555_astable.html" -> "NE555 Astable" (reference en majuscules conservee)
 #     "Plantation_autonome.html" -> "Plantation Autonome"
 # ----------------------------------------------------------------------------
 to_display_name() {
@@ -76,6 +77,11 @@ to_display_name() {
     local result=""
     for word in $name; do
         if [ -n "$word" ]; then
+            # Reference de composant deja en majuscules (NE555, LM311) : gardee telle quelle
+            if [[ "$word" =~ ^[A-Z0-9]+$ && "$word" =~ [A-Z] && "$word" =~ [0-9] ]]; then
+                result="${result:+$result }$word"
+                continue
+            fi
             local first="${word:0:1}"
             local rest="${word:1}"
             first="$(echo "$first" | tr '[:lower:]' '[:upper:]')"

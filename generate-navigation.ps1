@@ -30,7 +30,11 @@ function ConvertTo-DisplayName {
     
     $words = $Name -split '[-_]'
     $titleCase = ($words | ForEach-Object { 
-        if ($_.Length -gt 0) {
+        if ($_ -cmatch '^[A-Z0-9]+$' -and $_ -cmatch '[A-Z]' -and $_ -match '[0-9]') {
+            # Reference de composant deja en majuscules (NE555, LM311) : gardee telle quelle
+            $_
+        }
+        elseif ($_.Length -gt 0) {
             $_.Substring(0,1).ToUpper() + $_.Substring(1).ToLower()
         }
     }) -join ' '

@@ -1,5 +1,5 @@
 {
-  "generated": "2026-10-09 16:14:44",
+  "generated": "2026-10-23 17:21:21",
   "children": [
 {
   "name": "code",
@@ -42,6 +42,20 @@
   "type": "file"
 },
 {
+  "name": "bargraph_lm3914",
+  "displayName": "Bargraph Lm3914",
+  "path": "pages/electronique/bargraph_lm3914",
+  "type": "folder",
+  "children": [
+{
+  "name": "Bargraph_LM3914.html",
+  "displayName": "Bargraph LM3914",
+  "path": "pages/electronique/bargraph_lm3914/Bargraph_LM3914.html",
+  "type": "file"
+}
+]
+},
+{
   "name": "ne555_astable",
   "displayName": "Ne555 Astable",
   "path": "pages/electronique/ne555_astable",
@@ -49,8 +63,22 @@
   "children": [
 {
   "name": "NE555_astable.html",
-  "displayName": "Ne555 Astable",
+  "displayName": "NE555 Astable",
   "path": "pages/electronique/ne555_astable/NE555_astable.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "trigger_schmitt_lm311",
+  "displayName": "Trigger Schmitt Lm311",
+  "path": "pages/electronique/trigger_schmitt_lm311",
+  "type": "folder",
+  "children": [
+{
+  "name": "Trigger_Schmitt_LM311.html",
+  "displayName": "Trigger Schmitt LM311",
+  "path": "pages/electronique/trigger_schmitt_lm311/Trigger_Schmitt_LM311.html",
   "type": "file"
 }
 ]

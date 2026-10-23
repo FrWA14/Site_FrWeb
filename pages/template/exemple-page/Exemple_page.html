@@ -10,9 +10,12 @@
       3. Placez vos médias dans assets/ et référencez-les en chemin relatif :
          assets/images/..., assets/videos/..., assets/modeles-3d/..., assets/fichiers/...
          Noms en minuscules, sans espaces ni accents.
-      4. Lancez ./generate-navigation.sh (ou generate-navigation.ps1)
-      5. Ajoutez une carte vers la page dans la page de section
-         (avec une vignette copiée dans le assets/ de la section)
+      4. Remplissez les <meta> ci-dessous : ils construisent la carte de la page
+         dans la page de section (titre = <title>, vignette facultative)
+      5. Lancez ./generate-navigation.sh (ou generate-navigation.ps1)
+
+    La carte dans la section et le bouton « Retour » sont automatiques :
+    déplacer ou copier ce dossier ne demande que de relancer le script.
 
     Supprimez les blocs dont vous n'avez pas besoin.
 -->
@@ -21,6 +24,11 @@
 <head>
     <meta charset="UTF-8">
     <title>[TITRE] - FrWA Conception</title>
+    <!-- Carte affichée dans la page de section -->
+    <meta name="description" content="[Description courte, une ou deux phrases]">
+    <meta name="tags" content="[Tag 1], [Tag 2]">
+    <!-- Facultatif : sans vignette, la carte reprend l'image de la bannière -->
+    <!-- <meta name="vignette" content="assets/images/vignette.jpg"> -->
 </head>
 <body>
     <div class="page-content">
@@ -92,9 +100,7 @@
 
         <!-- Retour vers la page de section -->
         <p class="text-center">
-            <a href="../[Section].html" class="btn btn-primary">
-                ← Retour
-            </a>
+            <a data-retour class="btn btn-primary"></a>
         </p>
     </div>
 </body>

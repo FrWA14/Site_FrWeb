@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Bargraph 10 LED - LM3914 - FrWA Conception</title>
+    <!-- Carte affichée dans la page de section -->
+    <meta name="description" content="Calcul des résistances d'un LM3914 pour allumer de 0 à 10 LED entre Vmin et Vmax, avec une molette pour tester chaque palier.">
+    <meta name="tags" content="Électronique, LED, Calculateur">
+    <meta name="vignette" content="assets/images/banniere.jpg">
+</head>
+<body>
+    <div class="page-content">
+        <!-- Bannière -->
+        <div class="page-banner">
+            <img src="assets/images/banniere.jpg" alt="Bargraph 10 LED à LM3914">
+            <div class="page-banner-overlay">
+                <h1 class="page-banner-title">Bargraph 10 LED - LM3914</h1>
+                <span class="page-banner-subtitle">De 0 LED à Vmin jusqu'à 10 LED à Vmax</span>
+            </div>
+        </div>
+
+        <!-- Tags -->
+        <div class="flex gap-sm" style="margin-bottom: var(--spacing-lg);">
+            <span class="badge badge-primary">Électronique</span>
+            <span class="badge badge-secondary">LED</span>
+            <span class="badge badge-accent">Calculateur</span>
+        </div>
+
+        <p class="lead">
+            Le <strong>LM3914</strong> compare une tension à 10 seuils régulièrement espacés et
+            allume une LED par seuil franchi. Indiquez la tension pour laquelle aucune LED ne
+            s'allume (<strong>Vmin</strong>) et celle qui allume les 10 (<strong>Vmax</strong>) :
+            la page calcule les résistances. Tournez ensuite la molette pour voir chaque palier.
+        </p>
+
+        <div class="divider"></div>
+
+        <div id="lm3914-sim" class="lm3914-sim">
+
+            <!-- Panneau de réglages -->
+            <div class="lm3914-controls card">
+                <div class="card-header">
+                    <h3 class="card-title">Réglages</h3>
+                </div>
+                <div class="card-body">
+
+                    <div class="lm3914-field">
+                        <label for="lm3914-vcc">Alimentation V+</label>
+                        <div class="lm3914-input-group">
+                            <input type="text" inputmode="decimal" id="lm3914-vcc" value="9">
+                            <span class="lm3914-unit">V</span>
+                        </div>
+                    </div>
+
+                    <div class="lm3914-field">
+                        <label for="lm3914-vmin">Vmin (0 LED allumée)</label>
+                        <div class="lm3914-input-group">
+                            <input type="text" inputmode="decimal" id="lm3914-vmin" value="1">
+                            <span class="lm3914-unit">V</span>
+                        </div>
+                    </div>
+
+                    <div class="lm3914-field">
+                        <label for="lm3914-vmax">Vmax (10 LED allumées)</label>
+                        <div class="lm3914-input-group">
+                            <input type="text" inputmode="decimal" id="lm3914-vmax" value="5">
+                            <span class="lm3914-unit">V</span>
+                        </div>
+                    </div>
+
+                    <div class="lm3914-field">
+                        <label for="lm3914-iled">Courant dans chaque LED</label>
+                        <div class="lm3914-input-group">
+                            <input type="text" inputmode="decimal" id="lm3914-iled" value="10">
+                            <span class="lm3914-unit">mA</span>
+                        </div>
+                    </div>
+
+                    <div class="lm3914-field">
+                        <span class="lm3914-label">Mode d'affichage (pin 9)</span>
+                        <div class="lm3914-choice">
+                            <label><input type="radio" name="lm3914-mode" value="bar" checked> Barre</label>
+                            <label><input type="radio" name="lm3914-mode" value="dot"> Point</label>
+                        </div>
+                    </div>
+
+                    <details class="lm3914-more">
+                        <summary>Résistance imposée (facultatif)</summary>
+                        <div class="lm3914-field">
+                            <label for="lm3914-r3">R3 (haut du pont de Vmin)</label>
+                            <div class="lm3914-input-group">
+                                <input type="text" inputmode="decimal" id="lm3914-r3" value="10k">
+                                <span class="lm3914-unit">Ω</span>
+                            </div>
+                        </div>
+                    </details>
+
+                    <p class="lm3914-hint">
+                        Virgule ou point acceptés, ainsi que les préfixes : <code>4,7k</code>,
+                        <code>4k7</code>, <code>1M</code>.
+                    </p>
+
+                    <div class="divider" style="margin: var(--spacing-md) 0;"></div>
+
+                    <div class="lm3914-results">
+                        <div class="lm3914-result-row lm3914-result-head">
+                            <span></span><span>Calculé</span><span>Normalisé E24</span>
+                        </div>
+                        <div class="lm3914-result-row">
+                            <span>R1 (pin 7 → 8)</span><strong id="lm3914-r1-calc">-</strong><strong id="lm3914-r1-e24">-</strong>
+                        </div>
+                        <div class="lm3914-result-row">
+                            <span>R2 (pin 8 → masse)</span><strong id="lm3914-r2-calc">-</strong><strong id="lm3914-r2-e24">-</strong>
+                        </div>
+                        <div class="lm3914-result-row" data-rlo-divider>
+                            <span>R3 (pin 7 → 4)</span><strong id="lm3914-r3-calc">-</strong><strong id="lm3914-r3-e24">-</strong>
+                        </div>
+                        <div class="lm3914-result-row" data-rlo-divider>
+                            <span>R4 (pin 4 → masse)</span><strong id="lm3914-r4-calc">-</strong><strong id="lm3914-r4-e24">-</strong>
+                        </div>
+                        <div class="lm3914-result-row">
+                            <span>Courant par LED</span><strong id="lm3914-iled-calc">-</strong><strong id="lm3914-iled-e24">-</strong>
+                        </div>
+                        <div class="lm3914-result-row lm3914-result-highlight">
+                            <span>Vmin / Vmax obtenus</span><strong id="lm3914-range-calc">-</strong><strong id="lm3914-range-e24">-</strong>
+                        </div>
+                    </div>
+
+                    <div id="lm3914-messages" class="lm3914-messages" aria-live="polite"></div>
+
+                </div>
+            </div>
+
+            <!-- Afficheur + schéma -->
+            <div class="lm3914-visuals">
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Essai : tournez la molette</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="lm3914-bench">
+                            <div class="lm3914-knob-zone">
+                                <svg id="lm3914-knob" class="lm3914-knob" viewBox="0 0 120 120" tabindex="0" role="slider"
+                                     aria-label="Tension d'entrée" aria-valuemin="0" aria-valuemax="6" aria-valuenow="0">
+                                    <circle cx="60" cy="60" r="54" class="lm3914-knob-track"/>
+                                    <path id="lm3914-knob-arc" class="lm3914-knob-arc" d=""/>
+                                    <circle cx="60" cy="60" r="40" class="lm3914-knob-body"/>
+                                    <line id="lm3914-knob-pointer" x1="60" y1="60" x2="60" y2="26" class="lm3914-knob-pointer"/>
+                                </svg>
+                                <div class="lm3914-vsig" id="lm3914-vsig">0,00 V</div>
+                                <div class="lm3914-hint">Glisser, molette de la souris ou flèches du clavier</div>
+                            </div>
+
+                            <div class="lm3914-display">
+                                <div id="lm3914-leds" class="lm3914-leds"></div>
+                                <div class="lm3914-count" id="lm3914-count">0 LED allumée</div>
+                            </div>
+                        </div>
+
+                        <div class="lm3914-slider-row">
+                            <span>0 V</span>
+                            <input type="range" id="lm3914-slider" min="0" max="6" step="0.01" value="0" class="lm3914-range" aria-label="Tension d'entrée (curseur)">
+                            <span id="lm3914-slider-max">6 V</span>
+                        </div>
+                        <div class="lm3914-field lm3914-xmax">
+                            <label for="lm3914-xmax">Course de la molette : de 0 V à</label>
+                            <div class="lm3914-input-group">
+                                <input type="text" inputmode="decimal" id="lm3914-xmax" value="6">
+                                <span class="lm3914-unit">V</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Schéma du circuit</h3>
+                    </div>
+                    <div class="card-body">
+                        <svg viewBox="0 0 640 430" class="lm3914-svg" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Schéma de câblage du LM3914">
+
+                            <!-- ===== Rail V+ ===== -->
+                            <line x1="40" y1="30" x2="580" y2="30" class="lm3914-wire"/>
+                            <text x="40" y="22" class="lm3914-label" id="lm3914-svg-vcc">V+ = 9 V</text>
+                            <!-- ===== Rail masse ===== -->
+                            <line x1="40" y1="410" x2="580" y2="410" class="lm3914-wire"/>
+                            <text x="40" y="426" class="lm3914-label">GND</text>
+
+                            <!-- ===== Puce ===== -->
+                            <rect x="260" y="60" width="120" height="340" rx="6" class="lm3914-chip"/>
+                            <text x="320" y="235" text-anchor="middle" class="lm3914-chip-label">LM3914</text>
+
+                            <!-- pin 3 : V+ -->
+                            <line x1="200" y1="30" x2="200" y2="90" class="lm3914-wire"/>
+                            <circle cx="200" cy="30" r="3" class="lm3914-node"/>
+                            <line x1="200" y1="90" x2="260" y2="90" class="lm3914-wire"/>
+                            <text x="268" y="94" class="lm3914-pin-in">3 V+</text>
+
+                            <!-- pin 5 : signal (la molette) -->
+                            <circle cx="60" cy="190" r="20" class="lm3914-source"/>
+                            <path d="M 60 202 V 178 M 54 184 L 60 178 L 66 184" class="lm3914-source-glyph"/>
+                            <text x="60" y="160" class="lm3914-comp-label" text-anchor="middle" id="lm3914-svg-vsig">Vsig</text>
+                            <line x1="60" y1="170" x2="60" y2="130" class="lm3914-wire"/>
+                            <line x1="60" y1="130" x2="260" y2="130" class="lm3914-wire"/>
+                            <text x="268" y="134" class="lm3914-pin-in">5 SIG</text>
+                            <line x1="60" y1="210" x2="60" y2="410" class="lm3914-wire"/>
+                            <circle cx="60" cy="410" r="3" class="lm3914-node"/>
+
+                            <!-- pins 6 et 7 reliées : RHI = REF OUT = Vmax -->
+                            <line x1="240" y1="165" x2="260" y2="165" class="lm3914-wire"/>
+                            <text x="268" y="169" class="lm3914-pin-in">6 RHI</text>
+                            <line x1="240" y1="165" x2="240" y2="190" class="lm3914-wire"/>
+                            <line x1="110" y1="190" x2="260" y2="190" class="lm3914-wire"/>
+                            <circle cx="240" cy="190" r="3" class="lm3914-node"/>
+                            <text x="268" y="194" class="lm3914-pin-in">7 REF</text>
+
+                            <!-- R1 (pin 7 -> pin 8) et R2 (pin 8 -> masse) -->
+                            <line x1="110" y1="190" x2="110" y2="215" class="lm3914-wire"/>
+                            <rect x="102" y="215" width="16" height="60" rx="3" class="lm3914-resistor"/>
+                            <text x="96" y="250" class="lm3914-comp-label" text-anchor="end" id="lm3914-svg-r1">R1</text>
+                            <line x1="110" y1="275" x2="110" y2="330" class="lm3914-wire"/>
+                            <circle cx="110" cy="330" r="3" class="lm3914-node"/>
+                            <line x1="110" y1="330" x2="260" y2="330" class="lm3914-wire"/>
+                            <text x="268" y="334" class="lm3914-pin-in">8 ADJ</text>
+                            <line x1="110" y1="330" x2="110" y2="340" class="lm3914-wire"/>
+                            <rect x="102" y="340" width="16" height="50" rx="3" class="lm3914-resistor"/>
+                            <text x="96" y="370" class="lm3914-comp-label" text-anchor="end" id="lm3914-svg-r2">R2</text>
+                            <line x1="110" y1="390" x2="110" y2="410" class="lm3914-wire"/>
+                            <circle cx="110" cy="410" r="3" class="lm3914-node"/>
+
+                            <!-- pin 4 : RLO -->
+                            <line x1="240" y1="270" x2="260" y2="270" class="lm3914-wire"/>
+                            <text x="268" y="274" class="lm3914-pin-in">4 RLO</text>
+                            <!-- Vmin > 0 : pont R3 / R4 -->
+                            <g id="lm3914-rlo-divider">
+                                <line x1="240" y1="190" x2="240" y2="205" class="lm3914-wire"/>
+                                <rect x="232" y="205" width="16" height="50" rx="3" class="lm3914-resistor"/>
+                                <text x="226" y="234" class="lm3914-comp-label" text-anchor="end" id="lm3914-svg-r3">R3</text>
+                                <line x1="240" y1="255" x2="240" y2="270" class="lm3914-wire"/>
+                                <circle cx="240" cy="270" r="3" class="lm3914-node"/>
+                                <line x1="240" y1="270" x2="210" y2="270" class="lm3914-wire"/>
+                                <rect x="150" y="262" width="60" height="16" rx="3" class="lm3914-resistor"/>
+                                <text x="180" y="256" class="lm3914-comp-label" text-anchor="middle" id="lm3914-svg-r4">R4</text>
+                                <line x1="150" y1="270" x2="140" y2="270" class="lm3914-wire"/>
+                                <line x1="140" y1="270" x2="140" y2="290" class="lm3914-wire"/>
+                                <path d="M 128 290 H 152 M 132 295 H 148 M 136 300 H 144" class="lm3914-wire"/>
+                            </g>
+                            <!-- Vmin = 0 : RLO à la masse -->
+                            <g id="lm3914-rlo-gnd" visibility="hidden">
+                                <line x1="240" y1="270" x2="240" y2="290" class="lm3914-wire"/>
+                                <path d="M 228 290 H 252 M 232 295 H 248 M 236 300 H 244" class="lm3914-wire"/>
+                            </g>
+
+                            <!-- pin 2 : V- à la masse -->
+                            <line x1="260" y1="370" x2="240" y2="370" class="lm3914-wire"/>
+                            <line x1="240" y1="370" x2="240" y2="410" class="lm3914-wire"/>
+                            <circle cx="240" cy="410" r="3" class="lm3914-node"/>
+                            <text x="268" y="374" class="lm3914-pin-in">2 V−</text>
+
+                            <!-- ===== LED : anodes sur V+, cathodes sur les sorties ===== -->
+                            <line x1="560" y1="30" x2="560" y2="350" class="lm3914-wire"/>
+                            <circle cx="560" cy="30" r="3" class="lm3914-node"/>
+                            <g id="lm3914-svg-leds"></g>
+
+                            <!-- pin 9 : MODE -->
+                            <line x1="380" y1="385" x2="430" y2="385" class="lm3914-wire"/>
+                            <text x="372" y="389" class="lm3914-pin-in" text-anchor="end">MODE 9</text>
+                            <g id="lm3914-mode-bar">
+                                <line x1="430" y1="385" x2="590" y2="385" class="lm3914-wire"/>
+                                <line x1="590" y1="385" x2="590" y2="30" class="lm3914-wire"/>
+                                <line x1="580" y1="30" x2="590" y2="30" class="lm3914-wire"/>
+                                <text x="440" y="378" class="lm3914-label">vers V+ : barre</text>
+                            </g>
+                            <g id="lm3914-mode-dot" visibility="hidden">
+                                <circle cx="434" cy="385" r="4" class="lm3914-open"/>
+                                <text x="444" y="389" class="lm3914-label">en l'air : point</text>
+                            </g>
+                        </svg>
+
+                        <p class="lm3914-caption">
+                            Les pins <strong>6 (RHI)</strong> et <strong>7 (REF OUT)</strong> sont reliées :
+                            le haut de l'échelle interne vaut la tension de référence, réglée à Vmax par
+                            <strong>R1 / R2</strong> (V<sub>ref</sub> = 1,25 V × (1 + R2/R1)).
+                            Le bas de l'échelle (<strong>pin 4, RLO</strong>) est fixé à Vmin par le pont
+                            <strong>R3 / R4</strong>, ou relié à la masse si Vmin = 0 V.
+                            Le courant de chaque LED vaut environ 10 fois le courant sortant de la pin 7.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Paliers d'allumage</h3>
+                    </div>
+                    <div class="card-body">
+                        <table class="lm3914-table">
+                            <thead>
+                                <tr><th>LED</th><th>Pin</th><th>S'allume à partir de</th></tr>
+                            </thead>
+                            <tbody id="lm3914-steps"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <h2>Comment sont calculées les résistances</h2>
+        <ul>
+            <li><strong>Pas entre deux LED = (Vmax − Vmin) / 10</strong> ; la LED n°k s'allume à Vmin + k × pas.
+                Sous Vmin + 1 pas, aucune LED n'est allumée ; à Vmax, les 10 le sont.</li>
+            <li><strong>Vmax = 1,25 V × (1 + R2/R1) + 80 µA × R2</strong> (80 µA : courant typique de la pin 8),
+                d'où <strong>R2 = (Vmax − 1,25) / (1,25/R1 + 80 µA)</strong>.</li>
+            <li><strong>Courant LED ≈ 10 × courant sortant de la pin 7</strong> = 10 × (1,25/R1 + courant du pont R3/R4
+                et de l'échelle interne), d'où R1.</li>
+            <li><strong>Pont de Vmin</strong> : l'échelle interne (≈ 10 kΩ entre les pins 6 et 4) est en parallèle
+                avec R3, donc <strong>R4 = (R3 ∥ 10 kΩ) × Vmin / (Vmax − Vmin)</strong>.</li>
+        </ul>
+        <p>
+            La résistance de l'échelle interne varie d'un circuit à l'autre : pour un Vmin précis,
+            remplacez R4 par une résistance plus petite en série avec un potentiomètre d'ajustage.
+            Vmax doit être au moins égal à 1,25 V et rester à 1,5 V sous l'alimentation.
+            Les LED sont alimentées par V+ : le LM3914 dissipe la différence entre V+ et la tension
+            des LED, d'où l'avertissement de puissance en mode barre.
+        </p>
+
+        <p class="text-center">
+            <a data-retour class="btn btn-primary"></a>
+        </p>
+
+    <!-- Styles spécifiques à cette page -->
+    <style>
+        .lm3914-sim {
+            display: grid;
+            grid-template-columns: 340px 1fr;
+            gap: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+        }
+
+        .lm3914-visuals {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+            min-width: 0;
+        }
+
+        .lm3914-field {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .lm3914-field label,
+        .lm3914-controls .lm3914-label {
+            display: block;
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .lm3914-input-group {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .lm3914-input-group input {
+            flex: 1;
+            min-width: 0;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--color-primary-dark);
+            border-radius: var(--border-radius-sm);
+            color: var(--text-primary);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            font-size: var(--font-size-sm);
+        }
+
+        .lm3914-input-group input:focus {
+            outline: 2px solid var(--text-accent);
+            outline-offset: 1px;
+        }
+
+        .lm3914-input-group input.is-invalid {
+            border-color: var(--color-error);
+            outline-color: var(--color-error);
+        }
+
+        .lm3914-unit {
+            color: var(--text-muted);
+            font-size: var(--font-size-sm);
+            min-width: 1.8em;
+        }
+
+        .lm3914-choice {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-xs) var(--spacing-md);
+            font-size: var(--font-size-sm);
+        }
+
+        .lm3914-choice label {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            margin: 0;
+            color: var(--text-primary);
+            cursor: pointer;
+        }
+
+        .lm3914-more {
+            margin-bottom: var(--spacing-md);
+            font-size: var(--font-size-sm);
+        }
+
+        .lm3914-more summary {
+            cursor: pointer;
+            color: var(--text-accent);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .lm3914-hint {
+            font-size: var(--font-size-xs);
+            color: var(--text-muted);
+            margin-top: var(--spacing-xs);
+        }
+
+        .lm3914-results {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .lm3914-result-row {
+            display: grid;
+            grid-template-columns: 1.3fr 1fr 1fr;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            padding: var(--spacing-xs) 0;
+            border-bottom: 1px solid var(--bg-tertiary);
+        }
+
+        .lm3914-result-row[hidden] {
+            display: none;
+        }
+
+        .lm3914-result-row strong {
+            color: var(--text-primary);
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-xs);
+            text-align: right;
+        }
+
+        .lm3914-result-head span {
+            font-size: var(--font-size-xs);
+            color: var(--text-muted);
+            text-align: right;
+        }
+
+        .lm3914-result-highlight {
+            background: var(--bg-tertiary);
+            border-radius: var(--border-radius-sm);
+            padding: var(--spacing-sm);
+            border-bottom: none;
+        }
+
+        .lm3914-result-highlight strong {
+            color: var(--text-accent);
+        }
+
+        .lm3914-messages:empty {
+            display: none;
+        }
+
+        .lm3914-messages {
+            margin-top: var(--spacing-md);
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-xs);
+        }
+
+        .lm3914-msg {
+            font-size: var(--font-size-xs);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--border-radius-sm);
+            border-left: 3px solid var(--color-warning);
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .lm3914-msg.error {
+            border-left-color: var(--color-error);
+        }
+
+        /* ===== Banc d'essai : molette + LED ===== */
+        .lm3914-bench {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xl);
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .lm3914-knob-zone {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-xs);
+            width: 160px;
+            text-align: center;
+        }
+
+        .lm3914-knob {
+            width: 140px;
+            height: 140px;
+            cursor: grab;
+            touch-action: none;
+            user-select: none;
+            border-radius: 50%;
+        }
+
+        .lm3914-knob:active {
+            cursor: grabbing;
+        }
+
+        .lm3914-knob:focus-visible {
+            outline: 2px solid var(--text-accent);
+            outline-offset: 4px;
+        }
+
+        .lm3914-knob-track {
+            fill: none;
+            stroke: var(--bg-tertiary);
+            stroke-width: 8;
+        }
+
+        .lm3914-knob-arc {
+            fill: none;
+            stroke: var(--text-accent);
+            stroke-width: 8;
+            stroke-linecap: round;
+        }
+
+        .lm3914-knob-body {
+            fill: var(--bg-card);
+            stroke: var(--color-primary);
+            stroke-width: 3;
+        }
+
+        .lm3914-knob-pointer {
+            stroke: var(--text-primary);
+            stroke-width: 5;
+            stroke-linecap: round;
+        }
+
+        .lm3914-vsig {
+            font-family: var(--font-family-mono);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-accent);
+        }
+
+        .lm3914-display {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .lm3914-leds {
+            display: flex;
+            gap: 6px;
+            padding: var(--spacing-md);
+            background: #0b0f0f;
+            border-radius: var(--border-radius-md);
+        }
+
+        .lm3914-led {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .lm3914-led-body {
+            width: 22px;
+            height: 48px;
+            border-radius: 4px;
+            background: var(--led-off);
+            transition: background 0.08s linear, box-shadow 0.08s linear;
+        }
+
+        .lm3914-led.on .lm3914-led-body {
+            background: var(--led-on);
+            box-shadow: 0 0 10px var(--led-on), 0 0 2px var(--led-on);
+        }
+
+        .lm3914-led-num {
+            font-size: 10px;
+            font-family: var(--font-family-mono);
+            color: #9aa;
+        }
+
+        .lm3914-count {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+        }
+
+        .lm3914-slider-row {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-lg);
+            font-size: var(--font-size-xs);
+            color: var(--text-muted);
+            font-family: var(--font-family-mono);
+        }
+
+        .lm3914-range {
+            flex: 1;
+            accent-color: var(--text-accent);
+            height: 24px;
+        }
+
+        .lm3914-xmax {
+            max-width: 260px;
+            margin: var(--spacing-md) auto 0;
+        }
+
+        /* ===== Schéma SVG ===== */
+        .lm3914-svg {
+            width: 100%;
+            height: auto;
+            background: var(--bg-tertiary);
+            border-radius: var(--border-radius-md);
+            display: block;
+        }
+
+        .lm3914-wire {
+            stroke: var(--text-secondary);
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .lm3914-svg .lm3914-label,
+        .lm3914-pin-in {
+            fill: var(--text-muted);
+            font-size: 11px;
+            font-family: var(--font-family-mono);
+        }
+
+        .lm3914-pin-in {
+            fill: var(--text-secondary);
+        }
+
+        .lm3914-comp-label {
+            fill: var(--text-secondary);
+            font-size: 12px;
+            font-family: var(--font-family-mono);
+        }
+
+        .lm3914-resistor {
+            fill: var(--bg-card);
+            stroke: var(--color-primary);
+            stroke-width: 2;
+        }
+
+        .lm3914-node {
+            fill: var(--text-accent);
+        }
+
+        .lm3914-open {
+            fill: var(--bg-tertiary);
+            stroke: var(--text-secondary);
+            stroke-width: 2;
+        }
+
+        .lm3914-source {
+            fill: var(--bg-card);
+            stroke: var(--text-accent);
+            stroke-width: 2;
+        }
+
+        .lm3914-source-glyph {
+            stroke: var(--text-accent);
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .lm3914-chip {
+            fill: var(--bg-card);
+            stroke: var(--color-primary);
+            stroke-width: 2;
+        }
+
+        .lm3914-chip-label {
+            fill: var(--text-accent);
+            font-size: 16px;
+            font-weight: 700;
+            font-family: var(--font-family-mono);
+        }
+
+        .lm3914-svg-led {
+            fill: var(--bg-card);
+            stroke: var(--color-secondary);
+            stroke-width: 1.5;
+            transition: fill 0.08s linear;
+        }
+
+        .lm3914-svg-led.on {
+            fill: var(--led-on);
+            stroke: var(--led-on);
+            filter: drop-shadow(0 0 4px var(--led-on));
+        }
+
+        .lm3914-caption {
+            margin-top: var(--spacing-md);
+            font-size: var(--font-size-sm);
+            color: var(--text-muted);
+        }
+
+        /* ===== Tableau des paliers ===== */
+        .lm3914-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: var(--font-size-sm);
+        }
+
+        .lm3914-table th,
+        .lm3914-table td {
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-bottom: 1px solid var(--bg-tertiary);
+            text-align: left;
+        }
+
+        .lm3914-table td:last-child {
+            font-family: var(--font-family-mono);
+        }
+
+        .lm3914-table tr.on td {
+            color: var(--text-accent);
+            font-weight: 600;
+        }
+
+        .lm3914-swatch {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            margin-right: var(--spacing-xs);
+            background: var(--led-on);
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 1024px) {
+            .lm3914-sim {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .lm3914-led-body {
+                width: 16px;
+                height: 40px;
+            }
+
+            .lm3914-leds {
+                gap: 4px;
+                padding: var(--spacing-sm);
+            }
+        }
+    </style>
+
+    <!-- Script de calcul et de simulation -->
+    <script>
+        (function () {
+            const root = document.getElementById('lm3914-sim');
+            if (!root) return;
+
+            const $ = id => document.getElementById(id);
+            const fields = {
+                vcc: $('lm3914-vcc'),
+                vmin: $('lm3914-vmin'),
+                vmax: $('lm3914-vmax'),
+                iled: $('lm3914-iled'),
+                r3: $('lm3914-r3'),
+                xmax: $('lm3914-xmax')
+            };
+            const messagesEl = $('lm3914-messages');
+            const knob = $('lm3914-knob');
+            const knobArc = $('lm3914-knob-arc');
+            const knobPointer = $('lm3914-knob-pointer');
+            const slider = $('lm3914-slider');
+            const vsigEl = $('lm3914-vsig');
+            const countEl = $('lm3914-count');
+            const ledsEl = $('lm3914-leds');
+            const svgLedsEl = $('lm3914-svg-leds');
+            const stepsEl = $('lm3914-steps');
+
+            const VREF_INT = 1.25;     // référence interne entre les pins 7 et 8
+            const I_ADJ = 80e-6;       // courant typique sortant de la pin 8
+            const R_LADDER = 10e3;     // échelle interne entre RHI et RLO (valeur typique)
+            const LED_PINS = [1, 18, 17, 16, 15, 14, 13, 12, 11, 10];
+            const LED_COLORS = ['#2ecc71', '#2ecc71', '#2ecc71', '#2ecc71', '#2ecc71', '#2ecc71', '#f1c40f', '#f1c40f', '#e74c3c', '#e74c3c'];
+            const E24 = [10, 11, 12, 13, 15, 16, 18, 20, 22, 24, 27, 30, 33, 36, 39, 43, 47, 51, 56, 62, 68, 75, 82, 91];
+            const PREFIXES = { p: 1e-12, n: 1e-9, u: 1e-6, 'µ': 1e-6, m: 1e-3, k: 1e3, K: 1e3, M: 1e6, G: 1e9 };
+
+            /**
+             * Lit un nombre tapé à la main : "4,7", "4.7k", "4k7", "100 kΩ", "12V"...
+             * `scale` : unité du champ quand aucun préfixe n'est tapé (1e-3 pour un champ en mA).
+             */
+            function parseValue(text, scale = 1) {
+                let s = String(text).trim()
+                    .replace(/,/g, '.')
+                    .replace(/\s+/g, '')
+                    .replace(/(ohms?|Ω|V)$/i, '');
+                let explicit = false;
+                if (/A$/.test(s)) {
+                    s = s.slice(0, -1);
+                    explicit = true;
+                }
+                let m = s.match(/^([+-]?\d+)([pnuµmkKMG])(\d+)$/);
+                if (m) return parseFloat(m[1] + '.' + m[3]) * PREFIXES[m[2]];
+                m = s.match(/^([+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?)([pnuµmkKMG]?)$/);
+                if (!m) return NaN;
+                if (m[2]) return parseFloat(m[1]) * PREFIXES[m[2]];
+                return parseFloat(m[1]) * (explicit ? 1 : scale);
+            }
+
+            function formatValue(value, unit, digits = 3) {
+                if (!isFinite(value)) return '-';
+                if (value === 0) return '0 ' + unit;
+                const abs = Math.abs(value);
+                const units = [
+                    { factor: 1e6, prefix: 'M' },
+                    { factor: 1e3, prefix: 'k' },
+                    { factor: 1, prefix: '' },
+                    { factor: 1e-3, prefix: 'm' },
+                    { factor: 1e-6, prefix: 'µ' }
+                ];
+                for (const u of units) {
+                    if (abs >= u.factor) {
+                        return (value / u.factor).toFixed(digits).replace(/\.?0+$/, '').replace('.', ',') + ' ' + u.prefix + unit;
+                    }
+                }
+                return value.toExponential(2) + ' ' + unit;
+            }
+
+            const volts = v => isFinite(v) ? v.toFixed(2).replace('.', ',') + ' V' : '-';
+
+            function nearestE24(r) {
+                if (!(r > 0) || !isFinite(r)) return NaN;
+                const decade = Math.pow(10, Math.floor(Math.log10(r)) - 1);
+                let best = NaN;
+                let bestErr = Infinity;
+                [...E24.map(v => v * decade), 100 * decade].forEach(candidate => {
+                    const err = Math.abs(Math.log(candidate / r));
+                    if (err < bestErr) {
+                        bestErr = err;
+                        best = candidate;
+                    }
+                });
+                return parseFloat(best.toPrecision(2));
+            }
+
+            const parallel = (a, b) => a * b / (a + b);
+
+            /**
+             * Tensions et courant obtenus avec un jeu de résistances
+             * (r3 / r4 absents si RLO est à la masse)
+             */
+            function evaluate(r1, r2, r3, r4) {
+                const vhi = VREF_INT * (1 + r2 / r1) + I_ADJ * r2;
+                let vlo = 0;
+                let iDivider = vhi / R_LADDER; // échelle seule vers la masse
+                if (r3 && r4) {
+                    const top = parallel(r3, R_LADDER);
+                    vlo = vhi * r4 / (r4 + top);
+                    iDivider = (vhi - vlo) / top;
+                }
+                const iled = 10 * (VREF_INT / r1 + iDivider);
+                return { vhi, vlo, iled };
+            }
+
+            let sim = null; // { vlo, vhi } réellement simulés (valeurs E24)
+            let vsig = 0;
+            let xmax = 6;
+            let barMode = true;
+
+            // ===== LED (afficheur + schéma) =====
+            const ledEls = [];
+            const svgLedEls = [];
+            LED_COLORS.forEach((color, i) => {
+                const led = document.createElement('div');
+                led.className = 'lm3914-led';
+                led.style.setProperty('--led-on', color);
+                led.style.setProperty('--led-off', color + '26');
+                led.innerHTML = `<div class="lm3914-led-body"></div><span class="lm3914-led-num">${i + 1}</span>`;
+                ledsEl.appendChild(led);
+                ledEls.push(led);
+
+                // Schéma : sortie -> cathode, anode -> rail V+ (x = 560)
+                const y = 80 + i * 28;
+                const ns = 'http://www.w3.org/2000/svg';
+                const g = document.createElementNS(ns, 'g');
+                g.innerHTML = `
+                    <line x1="380" y1="${y}" x2="470" y2="${y}" class="lm3914-wire"/>
+                    <polygon points="470,${y} 488,${y - 9} 488,${y + 9}" class="lm3914-svg-led" style="--led-on:${color}"/>
+                    <line x1="470" y1="${y - 9}" x2="470" y2="${y + 9}" class="lm3914-wire"/>
+                    <line x1="488" y1="${y}" x2="560" y2="${y}" class="lm3914-wire"/>
+                    <circle cx="560" cy="${y}" r="2.5" class="lm3914-node"/>
+                    <text x="372" y="${y + 4}" class="lm3914-pin-in" text-anchor="end">${LED_PINS[i]}</text>
+                    <text x="500" y="${y - 4}" class="lm3914-label">D${i + 1}</text>`;
+                svgLedsEl.appendChild(g);
+                svgLedEls.push(g.querySelector('polygon'));
+            });
+
+            // ===== Calcul =====
+            function readField(name, check, label, scale) {
+                const input = fields[name];
+                const value = parseValue(input.value, scale);
+                const ok = isFinite(value) && check(value);
+                input.classList.toggle('is-invalid', !ok);
+                if (!ok) throw label;
+                return value;
+            }
+
+            function showMessages(list) {
+                messagesEl.innerHTML = '';
+                list.forEach(msg => {
+                    const div = document.createElement('div');
+                    div.className = 'lm3914-msg' + (msg.error ? ' error' : '');
+                    div.textContent = msg.text;
+                    messagesEl.appendChild(div);
+                });
+            }
+
+            const setText = (id, text) => { $(id).textContent = text; };
+
+            function clearResults() {
+                ['r1', 'r2', 'r3', 'r4', 'iled', 'range'].forEach(name => {
+                    setText('lm3914-' + name + '-calc', '-');
+                    setText('lm3914-' + name + '-e24', '-');
+                });
+                ['r1', 'r2', 'r3', 'r4'].forEach(name => setText('lm3914-svg-' + name, name.toUpperCase()));
+                sim = null;
+                renderSteps();
+                refreshLeds();
+            }
+
+            function update() {
+                const messages = [];
+                Object.values(fields).forEach(input => input.classList.remove('is-invalid'));
+                barMode = document.querySelector('input[name="lm3914-mode"]:checked').value === 'bar';
+                updateModeSvg();
+
+                let vcc, vmin, vmax, iled, r3;
+                try {
+                    xmax = readField('xmax', v => v > 0 && v <= 100, 'La course de la molette doit être une tension positive (ex : 6).');
+                    setKnobRange();
+                    vcc = readField('vcc', v => v >= 3 && v <= 25, 'V+ doit être compris entre 3 et 25 V (limites du LM3914).');
+                    vmin = readField('vmin', v => v >= 0, 'Vmin doit être une tension positive ou nulle (ex : 0 ou 1,5).');
+                    vmax = readField('vmax', v => v > 0, 'Vmax doit être une tension positive (ex : 5).');
+                    iled = readField('iled', v => v > 0, 'Le courant LED doit être positif (ex : 10 pour 10 mA).', 1e-3);
+                    r3 = readField('r3', v => v > 0, 'R3 doit être une résistance positive (ex : 10k).');
+                } catch (text) {
+                    showMessages([{ text, error: true }]);
+                    clearResults();
+                    return;
+                }
+
+                setText('lm3914-svg-vcc', 'V+ = ' + volts(vcc));
+
+                const fail = (text, ...names) => {
+                    names.forEach(name => fields[name].classList.add('is-invalid'));
+                    showMessages([{ text, error: true }]);
+                    clearResults();
+                };
+
+                if (vmax <= vmin) return fail('Vmax doit être plus grand que Vmin.', 'vmin', 'vmax');
+                if (vmax < VREF_INT) return fail(`Vmax doit valoir au moins 1,25 V (référence interne du LM3914). Pour une pleine échelle plus petite, il faut diviser le signal avant la pin 5.`, 'vmax');
+
+                // Pont de Vmin (ou RLO à la masse)
+                const useDivider = vmin > 0;
+                let r4 = NaN;
+                let iDivider = vmax / R_LADDER;
+                if (useDivider) {
+                    const top = parallel(r3, R_LADDER);
+                    r4 = top * vmin / (vmax - vmin);
+                    iDivider = (vmax - vmin) / top;
+                }
+
+                const iR1 = iled / 10 - iDivider;
+                if (!(iR1 > 0)) {
+                    return fail(`Le pont de Vmin et l'échelle interne consomment déjà ${formatValue(iDivider, 'A')} sur la référence, soit ${formatValue(10 * iDivider, 'A')} par LED : augmentez le courant LED` +
+                        (useDivider ? ' ou la valeur de R3.' : '.'), 'iled');
+                }
+                const r1 = VREF_INT / iR1;
+                const r2 = (vmax - VREF_INT) / (VREF_INT / r1 + I_ADJ);
+
+                const e24 = {
+                    r1: nearestE24(r1),
+                    r2: vmax > VREF_INT ? nearestE24(r2) : 0,
+                    r3: useDivider ? nearestE24(r3) : NaN,
+                    r4: useDivider ? nearestE24(r4) : NaN
+                };
+                const ideal = evaluate(r1, r2, useDivider ? r3 : 0, useDivider ? r4 : 0);
+                const real = evaluate(e24.r1, e24.r2, useDivider ? e24.r3 : 0, useDivider ? e24.r4 : 0);
+
+                setText('lm3914-r1-calc', formatValue(r1, 'Ω'));
+                setText('lm3914-r1-e24', formatValue(e24.r1, 'Ω'));
+                setText('lm3914-r2-calc', r2 > 0 ? formatValue(r2, 'Ω') : 'fil (0 Ω)');
+                setText('lm3914-r2-e24', e24.r2 > 0 ? formatValue(e24.r2, 'Ω') : 'fil (0 Ω)');
+                setText('lm3914-r3-calc', formatValue(r3, 'Ω'));
+                setText('lm3914-r3-e24', formatValue(e24.r3, 'Ω'));
+                setText('lm3914-r4-calc', formatValue(r4, 'Ω'));
+                setText('lm3914-r4-e24', formatValue(e24.r4, 'Ω'));
+                setText('lm3914-iled-calc', formatValue(ideal.iled, 'A'));
+                setText('lm3914-iled-e24', formatValue(real.iled, 'A'));
+                setText('lm3914-range-calc', volts(ideal.vlo) + ' / ' + volts(ideal.vhi));
+                setText('lm3914-range-e24', volts(real.vlo) + ' / ' + volts(real.vhi));
+                root.querySelectorAll('[data-rlo-divider]').forEach(row => { row.hidden = !useDivider; });
+
+                setText('lm3914-svg-r1', 'R1 ' + formatValue(e24.r1, 'Ω'));
+                setText('lm3914-svg-r2', e24.r2 > 0 ? 'R2 ' + formatValue(e24.r2, 'Ω') : 'R2 = fil');
+                setText('lm3914-svg-r3', 'R3 ' + formatValue(e24.r3, 'Ω'));
+                setText('lm3914-svg-r4', 'R4 ' + formatValue(e24.r4, 'Ω'));
+                $('lm3914-rlo-divider').setAttribute('visibility', useDivider ? 'visible' : 'hidden');
+                $('lm3914-rlo-gnd').setAttribute('visibility', useDivider ? 'hidden' : 'visible');
+
+                // Avertissements (le calcul reste affiché)
+                if (vmax > vcc - 1.5) {
+                    messages.push({ text: `Vmax (${volts(vmax)}) doit rester au moins 1,5 V sous V+ (${volts(vcc)}) : augmentez l'alimentation.` });
+                }
+                if (real.iled > 0.03) {
+                    messages.push({ text: `${formatValue(real.iled, 'A')} par LED, c'est au-dessus des 30 mA conseillés : réduisez le courant LED.` });
+                }
+                if (real.iled < 0.002) {
+                    messages.push({ text: `${formatValue(real.iled, 'A')} par LED : elles risquent d'être très peu lumineuses.` });
+                }
+                // Puissance dans le LM3914 : 10 LED allumées en mode barre, environ 2 V par LED
+                const power = (barMode ? 10 : 1) * real.iled * Math.max(vcc - 2, 0);
+                const powerText = `En mode ${barMode ? 'barre (10 LED allumées)' : 'point'}, le LM3914 dissiperait environ ${power.toFixed(1).replace('.', ',')} W`;
+                if (power > 1.3) {
+                    messages.push({ text: `${powerText} : c'est trop (≈ 1,3 W maximum). Baissez V+ ou le courant, ou ajoutez une résistance en série dans l'alimentation des LED.` });
+                } else if (power > 0.8) {
+                    messages.push({ text: `${powerText} : c'est proche du maximum (≈ 1,3 W), le circuit va chauffer. Une résistance en série dans l'alimentation des LED le soulagerait.` });
+                }
+                if (xmax < real.vhi) {
+                    messages.push({ text: `La molette s'arrête à ${volts(xmax)}, sous Vmax (${volts(real.vhi)}) : les dernières LED ne pourront pas s'allumer. Augmentez la course de la molette.` });
+                }
+
+                showMessages(messages);
+                sim = { vlo: real.vlo, vhi: real.vhi };
+                renderSteps();
+                refreshLeds();
+            }
+
+            function updateModeSvg() {
+                $('lm3914-mode-bar').setAttribute('visibility', barMode ? 'visible' : 'hidden');
+                $('lm3914-mode-dot').setAttribute('visibility', barMode ? 'hidden' : 'visible');
+            }
+
+            function threshold(k) {
+                return sim.vlo + k * (sim.vhi - sim.vlo) / 10;
+            }
+
+            function renderSteps() {
+                stepsEl.innerHTML = '';
+                if (!sim) return;
+                LED_COLORS.forEach((color, i) => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td><span class="lm3914-swatch" style="--led-on:${color}"></span>D${i + 1}</td><td>${LED_PINS[i]}</td><td>${volts(threshold(i + 1))}</td>`;
+                    stepsEl.appendChild(tr);
+                });
+            }
+
+            // ===== Molette =====
+            const ANGLE_MIN = -135;
+            const ANGLE_MAX = 135;
+
+            function setKnobRange() {
+                slider.max = xmax;
+                setText('lm3914-slider-max', volts(xmax));
+                knob.setAttribute('aria-valuemax', xmax);
+                if (vsig > xmax) setVsig(xmax);
+                else setVsig(vsig);
+            }
+
+            function polar(angle, r) {
+                const rad = (angle - 90) * Math.PI / 180;
+                return [60 + r * Math.cos(rad), 60 + r * Math.sin(rad)];
+            }
+
+            function setVsig(value) {
+                vsig = Math.min(Math.max(value, 0), xmax);
+                const ratio = xmax > 0 ? vsig / xmax : 0;
+                const angle = ANGLE_MIN + ratio * (ANGLE_MAX - ANGLE_MIN);
+
+                const [px, py] = polar(angle, 34);
+                knobPointer.setAttribute('x2', px);
+                knobPointer.setAttribute('y2', py);
+                const [sx, sy] = polar(ANGLE_MIN, 54);
+                const [ex, ey] = polar(angle, 54);
+                knobArc.setAttribute('d', ratio > 0.001
+                    ? `M ${sx} ${sy} A 54 54 0 ${angle - ANGLE_MIN > 180 ? 1 : 0} 1 ${ex} ${ey}`
+                    : '');
+
+                slider.value = vsig;
+                knob.setAttribute('aria-valuenow', vsig.toFixed(2));
+                knob.setAttribute('aria-valuetext', volts(vsig));
+                vsigEl.textContent = volts(vsig);
+                setText('lm3914-svg-vsig', 'Vsig ' + volts(vsig));
+                refreshLeds();
+            }
+
+            function refreshLeds() {
+                let lit = 0;
+                if (sim) {
+                    for (let k = 1; k <= 10; k++) {
+                        if (vsig >= threshold(k) - 1e-9) lit = k;
+                    }
+                }
+                ledEls.forEach((led, i) => {
+                    const on = barMode ? i < lit : i === lit - 1;
+                    led.classList.toggle('on', on);
+                    svgLedEls[i].classList.toggle('on', on);
+                    if (stepsEl.children[i]) stepsEl.children[i].classList.toggle('on', on);
+                });
+                if (!sim) {
+                    countEl.textContent = 'Réglages à corriger';
+                } else if (barMode) {
+                    countEl.textContent = lit === 0 ? 'Aucune LED allumée' : `${lit} LED allumée${lit > 1 ? 's' : ''} sur 10`;
+                } else {
+                    countEl.textContent = lit === 0 ? 'Aucune LED allumée' : `LED n°${lit} allumée`;
+                }
+            }
+
+            // Glisser : l'angle du pointeur autour du centre donne la tension
+            let dragging = false;
+            function knobFromEvent(e) {
+                const rect = knob.getBoundingClientRect();
+                const dx = e.clientX - (rect.left + rect.width / 2);
+                const dy = e.clientY - (rect.top + rect.height / 2);
+                let angle = Math.atan2(dx, -dy) * 180 / Math.PI; // 0° en haut, sens horaire
+                // Zone morte en bas : on reste sur la butée où l'on était,
+                // pour ne pas sauter de 0 V au maximum en passant par le bas
+                if (Math.abs(angle) > ANGLE_MAX) {
+                    angle = vsig > xmax / 2 ? ANGLE_MAX : ANGLE_MIN;
+                }
+                setVsig((angle - ANGLE_MIN) / (ANGLE_MAX - ANGLE_MIN) * xmax);
+            }
+            knob.addEventListener('pointerdown', e => {
+                dragging = true;
+                knob.setPointerCapture(e.pointerId);
+                knobFromEvent(e);
+                e.preventDefault();
+            });
+            knob.addEventListener('pointermove', e => { if (dragging) knobFromEvent(e); });
+            knob.addEventListener('pointerup', () => { dragging = false; });
+            knob.addEventListener('pointercancel', () => { dragging = false; });
+            knob.addEventListener('wheel', e => {
+                e.preventDefault();
+                setVsig(vsig + (e.deltaY < 0 ? 1 : -1) * xmax / 200);
+            }, { passive: false });
+            knob.addEventListener('keydown', e => {
+                const step = e.shiftKey ? xmax / 20 : xmax / 200;
+                const keys = {
+                    ArrowUp: vsig + step, ArrowRight: vsig + step,
+                    ArrowDown: vsig - step, ArrowLeft: vsig - step,
+                    PageUp: vsig + xmax / 10, PageDown: vsig - xmax / 10,
+                    Home: 0, End: xmax
+                };
+                if (e.key in keys) {
+                    e.preventDefault();
+                    setVsig(keys[e.key]);
+                }
+            });
+            slider.addEventListener('input', () => setVsig(parseFloat(slider.value)));
+
+            Object.values(fields).forEach(input => input.addEventListener('input', update));
+            document.querySelectorAll('input[name="lm3914-mode"]').forEach(radio => radio.addEventListener('change', update));
+
+            // Initialisation : molette au milieu de la plage pour voir tout de suite des LED
+            update();
+            setVsig(3);
+        })();
+    </script>
+    </div>
+</body>
+</html>

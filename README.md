@@ -47,13 +47,31 @@ son dossier.
 2. Mettre les médias dans `assets/` et les référencer en **chemin relatif** :
    `assets/images/photo.jpg`. Le site corrige automatiquement les chemins
    (`src`, `poster`, `srcset`, liens vers des fichiers).
-3. Lancer `./generate-navigation.sh`.
-4. Ajouter une carte vers la page dans la page de section, avec une vignette
-   placée dans le `assets/images/` de la section.
+3. Remplir les `<meta>` en tête de page : ils construisent automatiquement
+   la carte de la page dans sa section.
+
+   ```html
+   <title>Mon montage - FrWA Conception</title>
+   <meta name="description" content="Une ou deux phrases.">
+   <meta name="tags" content="Électronique, Arduino">
+   <meta name="vignette" content="assets/images/vignette.jpg">
+   ```
+
+   Sans vignette, la carte reprend l'image de la bannière.
+4. Lancer `./generate-navigation.sh`.
 5. Optionnel : ajouter une entrée dans `src/assets/data/vlog.json`.
 
-Retirer une page : supprimer son dossier, sa carte dans la page de section,
-puis relancer `./generate-navigation.sh`.
+Le bouton de retour s'écrit `<a data-retour class="btn btn-primary"></a>` :
+sa cible (la page de la section parente) et son texte sont calculés
+automatiquement.
+
+Retirer, déplacer ou copier une page : agir sur son dossier, puis relancer
+`./generate-navigation.sh`. La carte dans la section et le bouton de retour
+suivent tout seuls.
+
+Une page de section affiche les cartes de ses sous-dossiers dans
+`<div class="project-grid" data-cartes-auto></div>` ; les éléments déjà
+écrits dans cette grille (ex. la carte « à venir ») restent après.
 
 ## Médias : conventions et compression
 

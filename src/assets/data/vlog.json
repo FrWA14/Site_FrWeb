@@ -1,5 +1,10 @@
 [
   {
+    "date": "2026-10-23T15:38:14Z",
+    "title": "Mise à jour du site",
+    "message": "Ajout des montages LM3914 (bargraph 10 LED réglé entre Vmin et Vmax, avec molette) et LM311 (trigger de Schmitt à seuils Vmin / Vmax, avec sinus sur oscilloscope), et modification du site : cartes des sections et boutons « Retour » automatiques, vignettes rangées dans le dossier de chaque page, NE555 à 0,5 Hz par défaut."
+  },
+  {
     "date": "2026-10-09T16:30:00Z",
     "title": "Mise à jour du site",
     "message": "Chaque page possède ses propres médias, images, vidéo et modèle 3D compressés (190 Mo → 36 Mo), correction du schéma du NE555 (RESET, CTRL, LED)."

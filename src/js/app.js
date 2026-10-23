@@ -60,6 +60,9 @@ const App = {
 
         // Vlog - mises à jour dynamiques depuis vlog.json
         VlogManager.init('vlog-updates-list');
+
+        // Liens de retour et cartes de section automatiques
+        SectionPages.init();
     },
 
     /**

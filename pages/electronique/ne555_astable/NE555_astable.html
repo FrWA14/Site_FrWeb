@@ -2,7 +2,11 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>NE555 Astable - FrWA Conception</title>
+    <title>NE555 - Montage Astable - FrWA Conception</title>
+    <!-- Carte affichée dans la page de section -->
+    <meta name="description" content="Simulation interactive : déplacement des charges, oscilloscope et calcul automatique de R1, R2, C selon la fréquence.">
+    <meta name="tags" content="Électronique, Analogique">
+    <meta name="vignette" content="assets/images/vignette.jpg">
 </head>
 <body>
     <div class="page-content">
@@ -59,7 +63,7 @@
                     <div class="ne555-field">
                         <label for="ne555-c">C (condensateur)</label>
                         <div class="ne555-input-group">
-                            <input type="number" id="ne555-c" min="0.000000001" step="0.000000001" value="0.00001">
+                            <input type="number" id="ne555-c" min="0.000000001" step="0.000000001" value="0.000096">
                             <span class="ne555-unit">F</span>
                         </div>
                     </div>
@@ -69,7 +73,7 @@
                     <div class="ne555-field">
                         <label for="ne555-freq">Fréquence souhaitée</label>
                         <div class="ne555-input-group">
-                            <input type="number" id="ne555-freq" min="0.01" step="0.01" placeholder="ex: 1">
+                            <input type="number" id="ne555-freq" min="0.01" step="0.01" value="0.5" placeholder="ex: 1">
                             <span class="ne555-unit">Hz</span>
                             <button id="ne555-apply-freq" class="btn btn-secondary btn-sm">Appliquer</button>
                         </div>
@@ -265,9 +269,7 @@
         </ul>
 
         <p class="text-center">
-            <a href="../Electronique.html" class="btn btn-primary">
-                ← Retour à Électronique
-            </a>
+            <a data-retour class="btn btn-primary"></a>
         </p>
 
     <!-- Styles spécifiques à cette page -->
