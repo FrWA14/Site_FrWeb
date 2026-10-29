@@ -1,5 +1,5 @@
 {
-  "generated": "2026-10-23 17:21:21",
+  "generated": "2026-10-28 23:17:02",
   "children": [
 {
   "name": "code",
@@ -52,6 +52,132 @@
   "displayName": "Bargraph LM3914",
   "path": "pages/electronique/bargraph_lm3914/Bargraph_LM3914.html",
   "type": "file"
+}
+]
+},
+{
+  "name": "microcontroleur",
+  "displayName": "Microcontroleur",
+  "path": "pages/electronique/microcontroleur",
+  "type": "folder",
+  "children": [
+{
+  "name": "Microcontroleur.html",
+  "displayName": "Microcontroleur",
+  "path": "pages/electronique/microcontroleur/Microcontroleur.html",
+  "type": "file"
+},
+{
+  "name": "arduino",
+  "displayName": "Arduino",
+  "path": "pages/electronique/microcontroleur/arduino",
+  "type": "folder",
+  "children": [
+{
+  "name": "Arduino.html",
+  "displayName": "Arduino",
+  "path": "pages/electronique/microcontroleur/arduino/Arduino.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "esp32",
+  "displayName": "Esp32",
+  "path": "pages/electronique/microcontroleur/esp32",
+  "type": "folder",
+  "children": [
+{
+  "name": "ESP32.html",
+  "displayName": "ESP32",
+  "path": "pages/electronique/microcontroleur/esp32/ESP32.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "esp32_c3_c6",
+  "displayName": "Esp32 C3 C6",
+  "path": "pages/electronique/microcontroleur/esp32_c3_c6",
+  "type": "folder",
+  "children": [
+{
+  "name": "ESP32_C3_C6.html",
+  "displayName": "ESP32 C3 C6",
+  "path": "pages/electronique/microcontroleur/esp32_c3_c6/ESP32_C3_C6.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "esp32_cam",
+  "displayName": "Esp32 Cam",
+  "path": "pages/electronique/microcontroleur/esp32_cam",
+  "type": "folder",
+  "children": [
+{
+  "name": "ESP32_CAM.html",
+  "displayName": "ESP32 Cam",
+  "path": "pages/electronique/microcontroleur/esp32_cam/ESP32_CAM.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "esp32_h2_p4",
+  "displayName": "Esp32 H2 P4",
+  "path": "pages/electronique/microcontroleur/esp32_h2_p4",
+  "type": "folder",
+  "children": [
+{
+  "name": "ESP32_H2_P4.html",
+  "displayName": "ESP32 H2 P4",
+  "path": "pages/electronique/microcontroleur/esp32_h2_p4/ESP32_H2_P4.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "esp32_s2_s3",
+  "displayName": "Esp32 S2 S3",
+  "path": "pages/electronique/microcontroleur/esp32_s2_s3",
+  "type": "folder",
+  "children": [
+{
+  "name": "ESP32_S2_S3.html",
+  "displayName": "ESP32 S2 S3",
+  "path": "pages/electronique/microcontroleur/esp32_s2_s3/ESP32_S2_S3.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "maple_mini",
+  "displayName": "Maple Mini",
+  "path": "pages/electronique/microcontroleur/maple_mini",
+  "type": "folder",
+  "children": [
+{
+  "name": "Maple_Mini.html",
+  "displayName": "Maple Mini",
+  "path": "pages/electronique/microcontroleur/maple_mini/Maple_Mini.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "modules_esp",
+  "displayName": "Modules Esp",
+  "path": "pages/electronique/microcontroleur/modules_esp",
+  "type": "folder",
+  "children": [
+{
+  "name": "Modules_ESP.html",
+  "displayName": "Modules Esp",
+  "path": "pages/electronique/microcontroleur/modules_esp/Modules_ESP.html",
+  "type": "file"
+}
+]
 }
 ]
 },

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Microcontrôleur - FrWA Conception</title>
+    <!-- Carte affichée dans la page de section -->
+    <meta name="description" content="Brochages interactifs des cartes à microcontrôleur : Arduino, Maple Mini (STM32), ESP32 et ses variantes, modules Espressif.">
+    <meta name="tags" content="Électronique, Microcontrôleur">
+    <meta name="vignette" content="assets/images/vignette.jpg">
+</head>
+<body>
+    <div class="page-content">
+        <!-- Bannière -->
+        <div class="page-banner">
+            <img src="assets/images/banniere.jpg" alt="Cartes à microcontrôleur">
+            <div class="page-banner-overlay">
+                <h1 class="page-banner-title">Microcontrôleur</h1>
+                <span class="page-banner-subtitle">Brochages des cartes</span>
+            </div>
+        </div>
+
+        <!-- Tags -->
+        <div class="flex gap-sm" style="margin-bottom: var(--spacing-lg);">
+            <span class="badge badge-primary">Électronique</span>
+            <span class="badge badge-secondary">Microcontrôleur</span>
+        </div>
+
+        <p class="lead">
+            Brochages interactifs des cartes à microcontrôleur : vue de dessus de la carte,
+            fonctions de chaque broche (UART, I2C, SPI, PWM, ADC…), pull-up / pull-down internes,
+            niveaux 3,3 V / 5 V, broches de démarrage et broches réservées.
+        </p>
+
+        <div class="divider"></div>
+
+        <!-- Grille des brochages (générée depuis les <meta> de chaque page) -->
+        <div class="project-grid" data-cartes-auto></div>
+
+        <div class="divider"></div>
+
+        <div class="card-alert info">
+            <div class="card-body">
+                <strong>🔎 Lire un brochage :</strong> la carte est vue de dessus (connecteur USB en haut quand il y en a un).
+                Le numéro encadré est celui imprimé sur la carte ; une recherche par numéro, par port
+                ou par fonction surligne les broches correspondantes, et un clic sur une broche
+                affiche son détail.
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Retour vers la page de section -->
+        <p class="text-center">
+            <a data-retour class="btn btn-primary"></a>
+        </p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,2459 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Arduino - Brochage des cartes - FrWA Conception</title>
+    <meta name="description" content="Brochage interactif des cartes Arduino : Uno R3, Nano, Leonardo (32U4), Mega 2560, GIGA R1 WiFi, Uno R4 Minima et Uno R4 WiFi (matrice LED) : fonctions, pull-up / pull-down, niveaux 3,3 V / 5 V.">
+    <meta name="tags" content="Électronique, Microcontrôleur, Arduino">
+</head>
+<body>
+    <div class="page-content">
+        <!-- Bannière (texte rempli par le script depuis CONFIG.text) -->
+        <div class="page-banner mm-banner">
+            <div class="page-banner-overlay">
+                <h1 class="page-banner-title" data-cfg="title"></h1>
+                <span class="page-banner-subtitle" data-cfg="subtitle"></span>
+            </div>
+        </div>
+
+        <!-- Tags (CONFIG.badges) -->
+        <div class="flex gap-sm" style="margin-bottom: var(--spacing-lg);" id="mm-badges"></div>
+
+        <p class="lead" data-cfg="lead"></p>
+
+        <div class="divider"></div>
+
+        <div class="card mm-picker">
+            <div class="card-header"><h3 class="card-title">Choisir la carte</h3></div>
+            <div class="card-body">
+                <div class="mm-chips" id="mm-boards"></div>
+                <div class="mm-picker-note">Le brochage s'adapte à la carte choisie ; l'adresse de la page garde la sélection (<code>#uno-r3</code>, <code>#giga-r1-wifi</code>…).</div>
+            </div>
+        </div>
+
+        <div id="mm-root" class="mm-root">
+
+            <!-- Filtres -->
+            <div class="card mm-filters">
+                <div class="card-body">
+                    <input type="search" id="mm-search" class="mm-search" placeholder="" aria-label="Rechercher une broche">
+                    <div class="mm-chips" id="mm-chips"></div>
+                    <div class="mm-count" id="mm-count"></div>
+                </div>
+            </div>
+
+            <!-- Schéma -->
+            <div class="card">
+                <div class="card-header"><h3 class="card-title">Schéma de la carte</h3></div>
+                <div class="card-body">
+                    <div class="mm-view" id="mm-view">
+                        <div class="mm-side mm-side-left">
+                            <div class="mm-side-title" data-cfg="sideLeft"></div>
+                            <div class="mm-rows" id="mm-left"></div>
+                        </div>
+                        <div class="mm-boardcol" aria-hidden="true" id="mm-boardsvg"></div>
+                        <div class="mm-side mm-side-right">
+                            <div class="mm-side-title" data-cfg="sideRight"></div>
+                            <div class="mm-rows" id="mm-right"></div>
+                        </div>
+                    </div>
+
+                    <div class="mm-aux" id="mm-aux"></div>
+
+                    <div class="mm-hint" data-cfg="hint"></div>
+                    <div class="mm-legend" id="mm-legend"></div>
+                </div>
+            </div>
+
+            <!-- Détail -->
+            <div class="card" id="mm-detail-card">
+                <div class="card-header"><h3 class="card-title">Détail de la broche</h3></div>
+                <div class="card-body" id="mm-detail">
+                    <p class="text-muted" style="margin:0;">Sélectionne une broche dans le schéma ou dans le tableau.</p>
+                </div>
+            </div>
+
+            <!-- Tableau -->
+            <div class="card">
+                <div class="card-header"><h3 class="card-title">Toutes les broches</h3></div>
+                <div class="card-body">
+                    <div class="mm-table-wrap">
+                        <table class="mm-table">
+                            <thead>
+                                <tr>
+                                    <th>Carte</th><th>Rangée</th><th>Alias</th><th>Port</th>
+                                    <th>Fonctions</th><th>Pull interne</th><th>Niveau</th>
+                                </tr>
+                            </thead>
+                            <tbody id="mm-tbody"></tbody>
+                        </table>
+                    </div>
+                    <p class="mm-foot" data-cfg="foot"></p>
+                </div>
+            </div>
+
+            <!-- Les encadrés CONFIG.cards sont ajoutés ici par le script -->
+        </div>
+
+        <p class="text-center">
+            <a data-retour class="btn btn-primary"></a>
+        </p>
+
+    <!-- Styles spécifiques à cette page — PARTIE FIXE (identique au gabarit, plus sélecteur de carte) -->
+    <style>
+        .mm-banner { background: var(--bg-tertiary, #1a2424); }
+
+        .mm-root > .card,
+        .mm-root > .card-alert { margin-bottom: var(--spacing-lg, 24px); }
+        .mm-root .card-alert ul { margin: var(--spacing-sm, 8px) 0 0; padding-left: var(--spacing-lg, 24px); }
+
+        /* ----- Filtres ----- */
+        .mm-search {
+            width: 100%;
+            padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
+            background: var(--bg-tertiary, #1a2424);
+            border: 1px solid var(--color-primary, #2d5a5a);
+            border-radius: var(--border-radius-md, 8px);
+            color: var(--text-primary, #e8f0f0);
+            font-family: var(--font-family-mono, monospace);
+            font-size: var(--font-size-sm, 0.875rem);
+        }
+        .mm-chips { display: flex; flex-wrap: wrap; gap: var(--spacing-xs, 4px); margin-top: var(--spacing-md, 16px); }
+        .mm-chip-btn {
+            padding: 4px 12px;
+            border: 1px solid var(--color-primary, #2d5a5a);
+            border-radius: 999px;
+            background: transparent;
+            color: var(--text-secondary, #a8b5b5);
+            font-size: var(--font-size-xs, 0.75rem);
+            cursor: pointer;
+            transition: all var(--transition-fast, 150ms ease);
+        }
+        .mm-chip-btn:hover { color: var(--text-primary, #e8f0f0); border-color: var(--text-accent, #4ecdc4); }
+        .mm-chip-btn.active { background: var(--color-primary, #2d5a5a); color: #fff; border-color: var(--text-accent, #4ecdc4); }
+        .mm-count { margin-top: var(--spacing-sm, 8px); font-size: var(--font-size-xs, 0.75rem); color: var(--text-muted, #6a7a7a); }
+
+        /* ----- Éléments de rangée ----- */
+        .mm-lv {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 20px; height: 20px; flex-shrink: 0;
+            border-radius: 3px;
+            font: 700 12px var(--font-family-mono, monospace);
+            font-style: normal;
+        }
+        .mm-lv5 { background: #2ecc71; color: #05210f; }
+        .mm-lv3 { background: #e74c3c; color: #fff; }
+        .mm-lv0 { background: transparent; }
+        .mm-inl { vertical-align: middle; margin: 0 2px; }
+
+        .mm-pt {
+            display: inline-flex; align-items: center; justify-content: center;
+            min-width: 52px; height: 22px; padding: 0 6px; flex-shrink: 0;
+            border-radius: 3px;
+            font: 700 11px var(--font-family-mono, monospace);
+            color: #fff;
+            background: #2a6fb0;
+        }
+        .mm-side-left .mm-pt.io { background: #6b7d3a; }
+        .mm-pt.io { background: #2a6fb0; }
+        .mm-pt.pwr { background: #c0392b; }
+        .mm-pt.gnd { background: #222; border: 1px solid #555; }
+        .mm-pt.bat, .mm-pt.rst { background: #1f4fd8; }
+
+        .mm-cs { display: flex; align-items: center; gap: 4px; min-width: 0; flex-shrink: 1; }
+        .mm-view:not(.mm-stack) .mm-cs { overflow: hidden; }
+        .mm-c {
+            display: inline-flex; align-items: center;
+            height: 20px; padding: 0 6px;
+            border-radius: 4px; border: 1px solid transparent;
+            font: 600 10.5px var(--font-family-primary, sans-serif);
+            white-space: nowrap; color: #111;
+        }
+        .mm-c-al   { background: transparent; color: var(--text-secondary, #a8b5b5); border-color: var(--text-muted, #6a7a7a); font-style: italic; }
+        .mm-c-ser  { background: #f5d76e; }
+        .mm-c-i2c  { background: #f0a030; }
+        .mm-c-spi  { background: #8e5bd0; color: #fff; }
+        .mm-c-pwm  { background: #5b3a99; color: #fff; }
+        .mm-c-an   { background: #f4d6c0; }
+        .mm-c-usb  { background: #ff8c3a; }
+        .mm-c-dbg  { background: #a8e6a1; }
+        .mm-c-boot { background: #bfe3ff; }
+        .mm-c-btn  { background: #1f4fd8; color: #fff; }
+        .mm-c-misc { background: #cfd8dc; }
+        .mm-rm { border: 1px dashed rgba(0, 0, 0, 0.7); opacity: 0.85; }
+        .mm-c-spi.mm-rm, .mm-c-pwm.mm-rm { border-color: rgba(255, 255, 255, 0.8); }
+
+        .mm-pull {
+            display: inline-flex; align-items: center;
+            height: 18px; padding: 0 6px; flex-shrink: 0;
+            border: 1px solid var(--text-accent, #4ecdc4);
+            border-radius: 9px;
+            color: var(--text-accent, #4ecdc4);
+            font: 600 10px var(--font-family-mono, monospace);
+            font-style: normal;
+            white-space: nowrap;
+        }
+        .mm-line { flex: 1; min-width: 6px; height: 1px; background: var(--text-muted, #6a7a7a); opacity: 0.5; }
+                .mm-num {
+            min-width: 40px; height: 24px; padding: 0 6px; flex-shrink: 0;
+            display: inline-flex; align-items: center; justify-content: center;
+            border-radius: 4px;
+            background: var(--bg-primary, #0a0f0f);
+            border: 2px solid var(--text-accent, #4ecdc4);
+            color: var(--text-primary, #e8f0f0);
+            font: 700 14px var(--font-family-mono, monospace);
+            font-style: normal;
+        }
+        .mm-num.mm-num-x { border-color: var(--color-primary, #2d5a5a); color: var(--text-secondary, #a8b5b5); font-size: 11px; }
+        .mm-note { font-size: var(--font-size-xs, 0.75rem); color: var(--text-muted, #6a7a7a); }
+
+        /* ----- Schéma (mode large) ----- */
+        .mm-view {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 130px minmax(0, 1fr);
+            align-items: start;
+        }
+        .mm-side-title { display: none; }
+        .mm-side { padding-top: 44px; }
+        .mm-rows { display: flex; flex-direction: column; }
+        .mm-row {
+            display: flex; align-items: center; gap: 5px;
+            height: 30px; padding: 0 2px;
+            border: 1px solid transparent; border-radius: 4px;
+            cursor: pointer;
+            transition: opacity var(--transition-fast, 150ms ease), border-color var(--transition-fast, 150ms ease);
+        }
+        .mm-side-right .mm-row { flex-direction: row-reverse; }
+        .mm-row:hover { border-color: var(--text-accent, #4ecdc4); }
+        .mm-row:focus-visible { outline: 2px solid var(--text-accent, #4ecdc4); }
+        .mm-row.sel { border-color: var(--color-accent, #e67e22); box-shadow: 0 0 0 1px var(--color-accent, #e67e22); }
+        .mm-row.mm-dim { opacity: 0.18; }
+        .mm-boardcol { color: var(--text-muted, #6a7a7a); }
+        .mm-boardcol svg { display: block; }  /* largeur / hauteur fixées par le script selon le nombre de rangées */
+
+        .mm-aux { display: flex; justify-content: space-between; gap: var(--spacing-md, 16px); margin-top: var(--spacing-md, 16px); flex-wrap: wrap; }
+        .mm-auxitem { display: flex; align-items: center; gap: 8px; }
+        .mm-hint { margin-top: var(--spacing-md, 16px); font-size: var(--font-size-xs, 0.75rem); color: var(--text-muted, #6a7a7a); }
+        .mm-legend { display: flex; flex-wrap: wrap; gap: 6px var(--spacing-md, 16px); margin-top: var(--spacing-sm, 8px); font-size: var(--font-size-xs, 0.75rem); color: var(--text-secondary, #a8b5b5); }
+        .mm-legend span { display: inline-flex; align-items: center; gap: 6px; }
+
+        /* ----- Schéma (mode empilé : écrans étroits) ----- */
+        .mm-view.mm-stack { display: block; }
+        .mm-stack .mm-boardcol { display: none; }
+        .mm-stack .mm-side { padding-top: 0; margin-bottom: var(--spacing-lg, 24px); }
+        .mm-stack .mm-side-title { display: block; margin-bottom: var(--spacing-sm, 8px); font-weight: 600; color: var(--text-primary, #e8f0f0); }
+        .mm-stack .mm-row,
+        .mm-stack .mm-side-right .mm-row { flex-direction: row; flex-wrap: wrap; height: auto; min-height: 34px; padding: 4px 2px; border-bottom: 1px solid var(--bg-tertiary, #1a2424); }
+        .mm-stack .mm-line { display: none; }
+        .mm-stack .mm-num { order: -3; }
+        .mm-stack .mm-cs { flex-wrap: wrap; }
+
+        /* ----- Détail ----- */
+        .mm-d-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--spacing-md, 16px); margin-bottom: var(--spacing-md, 16px); }
+        .mm-d-title { font-family: var(--font-family-mono, monospace); font-size: var(--font-size-xl, 1.5rem); font-weight: 700; color: var(--text-primary, #e8f0f0); }
+        .mm-d-sub { color: var(--text-muted, #6a7a7a); font-family: var(--font-family-mono, monospace); }
+        .mm-d-grid { display: grid; grid-template-columns: 160px 1fr; gap: var(--spacing-sm, 8px) var(--spacing-md, 16px); }
+        .mm-d-grid dt { color: var(--text-muted, #6a7a7a); font-size: var(--font-size-sm, 0.875rem); }
+        .mm-d-grid dd { margin: 0; color: var(--text-secondary, #a8b5b5); }
+        .mm-tag {
+            display: inline-block; margin: 0 4px 4px 0; padding: 2px 8px;
+            border-radius: var(--border-radius-sm, 4px);
+            background: var(--bg-tertiary, #1a2424);
+            border: 1px solid var(--color-primary, #2d5a5a);
+            color: var(--text-accent, #4ecdc4);
+            font-family: var(--font-family-mono, monospace);
+            font-size: var(--font-size-xs, 0.75rem);
+        }
+        .mm-tag.remap { color: var(--text-secondary, #a8b5b5); border-style: dashed; }
+
+        /* ----- Tableau ----- */
+        .mm-table-wrap { overflow-x: auto; }
+        .mm-table { width: 100%; font-size: var(--font-size-sm, 0.875rem); }
+        .mm-table th, .mm-table td {
+            padding: 6px 10px;
+            border-bottom: 1px solid var(--bg-tertiary, #1a2424);
+            text-align: left; vertical-align: top;
+            color: var(--text-secondary, #a8b5b5);
+        }
+        .mm-table th { color: var(--text-primary, #e8f0f0); font-weight: 600; white-space: nowrap; }
+        .mm-table tbody tr { cursor: pointer; }
+        .mm-table tbody tr:hover { background: var(--bg-tertiary, #1a2424); }
+        .mm-table tbody tr.sel { background: var(--bg-tertiary, #1a2424); outline: 1px solid var(--color-accent, #e67e22); }
+        .mm-table td.mono { font-family: var(--font-family-mono, monospace); color: var(--text-primary, #e8f0f0); white-space: nowrap; }
+        .mm-table td.fn { font-family: var(--font-family-mono, monospace); font-size: var(--font-size-xs, 0.75rem); min-width: 200px; }
+        .mm-foot { margin: var(--spacing-md, 16px) 0 0; font-size: var(--font-size-xs, 0.75rem); color: var(--text-muted, #6a7a7a); }
+
+        @media (max-width: 700px) {
+            .mm-d-grid { grid-template-columns: 1fr; }
+            .mm-d-grid dt { margin-top: var(--spacing-sm, 8px); }
+        }
+
+        .mm-pt.nc { background: #3a4242; color: #aab4b4; border: 1px solid #556; }
+        .mm-pt.sig { background: #6b4fa0; }
+        .mm-picker .mm-chips { margin-top: 0; }
+        .mm-board-btn { display: inline-flex; flex-direction: column; align-items: flex-start; gap: 0; padding: 6px 14px; border-radius: 10px; text-align: left; line-height: 1.2; }
+        .mm-board-btn b { font-size: var(--font-size-sm, 0.875rem); font-weight: 700; }
+        .mm-board-btn small { font-size: 10px; opacity: 0.75; font-family: var(--font-family-mono, monospace); }
+        .mm-picker-note { margin-top: var(--spacing-sm, 8px); font-size: var(--font-size-xs, 0.75rem); color: var(--text-muted, #6a7a7a); }
+    </style>
+
+    <!-- Script de la page : DONNÉES par carte puis MOTEUR (identique au gabarit, rendu rejouable) -->
+    <script>
+        (function () {
+            const root = document.getElementById('mm-root');
+            if (!root) return;
+
+            const g = (s, r, l, p, f, m, ft, n, rs, al, x, pl) =>
+                ({ s, r, l, p, t: 'gpio', f, m: m || [], ft, n: n || '', rs: rs || '', al: al || '', x: x || [], pl: pl || 'both' });
+            const pw = (s, r, l, sh, n, gnd, disp, kind) =>
+                ({ s, r, l, p: sh, sh, t: 'pwr', f: [], m: [], ft: null, n, gnd: !!gnd, disp: disp || l, kind: kind || (gnd ? 'gnd' : 'pwr'), al: '', x: [], rs: '' });
+            const rst = (s, r, l, p, n, disp) =>
+                ({ s, r, l, p, t: 'rst', f: [], m: [], ft: false, n: n || '', disp: disp || 'RESET', al: '', x: [], rs: '' });
+            const BOARDS = {};
+        BOARDS["uno-r3"] = { label: "Uno R3", mcu: "ATmega328P", build: function () {
+            const CONFIG = {
+              "board": {
+                "name": "Arduino Uno R3",
+                "color": "#00878f",
+                "stroke": "#005b61",
+                "textColor": "#bfe9ec",
+                "usb": true,
+                "chip": [
+                  "ATmega",
+                  "328P"
+                ],
+                "crystal": "16 MHz",
+                "buttons": [
+                  {
+                    "x": 65,
+                    "label": "RESET"
+                  }
+                ],
+                "extraSvg": ""
+              },
+              "badges": [
+                [
+                  "primary",
+                  "Électronique"
+                ],
+                [
+                  "secondary",
+                  "Microcontrôleur"
+                ],
+                [
+                  "accent",
+                  "AVR"
+                ]
+              ],
+              "text": {
+                "title": "Arduino Uno R3",
+                "subtitle": "Brochage ATmega328P",
+                "lead": "Vue de la carte <strong>Arduino Uno R3</strong> (ATmega328P, logique <strong>5 V</strong>) : chaque broche est repérée par le <strong>numéro imprimé sur la carte</strong>, avec le port du microcontrôleur, les fonctions et la pull-up interne activable. Clique sur une broche pour le détail.",
+                "sideLeft": "Rangée gauche · en-têtes alimentation et A0 → A5",
+                "sideRight": "Rangée droite · SCL, SDA, AREF, GND, 13 → 8 puis 7 → 0",
+                "hint": "Vue de dessus, USB en haut (la carte est tournée d'un quart de tour par rapport à la vue habituelle). Le <strong>numéro dans le cadre</strong>, collé à la carte, est celui imprimé dessus. Les trous correspondent aux espaces entre en-têtes.",
+                "foot": "Les broches AVR n'ont pas de remap : chaque fonction est fixe. Chaque broche I/O a aussi une interruption de changement de niveau (PCINT). « PU » = pull-up interne ≈ 20–50 kΩ, activée par logiciel (<code>INPUT_PULLUP</code>) ; il n'existe pas de pull-down interne.",
+                "searchPlaceholder": "Rechercher : 13, PB5, SPI, OC2B, INT0…"
+              },
+              "aux": [
+                {
+                  "side": "L",
+                  "port": "ICSP",
+                  "chip": "6 broches",
+                  "cls": "misc",
+                  "note": "MISO, 5V, SCK, MOSI, RESET, GND (en-tête 2×3, recopie des broches SPI)"
+                },
+                {
+                  "side": "R",
+                  "port": "PB5",
+                  "chip": "LED L",
+                  "cls": "btn",
+                  "note": "LED « L » sur D13"
+                }
+              ],
+              "legend": [
+                "<i class=\"mm-lv mm-lv5 mm-inl\">5</i> logique 5 V",
+                "<i class=\"mm-pull mm-inl\">PU</i> pull-up interne activable",
+                "<i class=\"mm-pull mm-inl\">PU fixe</i> pull-up de reset non configurable",
+                "<i class=\"mm-num mm-inl\">13</i> numéro imprimé sur la carte",
+                "<i class=\"mm-c mm-c-al mm-inl\">D14</i> équivalent numérique d'une entrée analogique"
+              ],
+              "cards": [
+                {
+                  "kind": "warning",
+                  "html": "<strong>À savoir :</strong><ul><li>Toutes les E/S sont en <strong>5 V</strong> : un signal 3,3 V est lu comme niveau haut dès ≈ 3 V (0,6 × VCC), mais une sortie 5 V détruit une entrée 3,3 V.</li><li>Courant par broche : 20 mA conseillé, 40 mA maximum absolu ; environ 200 mA au total sur VCC / GND pour l'ATmega328P.</li><li>D0 / D1 sont reliées à l'ATmega16U2 (liaison USB-série) : un montage branché dessus gêne le téléversement.</li><li>Entrées A0–A5 : en entrée analogique, ne pas dépasser VCC ; les sorties PWM (~) sont D3, D5, D6, D9, D10, D11.</li></ul>"
+                },
+                {
+                  "kind": "info",
+                  "html": "<strong>Sources &amp; vérification :</strong> ports, timers et numéros d'après le cœur <em>ArduinoCore-avr</em> (variant <code>standard</code>) ; fonctions d'après la datasheet de l'ATmega328P ; ordre des en-têtes d'après la disposition standard de l'Uno R3. Les révisions et clones (CH340, SMD) ont la même disposition mais peuvent différer par l'USB-série."
+                }
+              ],
+              "silk": {
+                "re": "^(D\\d+|A\\d+)$",
+                "strip": "^D"
+              },
+              "portFmt": null,
+              "cats": [
+                [
+                  "all",
+                  "Tout"
+                ],
+                [
+                  "ADC",
+                  "ADC"
+                ],
+                [
+                  "UART",
+                  "UART"
+                ],
+                [
+                  "SPI",
+                  "SPI"
+                ],
+                [
+                  "I2C",
+                  "I2C"
+                ],
+                [
+                  "TIM",
+                  "PWM / Timers"
+                ],
+                [
+                  "INT",
+                  "Interruptions"
+                ],
+                [
+                  "PWR",
+                  "Alim"
+                ]
+              ],
+              "catRe": {
+                "ADC": "^ADC",
+                "UART": "^(RXD|TXD|XCK)",
+                "SPI": "^(MOSI|MISO|SCK|SS)$",
+                "I2C": "^(SDA|SCL)$",
+                "TIM": "^(OC\\d|T\\d$|ICP)",
+                "INT": "^INT\\d"
+              },
+              "funcMap": [
+                {
+                  "re": "^ADC\\d+$",
+                  "t": "Analog In",
+                  "c": "an",
+                  "once": true
+                },
+                {
+                  "re": "^RXD(\\d)$",
+                  "t": "UART$1 RX",
+                  "c": "ser"
+                },
+                {
+                  "re": "^TXD(\\d)$",
+                  "t": "UART$1 TX",
+                  "c": "ser"
+                },
+                {
+                  "re": "^(SDA|SCL)$",
+                  "t": "I2C $1",
+                  "c": "i2c"
+                },
+                {
+                  "re": "^(MOSI|MISO|SCK|SS)$",
+                  "t": "SPI $1",
+                  "c": "spi"
+                },
+                {
+                  "re": "^OC(\\d)([A-D])$",
+                  "t": "PWM$1$2",
+                  "c": "pwm"
+                },
+                {
+                  "re": "^INT(\\d)$",
+                  "t": "INT$1",
+                  "c": "misc"
+                },
+                {
+                  "re": "^(TCK|TMS|TDO|TDI)$",
+                  "t": "JTAG $1",
+                  "c": "dbg"
+                }
+              ],
+              "texts": {
+                "pullBoth": "Pull-up ou pull-down au choix",
+                "pullUp": "Pull-up interne seulement (≈ 20–50 kΩ), activée par logiciel : INPUT_PULLUP",
+                "pullDown": "Pull-down interne seulement",
+                "pullNone": "Aucune pull interne : entrée analogique seule",
+                "float": "Entrée (haute impédance)",
+                "rstTag": "PU fixe",
+                "rstTip": "Pull-up interne fixe (≈ 30–60 kΩ) en plus du rappel de la carte",
+                "rstLevel": "5 V (entrée de reset, actif bas)",
+                "ft": "Logique 5 V (E/S alimentées en 5 V)",
+                "v3": "3,3 V uniquement",
+                "ftShort": "Logique 5 V",
+                "v3Short": "3,3 V",
+                "aliasLabel": "Équivalent",
+                "posSuffix": "e position depuis le haut (USB en haut)",
+                "badgeOk": "5 V",
+                "badgeLow": "3,3 V",
+                "badgeRst": "5 V"
+              }
+            };
+            const pins = [
+                pw("L",1,"NC","—","Broche réservée, non connectée.",false,"NC","nc"),
+                pw("L",2,"IOREF","5 V","Tension de référence des E/S (5 V) : permet aux shields de s'adapter au niveau logique de la carte.",false,"IOREF","pwr"),
+                rst("L",3,"RESET","PC6","Reset actif bas, relié au bouton RESET de la carte et à PC6.","RESET"),
+                pw("L",4,"3V3","3,3 V","Régulateur 3,3 V de la carte, ≈ 50 mA maximum.",false,"+3.3V","pwr"),
+                pw("L",5,"5V","5 V","Rail 5 V régulé (sortie, ou entrée si alimentation externe stabilisée).",false,"+5V","pwr"),
+                pw("L",6,"GND","0 V","Masse.",true,"GND","gnd"),
+                pw("L",7,"GND","0 V","Masse.",true,"GND","gnd"),
+                pw("L",8,"VIN","7–12 V","Entrée d'alimentation : 7–12 V recommandé, limites 6–20 V (jack ou broche).",false,"VIN","pwr"),
+                g("L",10,"A0","PC0",["ADC0"],[],true,"Entrée analogique 0–5 V ; utilisable en numérique (D14).","","D14",[],"up"),
+                g("L",11,"A1","PC1",["ADC1"],[],true,"Entrée analogique 0–5 V ; utilisable en numérique (D15).","","D15",[],"up"),
+                g("L",12,"A2","PC2",["ADC2"],[],true,"Entrée analogique 0–5 V ; utilisable en numérique (D16).","","D16",[],"up"),
+                g("L",13,"A3","PC3",["ADC3"],[],true,"Entrée analogique 0–5 V ; utilisable en numérique (D17).","","D17",[],"up"),
+                g("L",14,"A4","PC4",["ADC4", "SDA"],[],true,"SDA de l'I2C (TWI), relié aussi à la broche SDA près d'AREF. I2C : pull-up externe vers 5 V (non fournie sur la carte).","","D18",[],"up"),
+                g("L",15,"A5","PC5",["ADC5", "SCL"],[],true,"SCL de l'I2C (TWI), relié aussi à la broche SCL près d'AREF.","","D19",[],"up"),
+                g("R",1,"SCL","PC5",["SCL"],[],true,"Doublon de A5 / SCL (même broche du microcontrôleur), ajouté à la révision R3 près d'AREF.","","A5",[],"up"),
+                g("R",2,"SDA","PC4",["SDA"],[],true,"Doublon de A4 / SDA (même broche du microcontrôleur), ajouté à la révision R3 près d'AREF.","","A4",[],"up"),
+                pw("R",3,"AREF","réf. ADC","Référence analogique externe (analogReference(EXTERNAL)). Ne jamais appliquer une tension externe si la référence interne ou AVCC est sélectionnée.",false,"AREF","sig"),
+                pw("R",4,"GND","0 V","Masse.",true,"GND","gnd"),
+                g("R",5,"D13","PB5",["SCK"],[],true,"SCK de l'SPI matériel ; LED « L » de la carte (ne pas forcer en entrée basse).","","",[],"up"),
+                g("R",6,"D12","PB4",["MISO"],[],true,"MISO de l'SPI matériel.","","",[],"up"),
+                g("R",7,"D11","PB3",["MOSI", "OC2A"],[],true,"MOSI de l'SPI matériel ; sortie PWM (~).","","",[],"up"),
+                g("R",8,"D10","PB2",["SS", "OC1B"],[],true,"SS de l'SPI matériel ; sortie PWM (~). Doit rester en sortie pour que l'ATmega reste maître SPI.","","",[],"up"),
+                g("R",9,"D9","PB1",["OC1A"],[],true,"Sortie PWM (~).","","",[],"up"),
+                g("R",10,"D8","PB0",["ICP1", "CLKO"],[],true,"Capture ICP1 ; sortie d'horloge CLKO possible.","","",[],"up"),
+                g("R",12,"D7","PD7",["AIN1"],[],true,"","","",[],"up"),
+                g("R",13,"D6","PD6",["OC0A", "AIN0"],[],true,"Sortie PWM (~).","","",[],"up"),
+                g("R",14,"D5","PD5",["OC0B", "T1"],[],true,"Sortie PWM (~).","","",[],"up"),
+                g("R",15,"D4","PD4",["T0", "XCK0"],[],true,"","","",[],"up"),
+                g("R",16,"D3","PD3",["INT1", "OC2B"],[],true,"Interruption externe INT1 ; sortie PWM (~).","","",[],"up"),
+                g("R",17,"D2","PD2",["INT0"],[],true,"Interruption externe INT0.","","",[],"up"),
+                g("R",18,"D1","PD1",["TXD0"],[],true,"TX du port série matériel (UART0), partagée avec la liaison USB : la débrancher pendant le téléversement.","","",[],"up"),
+                g("R",19,"D0","PD0",["RXD0"],[],true,"RX du port série matériel (UART0), partagée avec la liaison USB : la débrancher pendant le téléversement.","","",[],"up")
+            ];
+            return { CONFIG: CONFIG, pins: pins };
+        } };
+        BOARDS["nano"] = { label: "Nano", mcu: "ATmega328P", build: function () {
+            const CONFIG = {
+              "board": {
+                "name": "Arduino Nano",
+                "color": "#1c4fa0",
+                "stroke": "#0f2f66",
+                "textColor": "#c6d8f5",
+                "usb": true,
+                "chip": [
+                  "ATmega",
+                  "328P"
+                ],
+                "crystal": null,
+                "buttons": [
+                  {
+                    "x": 65,
+                    "label": "RESET"
+                  }
+                ],
+                "extraSvg": ""
+              },
+              "badges": [
+                [
+                  "primary",
+                  "Électronique"
+                ],
+                [
+                  "secondary",
+                  "Microcontrôleur"
+                ],
+                [
+                  "accent",
+                  "AVR"
+                ]
+              ],
+              "text": {
+                "title": "Arduino Nano",
+                "subtitle": "Brochage ATmega328P",
+                "lead": "Vue de la carte <strong>Arduino Nano</strong> (ATmega328P, logique <strong>5 V</strong>, 30 broches). Même microcontrôleur que l'Uno R3, avec deux entrées analogiques en plus (<strong>A6</strong> et <strong>A7</strong>, analogiques seulement) et une disposition en deux rangées de 15 broches.",
+                "sideLeft": "Rangée gauche · broches 1 → 15 (D1, D0, RESET, GND, D2 → D12)",
+                "sideRight": "Rangée droite · broches 30 → 16 (VIN, GND, RESET, 5V, A7 → A0, AREF, 3V3, D13)",
+                "hint": "Vue de dessus, USB en haut. Numérotation 1 → 30 de la fiche officielle (rangée gauche de haut en bas, rangée droite de bas en haut). <strong>Orientation gauche / droite à confirmer sur ta carte</strong> : l'ordre dans chaque rangée est celui de la table officielle.",
+                "foot": "Les broches AVR n'ont pas de remap. « PU » = pull-up interne ≈ 20–50 kΩ, activée par logiciel (<code>INPUT_PULLUP</code>) ; A6 et A7 n'en ont pas. Il n'existe pas de pull-down interne.",
+                "searchPlaceholder": "Rechercher : 13, A6, PB5, SPI, OC2B…"
+              },
+              "aux": [
+                {
+                  "side": "L",
+                  "port": "ICSP",
+                  "chip": "6 broches",
+                  "cls": "misc",
+                  "note": "MISO, 5V, SCK, MOSI, RESET, GND (en-tête 2×3 au bout de la carte)"
+                },
+                {
+                  "side": "R",
+                  "port": "PB5",
+                  "chip": "LED L",
+                  "cls": "btn",
+                  "note": "LED « L » sur D13"
+                }
+              ],
+              "legend": [
+                "<i class=\"mm-lv mm-lv5 mm-inl\">5</i> logique 5 V",
+                "<i class=\"mm-pull mm-inl\">PU</i> pull-up interne activable",
+                "<i class=\"mm-pull mm-inl\">PU fixe</i> pull-up de reset non configurable",
+                "<i class=\"mm-num mm-inl\">13</i> numéro imprimé sur la carte",
+                "<i class=\"mm-c mm-c-al mm-inl\">D14</i> équivalent numérique d'une entrée analogique"
+              ],
+              "cards": [
+                {
+                  "kind": "warning",
+                  "html": "<strong>Orientation et variantes à vérifier :</strong><ul><li>La table officielle donne la numérotation des 30 broches ; <strong>le côté gauche / droite et l'extrémité côté USB ne sont pas indiqués</strong> dans les documents consultés. Si ta carte est inversée, lis simplement la liste en miroir.</li><li>Les clones (CH340, « old bootloader ») gardent le brochage mais changent la puce USB-série : la sortie 3,3 V peut alors venir d'un autre régulateur.</li></ul>"
+                },
+                {
+                  "kind": "warning",
+                  "html": "<strong>À savoir :</strong><ul><li>Logique 5 V : 20 mA par broche conseillés (40 mA maximum absolu).</li><li>A6 / A7 ne sont <strong>que</strong> des entrées analogiques : <code>digitalRead</code> et <code>pinMode</code> ne s'y appliquent pas.</li><li>D0 / D1 sont partagées avec l'USB-série.</li></ul>"
+                },
+                {
+                  "kind": "info",
+                  "html": "<strong>Sources &amp; vérification :</strong> numérotation et noms d'après la fiche officielle du Nano (A000005) ; ports d'après le cœur <em>ArduinoCore-avr</em> (variant <code>eightanaloginputs</code> / <code>standard</code>) ; fonctions d'après la datasheet de l'ATmega328P."
+                }
+              ],
+              "silk": {
+                "re": "^(D\\d+|A\\d+)$",
+                "strip": "^D"
+              },
+              "portFmt": null,
+              "cats": [
+                [
+                  "all",
+                  "Tout"
+                ],
+                [
+                  "ADC",
+                  "ADC"
+                ],
+                [
+                  "UART",
+                  "UART"
+                ],
+                [
+                  "SPI",
+                  "SPI"
+                ],
+                [
+                  "I2C",
+                  "I2C"
+                ],
+                [
+                  "TIM",
+                  "PWM / Timers"
+                ],
+                [
+                  "INT",
+                  "Interruptions"
+                ],
+                [
+                  "PWR",
+                  "Alim"
+                ]
+              ],
+              "catRe": {
+                "ADC": "^ADC",
+                "UART": "^(RXD|TXD|XCK)",
+                "SPI": "^(MOSI|MISO|SCK|SS)$",
+                "I2C": "^(SDA|SCL)$",
+                "TIM": "^(OC\\d|T\\d$|ICP)",
+                "INT": "^INT\\d"
+              },
+              "funcMap": [
+                {
+                  "re": "^ADC\\d+$",
+                  "t": "Analog In",
+                  "c": "an",
+                  "once": true
+                },
+                {
+                  "re": "^RXD(\\d)$",
+                  "t": "UART$1 RX",
+                  "c": "ser"
+                },
+                {
+                  "re": "^TXD(\\d)$",
+                  "t": "UART$1 TX",
+                  "c": "ser"
+                },
+                {
+                  "re": "^(SDA|SCL)$",
+                  "t": "I2C $1",
+                  "c": "i2c"
+                },
+                {
+                  "re": "^(MOSI|MISO|SCK|SS)$",
+                  "t": "SPI $1",
+                  "c": "spi"
+                },
+                {
+                  "re": "^OC(\\d)([A-D])$",
+                  "t": "PWM$1$2",
+                  "c": "pwm"
+                },
+                {
+                  "re": "^INT(\\d)$",
+                  "t": "INT$1",
+                  "c": "misc"
+                },
+                {
+                  "re": "^(TCK|TMS|TDO|TDI)$",
+                  "t": "JTAG $1",
+                  "c": "dbg"
+                }
+              ],
+              "texts": {
+                "pullBoth": "Pull-up ou pull-down au choix",
+                "pullUp": "Pull-up interne seulement (≈ 20–50 kΩ), activée par logiciel : INPUT_PULLUP",
+                "pullDown": "Pull-down interne seulement",
+                "pullNone": "Aucune pull interne : entrée analogique seule",
+                "float": "Entrée (haute impédance)",
+                "rstTag": "PU fixe",
+                "rstTip": "Pull-up interne fixe (≈ 30–60 kΩ) en plus du rappel de la carte",
+                "rstLevel": "5 V (entrée de reset, actif bas)",
+                "ft": "Logique 5 V (E/S alimentées en 5 V)",
+                "v3": "3,3 V uniquement",
+                "ftShort": "Logique 5 V",
+                "v3Short": "3,3 V",
+                "aliasLabel": "Équivalent",
+                "posSuffix": "e position depuis le haut (USB en haut)",
+                "badgeOk": "5 V",
+                "badgeLow": "3,3 V",
+                "badgeRst": "5 V"
+              }
+            };
+            const pins = [
+                g("L",1,"D1","PD1",["TXD0"],[],true,"TX du port série matériel (UART0) vers la puce USB-série : à débrancher pendant le téléversement. Imprimée « TX1 » sur la carte.","","TX1",[],"up"),
+                g("L",2,"D0","PD0",["RXD0"],[],true,"RX du port série matériel (UART0) vers la puce USB-série : à débrancher pendant le téléversement. Imprimée « RX0 » sur la carte.","","RX0",[],"up"),
+                rst("L",3,"RESET","PC6","Reset actif bas (deux broches RESET reliées entre elles).","RESET"),
+                pw("L",4,"GND","0 V","Masse.",true,"GND","gnd"),
+                g("L",5,"D2","PD2",["INT0"],[],true,"Interruption externe INT0.","","",[],"up"),
+                g("L",6,"D3","PD3",["INT1", "OC2B"],[],true,"Interruption externe INT1 ; sortie PWM (~).","","",[],"up"),
+                g("L",7,"D4","PD4",["T0", "XCK0"],[],true,"","","",[],"up"),
+                g("L",8,"D5","PD5",["OC0B", "T1"],[],true,"Sortie PWM (~).","","",[],"up"),
+                g("L",9,"D6","PD6",["OC0A", "AIN0"],[],true,"Sortie PWM (~).","","",[],"up"),
+                g("L",10,"D7","PD7",["AIN1"],[],true,"","","",[],"up"),
+                g("L",11,"D8","PB0",["ICP1", "CLKO"],[],true,"Capture ICP1 ; sortie d'horloge CLKO possible.","","",[],"up"),
+                g("L",12,"D9","PB1",["OC1A"],[],true,"Sortie PWM (~).","","",[],"up"),
+                g("L",13,"D10","PB2",["SS", "OC1B"],[],true,"SS de l'SPI matériel ; sortie PWM (~). Doit rester en sortie pour que l'ATmega reste maître SPI.","","",[],"up"),
+                g("L",14,"D11","PB3",["MOSI", "OC2A"],[],true,"MOSI de l'SPI matériel ; sortie PWM (~).","","",[],"up"),
+                g("L",15,"D12","PB4",["MISO"],[],true,"MISO de l'SPI matériel.","","",[],"up"),
+                pw("R",1,"VIN","7–12 V","Entrée d'alimentation 7–12 V vers le régulateur de la carte.",false,"VIN","pwr"),
+                pw("R",2,"GND","0 V","Masse.",true,"GND","gnd"),
+                rst("R",3,"RESET","PC6","Reset actif bas (deux broches RESET reliées entre elles).","RESET"),
+                pw("R",4,"5V","5 V","Rail 5 V régulé (sortie, ou entrée si alimentation externe stabilisée).",false,"+5V","pwr"),
+                g("R",5,"A7","ADC7",["ADC7"],[],true,"Entrée analogique uniquement : pas de fonction numérique ni de pull-up (spécifique au Nano, absente de l'Uno).","","",[],"none"),
+                g("R",6,"A6","ADC6",["ADC6"],[],true,"Entrée analogique uniquement : pas de fonction numérique ni de pull-up (spécifique au Nano, absente de l'Uno).","","",[],"none"),
+                g("R",7,"A5","PC5",["ADC5", "SCL"],[],true,"SCL de l'I2C (TWI).","","D19",[],"up"),
+                g("R",8,"A4","PC4",["ADC4", "SDA"],[],true,"SDA de l'I2C (TWI).","","D18",[],"up"),
+                g("R",9,"A3","PC3",["ADC3"],[],true,"Entrée analogique ; utilisable en numérique (D17).","","D17",[],"up"),
+                g("R",10,"A2","PC2",["ADC2"],[],true,"Entrée analogique ; utilisable en numérique (D16).","","D16",[],"up"),
+                g("R",11,"A1","PC1",["ADC1"],[],true,"Entrée analogique ; utilisable en numérique (D15).","","D15",[],"up"),
+                g("R",12,"A0","PC0",["ADC0"],[],true,"Entrée analogique ; utilisable en numérique (D14).","","D14",[],"up"),
+                pw("R",13,"AREF","réf. ADC","Référence analogique externe (analogReference(EXTERNAL)).",false,"AREF","sig"),
+                pw("R",14,"3V3","3,3 V","Sortie 3,3 V issue de la puce USB-série (FTDI), ≈ 50 mA maximum.",false,"+3.3V","pwr"),
+                g("R",15,"D13","PB5",["SCK"],[],true,"SCK de l'SPI matériel ; LED « L » de la carte (ne pas forcer en entrée basse).","","",[],"up")
+            ];
+            return { CONFIG: CONFIG, pins: pins };
+        } };
+        BOARDS["leonardo"] = { label: "Leonardo (32U4)", mcu: "ATmega32U4", build: function () {
+            const CONFIG = {
+              "board": {
+                "name": "Arduino Leonardo",
+                "color": "#00878f",
+                "stroke": "#005b61",
+                "textColor": "#bfe9ec",
+                "usb": true,
+                "chip": [
+                  "ATmega",
+                  "32U4"
+                ],
+                "crystal": "16 MHz",
+                "buttons": [
+                  {
+                    "x": 65,
+                    "label": "RESET"
+                  }
+                ],
+                "extraSvg": ""
+              },
+              "badges": [
+                [
+                  "primary",
+                  "Électronique"
+                ],
+                [
+                  "secondary",
+                  "Microcontrôleur"
+                ],
+                [
+                  "accent",
+                  "AVR"
+                ]
+              ],
+              "text": {
+                "title": "Arduino Leonardo",
+                "subtitle": "Brochage ATmega32U4",
+                "lead": "Vue de la carte <strong>Arduino Leonardo</strong> (ATmega32U4, USB natif, logique <strong>5 V</strong>). Mêmes en-têtes que l'Uno R3, mais le port série <strong>Serial</strong> est l'USB (CDC) ; <strong>Serial1</strong> est sur D0 / D1, et l'SPI n'est disponible que sur l'en-tête ICSP.",
+                "sideLeft": "Rangée gauche · en-têtes alimentation et A0 → A5",
+                "sideRight": "Rangée droite · SCL, SDA, AREF, GND, 13 → 8 puis 7 → 0",
+                "hint": "Vue de dessus, USB en haut (quart de tour par rapport à la vue habituelle). Le <strong>numéro dans le cadre</strong> est celui imprimé sur la carte. Les trous correspondent aux espaces entre en-têtes.",
+                "foot": "Les broches AVR n'ont pas de remap. « PU » = pull-up interne activée par logiciel (<code>INPUT_PULLUP</code>) ; pas de pull-down interne. A6 → A11 sont sur D4, D6, D8, D9, D10, D12.",
+                "searchPlaceholder": "Rechercher : 13, PC7, I2C, OC4A, A8…"
+              },
+              "aux": [
+                {
+                  "side": "L",
+                  "port": "PB3",
+                  "chip": "MISO",
+                  "cls": "spi",
+                  "note": "D14, uniquement sur l'en-tête ICSP"
+                },
+                {
+                  "side": "L",
+                  "port": "PB1",
+                  "chip": "SCK",
+                  "cls": "spi",
+                  "note": "D15, uniquement sur l'en-tête ICSP"
+                },
+                {
+                  "side": "L",
+                  "port": "PB2",
+                  "chip": "MOSI",
+                  "cls": "spi",
+                  "note": "D16, uniquement sur l'en-tête ICSP"
+                },
+                {
+                  "side": "R",
+                  "port": "PB0",
+                  "chip": "RX LED",
+                  "cls": "btn",
+                  "note": "D17, LED RX (aussi SS)"
+                },
+                {
+                  "side": "R",
+                  "port": "PD5",
+                  "chip": "TX LED",
+                  "cls": "btn",
+                  "note": "D30, LED TX"
+                }
+              ],
+              "legend": [
+                "<i class=\"mm-lv mm-lv5 mm-inl\">5</i> logique 5 V",
+                "<i class=\"mm-pull mm-inl\">PU</i> pull-up interne activable",
+                "<i class=\"mm-num mm-inl\">13</i> numéro imprimé sur la carte",
+                "<i class=\"mm-c mm-c-al mm-inl\">D18</i> équivalent numérique d'une entrée analogique"
+              ],
+              "cards": [
+                {
+                  "kind": "warning",
+                  "html": "<strong>À savoir :</strong><ul><li>Logique 5 V : 20 mA par broche conseillés (40 mA maximum absolu).</li><li>Le microcontrôleur gère l'USB : un sketch qui bloque ou plante le port USB peut obliger à utiliser le reset double-appui pour reprendre la main.</li><li>D0 / D1 ne sont <strong>pas</strong> liées à l'USB : <code>Serial1</code> est un UART indépendant.</li><li>L'SPI matériel (MISO PB3, SCK PB1, MOSI PB2) n'est sorti que sur l'en-tête ICSP.</li></ul>"
+                },
+                {
+                  "kind": "info",
+                  "html": "<strong>Sources &amp; vérification :</strong> ports, timers et canaux ADC d'après le cœur <em>ArduinoCore-avr</em> (variant <code>leonardo</code>) ; fonctions d'après la datasheet de l'ATmega32U4 ; JTAG : fusible haut <code>0xD8</code> du <code>boards.txt</code> (JTAG désactivé). Les cartes « Micro » et « Pro Micro » utilisent le même microcontrôleur avec un autre brochage : elles ne sont pas incluses (voir la note de livraison)."
+                }
+              ],
+              "silk": {
+                "re": "^(D\\d+|A\\d+)$",
+                "strip": "^D"
+              },
+              "portFmt": null,
+              "cats": [
+                [
+                  "all",
+                  "Tout"
+                ],
+                [
+                  "ADC",
+                  "ADC"
+                ],
+                [
+                  "UART",
+                  "UART"
+                ],
+                [
+                  "SPI",
+                  "SPI"
+                ],
+                [
+                  "I2C",
+                  "I2C"
+                ],
+                [
+                  "TIM",
+                  "PWM / Timers"
+                ],
+                [
+                  "INT",
+                  "Interruptions"
+                ],
+                [
+                  "PWR",
+                  "Alim"
+                ]
+              ],
+              "catRe": {
+                "ADC": "^ADC",
+                "UART": "^(RXD|TXD|XCK)",
+                "SPI": "^(MOSI|MISO|SCK|SS)$",
+                "I2C": "^(SDA|SCL)$",
+                "TIM": "^(OC\\d|T\\d$|ICP)",
+                "INT": "^INT\\d"
+              },
+              "funcMap": [
+                {
+                  "re": "^ADC\\d+$",
+                  "t": "Analog In",
+                  "c": "an",
+                  "once": true
+                },
+                {
+                  "re": "^RXD(\\d)$",
+                  "t": "UART$1 RX",
+                  "c": "ser"
+                },
+                {
+                  "re": "^TXD(\\d)$",
+                  "t": "UART$1 TX",
+                  "c": "ser"
+                },
+                {
+                  "re": "^(SDA|SCL)$",
+                  "t": "I2C $1",
+                  "c": "i2c"
+                },
+                {
+                  "re": "^(MOSI|MISO|SCK|SS)$",
+                  "t": "SPI $1",
+                  "c": "spi"
+                },
+                {
+                  "re": "^OC(\\d)([A-D])$",
+                  "t": "PWM$1$2",
+                  "c": "pwm"
+                },
+                {
+                  "re": "^INT(\\d)$",
+                  "t": "INT$1",
+                  "c": "misc"
+                },
+                {
+                  "re": "^(TCK|TMS|TDO|TDI)$",
+                  "t": "JTAG $1",
+                  "c": "dbg"
+                }
+              ],
+              "texts": {
+                "pullBoth": "Pull-up ou pull-down au choix",
+                "pullUp": "Pull-up interne seulement (≈ 20–50 kΩ), activée par logiciel : INPUT_PULLUP",
+                "pullDown": "Pull-down interne seulement",
+                "pullNone": "Aucune pull interne : entrée analogique seule",
+                "float": "Entrée (haute impédance)",
+                "rstTag": "PU fixe",
+                "rstTip": "Pull-up interne fixe (≈ 30–60 kΩ) en plus du rappel de la carte",
+                "rstLevel": "5 V (entrée de reset, actif bas)",
+                "ft": "Logique 5 V (E/S alimentées en 5 V)",
+                "v3": "3,3 V uniquement",
+                "ftShort": "Logique 5 V",
+                "v3Short": "3,3 V",
+                "aliasLabel": "Équivalent",
+                "posSuffix": "e position depuis le haut (USB en haut)",
+                "badgeOk": "5 V",
+                "badgeLow": "3,3 V",
+                "badgeRst": "5 V"
+              }
+            };
+            const pins = [
+                pw("L",1,"NC","—","Broche réservée, non connectée.",false,"NC","nc"),
+                pw("L",2,"IOREF","5 V","Tension de référence des E/S (5 V) pour les shields.",false,"IOREF","pwr"),
+                rst("L",3,"RESET","RESET","Reset actif bas, relié au bouton RESET de la carte.","RESET"),
+                pw("L",4,"3V3","3,3 V","Régulateur 3,3 V de la carte, ≈ 50 mA maximum.",false,"+3.3V","pwr"),
+                pw("L",5,"5V","5 V","Rail 5 V régulé (sortie, ou entrée si alimentation externe stabilisée).",false,"+5V","pwr"),
+                pw("L",6,"GND","0 V","Masse.",true,"GND","gnd"),
+                pw("L",7,"GND","0 V","Masse.",true,"GND","gnd"),
+                pw("L",8,"VIN","7–12 V","Entrée d'alimentation : 7–12 V recommandé, limites 6–20 V.",false,"VIN","pwr"),
+                g("L",10,"A0","PF7",["ADC7", "TDI"],[],true,"Entrée analogique ; JTAG TDI (JTAG désactivé par fusible sur la carte).","","D18",[],"up"),
+                g("L",11,"A1","PF6",["ADC6", "TDO"],[],true,"Entrée analogique ; JTAG TDO.","","D19",[],"up"),
+                g("L",12,"A2","PF5",["ADC5", "TMS"],[],true,"Entrée analogique ; JTAG TMS.","","D20",[],"up"),
+                g("L",13,"A3","PF4",["ADC4", "TCK"],[],true,"Entrée analogique ; JTAG TCK.","","D21",[],"up"),
+                g("L",14,"A4","PF1",["ADC1"],[],true,"Entrée analogique.","","D22",[],"up"),
+                g("L",15,"A5","PF0",["ADC0"],[],true,"Entrée analogique.","","D23",[],"up"),
+                g("R",1,"SCL","PD0",["SCL", "INT0", "OC0B"],[],true,"Doublon de D3 / SCL, près d'AREF.","","D3",[],"up"),
+                g("R",2,"SDA","PD1",["SDA", "INT1"],[],true,"Doublon de D2 / SDA, près d'AREF.","","D2",[],"up"),
+                pw("R",3,"AREF","réf. ADC","Référence analogique externe.",false,"AREF","sig"),
+                pw("R",4,"GND","0 V","Masse.",true,"GND","gnd"),
+                g("R",5,"D13","PC7",["OC4A", "ICP3"],[],true,"LED « L » de la carte ; sortie PWM (~) via Timer 4.","","",[],"up"),
+                g("R",6,"D12","PD6",["ADC9", "T1", "OC4D"],[],true,"Aussi entrée analogique A11.","","",[],"up"),
+                g("R",7,"D11","PB7",["OC0A", "OC1C"],[],true,"Sortie PWM (~) via Timer 0.","","",[],"up"),
+                g("R",8,"D10","PB6",["ADC13", "OC1B"],[],true,"Sortie PWM (~) ; aussi entrée analogique A10.","","",[],"up"),
+                g("R",9,"D9","PB5",["ADC12", "OC1A"],[],true,"Sortie PWM (~) ; aussi entrée analogique A9.","","",[],"up"),
+                g("R",10,"D8","PB4",["ADC11"],[],true,"Aussi entrée analogique A8.","","",[],"up"),
+                g("R",12,"D7","PE6",["INT6", "AIN0"],[],true,"Interruption externe INT6.","","",[],"up"),
+                g("R",13,"D6","PD7",["ADC10", "T0", "OC4D"],[],true,"Sortie PWM (~) via Timer 4 ; aussi entrée analogique A7.","","",[],"up"),
+                g("R",14,"D5","PC6",["OC3A"],[],true,"Sortie PWM (~) via Timer 3.","","",[],"up"),
+                g("R",15,"D4","PD4",["ADC8", "ICP1"],[],true,"Aussi entrée analogique A6.","","",[],"up"),
+                g("R",16,"D3","PD0",["SCL", "INT0", "OC0B"],[],true,"SCL de l'I2C ; INT0 ; sortie PWM (~) via Timer 0.","","",[],"up"),
+                g("R",17,"D2","PD1",["SDA", "INT1"],[],true,"SDA de l'I2C ; INT1.","","",[],"up"),
+                g("R",18,"D1","PD3",["TXD1", "INT3"],[],true,"TX du port série matériel Serial1 (le port USB est un CDC séparé) ; INT3.","","",[],"up"),
+                g("R",19,"D0","PD2",["RXD1", "INT2"],[],true,"RX du port série matériel Serial1 ; INT2.","","",[],"up")
+            ];
+            return { CONFIG: CONFIG, pins: pins };
+        } };
+        BOARDS["mega-2560"] = { label: "Mega 2560", mcu: "ATmega2560", build: function () {
+            const CONFIG = {
+              "board": {
+                "name": "Arduino Mega 2560",
+                "color": "#00878f",
+                "stroke": "#005b61",
+                "textColor": "#bfe9ec",
+                "usb": true,
+                "chip": [
+                  "ATmega",
+                  "2560"
+                ],
+                "crystal": "16 MHz",
+                "buttons": [
+                  {
+                    "x": 65,
+                    "label": "RESET"
+                  }
+                ],
+                "extraSvg": ""
+              },
+              "badges": [
+                [
+                  "primary",
+                  "Électronique"
+                ],
+                [
+                  "secondary",
+                  "Microcontrôleur"
+                ],
+                [
+                  "accent",
+                  "AVR"
+                ]
+              ],
+              "text": {
+                "title": "Arduino Mega 2560",
+                "subtitle": "Brochage ATmega2560",
+                "lead": "Vue de la carte <strong>Arduino Mega 2560 R3</strong> (ATmega2560, logique <strong>5 V</strong>) : 54 E/S numériques (15 PWM), 16 entrées analogiques, 4 ports série matériels. Les en-têtes D0–D21 et l'en-tête double rangée <strong>D22–D53</strong> sont mis à la suite dans la rangée droite.",
+                "sideLeft": "Rangée gauche · en-têtes alimentation et A0 → A15",
+                "sideRight": "Rangée droite · SCL, SDA, AREF, GND, 13 → 8, 7 → 0, 14 → 21, puis 5V, D22 → D53, GND",
+                "hint": "Vue de dessus, USB en haut (quart de tour par rapport à la vue habituelle). Le <strong>numéro dans le cadre</strong> est celui imprimé sur la carte. L'en-tête D22–D53 est physiquement sur <strong>deux colonnes</strong> (paires D22 / D23, D24 / D25, … avec +5V en tête et GND en pied) ; il est listé ici dans l'ordre D22 → D53.",
+                "foot": "Les broches AVR n'ont pas de remap. « PU » = pull-up interne activée par logiciel (<code>INPUT_PULLUP</code>) ; pas de pull-down interne.",
+                "searchPlaceholder": "Rechercher : 13, PB7, UART, OC3A, A15, INT4…"
+              },
+              "aux": [
+                {
+                  "side": "L",
+                  "port": "ICSP",
+                  "chip": "6 broches",
+                  "cls": "misc",
+                  "note": "MISO, 5V, SCK, MOSI, RESET, GND (recopie de D50, D52, D51)"
+                },
+                {
+                  "side": "R",
+                  "port": "PB7",
+                  "chip": "LED L",
+                  "cls": "btn",
+                  "note": "LED « L » sur D13"
+                }
+              ],
+              "legend": [
+                "<i class=\"mm-lv mm-lv5 mm-inl\">5</i> logique 5 V",
+                "<i class=\"mm-pull mm-inl\">PU</i> pull-up interne activable",
+                "<i class=\"mm-pull mm-inl\">PU fixe</i> pull-up de reset non configurable",
+                "<i class=\"mm-num mm-inl\">13</i> numéro imprimé sur la carte",
+                "<i class=\"mm-c mm-c-al mm-inl\">D54</i> équivalent numérique d'une entrée analogique"
+              ],
+              "cards": [
+                {
+                  "kind": "warning",
+                  "html": "<strong>À savoir :</strong><ul><li>Logique 5 V : 20 mA par broche conseillés (40 mA maximum absolu).</li><li>D0 / D1 (Serial) sont partagées avec l'USB-série ; Serial1 (D18 / D19), Serial2 (D16 / D17) et Serial3 (D14 / D15) sont libres.</li><li>D22–D41 portent aussi le bus d'adresses / données de la mémoire externe de l'ATmega2560 : libre si aucune RAM externe n'est montée.</li><li>Les sorties PWM (~) sont D2 → D13, D44, D45 et D46.</li><li>L'SPI est sur D50 (MISO), D51 (MOSI), D52 (SCK) et D53 (SS), et sur l'en-tête ICSP.</li></ul>"
+                },
+                {
+                  "kind": "warning",
+                  "html": "<strong>Point à confirmer sur la carte :</strong> l'en-tête D22–D53 est une double rangée. La liste ici est séquentielle ; <strong>le côté (gauche / droite) des broches paires et impaires dépend de l'orientation de ta carte</strong> et n'a pas pu être vérifié sur un schéma coté. Les noms et ports, eux, viennent du cœur Arduino."
+                },
+                {
+                  "kind": "info",
+                  "html": "<strong>Sources &amp; vérification :</strong> ports et timers d'après le cœur <em>ArduinoCore-avr</em> (variant <code>mega</code>) ; fonctions d'après la datasheet de l'ATmega2560 ; ordre des en-têtes d'après la fiche officielle de la Mega 2560 R3."
+                }
+              ],
+              "silk": {
+                "re": "^(D\\d+|A\\d+)$",
+                "strip": "^D"
+              },
+              "portFmt": null,
+              "cats": [
+                [
+                  "all",
+                  "Tout"
+                ],
+                [
+                  "ADC",
+                  "ADC"
+                ],
+                [
+                  "UART",
+                  "UART"
+                ],
+                [
+                  "SPI",
+                  "SPI"
+                ],
+                [
+                  "I2C",
+                  "I2C"
+                ],
+                [
+                  "TIM",
+                  "PWM / Timers"
+                ],
+                [
+                  "INT",
+                  "Interruptions"
+                ],
+                [
+                  "PWR",
+                  "Alim"
+                ]
+              ],
+              "catRe": {
+                "ADC": "^ADC",
+                "UART": "^(RXD|TXD|XCK)",
+                "SPI": "^(MOSI|MISO|SCK|SS)$",
+                "I2C": "^(SDA|SCL)$",
+                "TIM": "^(OC\\d|T\\d$|ICP)",
+                "INT": "^INT\\d"
+              },
+              "funcMap": [
+                {
+                  "re": "^ADC\\d+$",
+                  "t": "Analog In",
+                  "c": "an",
+                  "once": true
+                },
+                {
+                  "re": "^RXD(\\d)$",
+                  "t": "UART$1 RX",
+                  "c": "ser"
+                },
+                {
+                  "re": "^TXD(\\d)$",
+                  "t": "UART$1 TX",
+                  "c": "ser"
+                },
+                {
+                  "re": "^(SDA|SCL)$",
+                  "t": "I2C $1",
+                  "c": "i2c"
+                },
+                {
+                  "re": "^(MOSI|MISO|SCK|SS)$",
+                  "t": "SPI $1",
+                  "c": "spi"
+                },
+                {
+                  "re": "^OC(\\d)([A-D])$",
+                  "t": "PWM$1$2",
+                  "c": "pwm"
+                },
+                {
+                  "re": "^INT(\\d)$",
+                  "t": "INT$1",
+                  "c": "misc"
+                },
+                {
+                  "re": "^(TCK|TMS|TDO|TDI)$",
+                  "t": "JTAG $1",
+                  "c": "dbg"
+                }
+              ],
+              "texts": {
+                "pullBoth": "Pull-up ou pull-down au choix",
+                "pullUp": "Pull-up interne seulement (≈ 20–50 kΩ), activée par logiciel : INPUT_PULLUP",
+                "pullDown": "Pull-down interne seulement",
+                "pullNone": "Aucune pull interne : entrée analogique seule",
+                "float": "Entrée (haute impédance)",
+                "rstTag": "PU fixe",
+                "rstTip": "Pull-up interne fixe (≈ 30–60 kΩ) en plus du rappel de la carte",
+                "rstLevel": "5 V (entrée de reset, actif bas)",
+                "ft": "Logique 5 V (E/S alimentées en 5 V)",
+                "v3": "3,3 V uniquement",
+                "ftShort": "Logique 5 V",
+                "v3Short": "3,3 V",
+                "aliasLabel": "Équivalent",
+                "posSuffix": "e position depuis le haut (USB en haut)",
+                "badgeOk": "5 V",
+                "badgeLow": "3,3 V",
+                "badgeRst": "5 V"
+              }
+            };
+            const pins = [
+                pw("L",1,"NC","—","Broche réservée, non connectée.",false,"NC","nc"),
+                pw("L",2,"IOREF","5 V","Tension de référence des E/S (5 V) pour les shields.",false,"IOREF","pwr"),
+                rst("L",3,"RESET","RESET","Reset actif bas, relié au bouton RESET de la carte.","RESET"),
+                pw("L",4,"3V3","3,3 V","Régulateur 3,3 V de la carte, ≈ 50 mA maximum.",false,"+3.3V","pwr"),
+                pw("L",5,"5V","5 V","Rail 5 V régulé (sortie, ou entrée si alimentation externe stabilisée).",false,"+5V","pwr"),
+                pw("L",6,"GND","0 V","Masse.",true,"GND","gnd"),
+                pw("L",7,"GND","0 V","Masse.",true,"GND","gnd"),
+                pw("L",8,"VIN","7–12 V","Entrée d'alimentation : 7–12 V recommandé, limites 6–20 V.",false,"VIN","pwr"),
+                g("L",10,"A0","PF0",["ADC0"],[],true,"Entrée analogique 0–5 V (D54).","","D54",[],"up"),
+                g("L",11,"A1","PF1",["ADC1"],[],true,"Entrée analogique 0–5 V (D55).","","D55",[],"up"),
+                g("L",12,"A2","PF2",["ADC2"],[],true,"Entrée analogique 0–5 V (D56).","","D56",[],"up"),
+                g("L",13,"A3","PF3",["ADC3"],[],true,"Entrée analogique 0–5 V (D57).","","D57",[],"up"),
+                g("L",14,"A4","PF4",["ADC4", "TCK"],[],true,"Entrée analogique 0–5 V (D58). JTAG TCK.","","D58",[],"up"),
+                g("L",15,"A5","PF5",["ADC5", "TMS"],[],true,"Entrée analogique 0–5 V (D59). JTAG TMS.","","D59",[],"up"),
+                g("L",16,"A6","PF6",["ADC6", "TDO"],[],true,"Entrée analogique 0–5 V (D60). JTAG TDO.","","D60",[],"up"),
+                g("L",17,"A7","PF7",["ADC7", "TDI"],[],true,"Entrée analogique 0–5 V (D61). JTAG TDI.","","D61",[],"up"),
+                g("L",18,"A8","PK0",["ADC8"],[],true,"Entrée analogique 0–5 V (D62).","","D62",[],"up"),
+                g("L",19,"A9","PK1",["ADC9"],[],true,"Entrée analogique 0–5 V (D63).","","D63",[],"up"),
+                g("L",20,"A10","PK2",["ADC10"],[],true,"Entrée analogique 0–5 V (D64).","","D64",[],"up"),
+                g("L",21,"A11","PK3",["ADC11"],[],true,"Entrée analogique 0–5 V (D65).","","D65",[],"up"),
+                g("L",22,"A12","PK4",["ADC12"],[],true,"Entrée analogique 0–5 V (D66).","","D66",[],"up"),
+                g("L",23,"A13","PK5",["ADC13"],[],true,"Entrée analogique 0–5 V (D67).","","D67",[],"up"),
+                g("L",24,"A14","PK6",["ADC14"],[],true,"Entrée analogique 0–5 V (D68).","","D68",[],"up"),
+                g("L",25,"A15","PK7",["ADC15"],[],true,"Entrée analogique 0–5 V (D69).","","D69",[],"up"),
+                g("R",1,"SCL","PD0",["SCL", "INT0"],[],true,"Doublon de D21 / SCL, près d'AREF.","","D21",[],"up"),
+                g("R",2,"SDA","PD1",["SDA", "INT1"],[],true,"Doublon de D20 / SDA, près d'AREF.","","D20",[],"up"),
+                pw("R",3,"AREF","réf. ADC","Référence analogique externe.",false,"AREF","sig"),
+                pw("R",4,"GND","0 V","Masse.",true,"GND","gnd"),
+                g("R",5,"D13","PB7",["OC0A", "OC1C"],[],true,"LED « L » de la carte ; sortie PWM (~).","","",[],"up"),
+                g("R",6,"D12","PB6",["OC1B"],[],true,"Sortie PWM (~).","","",[],"up"),
+                g("R",7,"D11","PB5",["OC1A"],[],true,"Sortie PWM (~).","","",[],"up"),
+                g("R",8,"D10","PB4",["OC2A"],[],true,"Sortie PWM (~).","","",[],"up"),
+                g("R",9,"D9","PH6",["OC2B"],[],true,"Sortie PWM (~).","","",[],"up"),
+                g("R",10,"D8","PH5",["OC4C"],[],true,"Sortie PWM (~).","","",[],"up"),
+                g("R",12,"D7","PH4",["OC4B"],[],true,"Sortie PWM (~).","","",[],"up"),
+                g("R",13,"D6","PH3",["OC4A"],[],true,"Sortie PWM (~).","","",[],"up"),
+                g("R",14,"D5","PE3",["OC3A", "AIN1"],[],true,"Sortie PWM (~).","","",[],"up"),
+                g("R",15,"D4","PG5",["OC0B"],[],true,"Sortie PWM (~).","","",[],"up"),
+                g("R",16,"D3","PE5",["INT5", "OC3C"],[],true,"Sortie PWM (~) ; interruption INT5.","","",[],"up"),
+                g("R",17,"D2","PE4",["INT4", "OC3B"],[],true,"Sortie PWM (~) ; interruption INT4.","","",[],"up"),
+                g("R",18,"D1","PE1",["TXD0"],[],true,"TX0 : port série matériel partagé avec l'USB-série (ATmega16U2).","","",[],"up"),
+                g("R",19,"D0","PE0",["RXD0"],[],true,"RX0 : port série matériel partagé avec l'USB-série (ATmega16U2).","","",[],"up"),
+                g("R",21,"D14","PJ1",["TXD3"],[],true,"TX3 (Serial3).","","",[],"up"),
+                g("R",22,"D15","PJ0",["RXD3"],[],true,"RX3 (Serial3).","","",[],"up"),
+                g("R",23,"D16","PH1",["TXD2"],[],true,"TX2 (Serial2).","","",[],"up"),
+                g("R",24,"D17","PH0",["RXD2"],[],true,"RX2 (Serial2).","","",[],"up"),
+                g("R",25,"D18","PD3",["TXD1", "INT3"],[],true,"TX1 (Serial1) ; interruption INT3.","","",[],"up"),
+                g("R",26,"D19","PD2",["RXD1", "INT2"],[],true,"RX1 (Serial1) ; interruption INT2.","","",[],"up"),
+                g("R",27,"D20","PD1",["SDA", "INT1"],[],true,"SDA de l'I2C ; INT1 ; relié à la broche SDA près d'AREF.","","",[],"up"),
+                g("R",28,"D21","PD0",["SCL", "INT0"],[],true,"SCL de l'I2C ; INT0 ; relié à la broche SCL près d'AREF.","","",[],"up"),
+                pw("R",30,"5V","5 V","Rail 5 V, en-tête double rangée D22–D53.",false,"+5V","pwr"),
+                g("R",31,"D22","PA0",[],[],true,"Bus d'adresses/données mémoire externe (AD0).","","",[],"up"),
+                g("R",32,"D23","PA1",[],[],true,"Bus d'adresses/données mémoire externe (AD1).","","",[],"up"),
+                g("R",33,"D24","PA2",[],[],true,"Bus d'adresses/données mémoire externe (AD2).","","",[],"up"),
+                g("R",34,"D25","PA3",[],[],true,"Bus d'adresses/données mémoire externe (AD3).","","",[],"up"),
+                g("R",35,"D26","PA4",[],[],true,"Bus d'adresses/données mémoire externe (AD4).","","",[],"up"),
+                g("R",36,"D27","PA5",[],[],true,"Bus d'adresses/données mémoire externe (AD5).","","",[],"up"),
+                g("R",37,"D28","PA6",[],[],true,"Bus d'adresses/données mémoire externe (AD6).","","",[],"up"),
+                g("R",38,"D29","PA7",[],[],true,"Bus d'adresses/données mémoire externe (AD7).","","",[],"up"),
+                g("R",39,"D30","PC7",[],[],true,"Bus d'adresses mémoire externe (A15).","","",[],"up"),
+                g("R",40,"D31","PC6",[],[],true,"Bus d'adresses mémoire externe (A14).","","",[],"up"),
+                g("R",41,"D32","PC5",[],[],true,"Bus d'adresses mémoire externe (A13).","","",[],"up"),
+                g("R",42,"D33","PC4",[],[],true,"Bus d'adresses mémoire externe (A12).","","",[],"up"),
+                g("R",43,"D34","PC3",[],[],true,"Bus d'adresses mémoire externe (A11).","","",[],"up"),
+                g("R",44,"D35","PC2",[],[],true,"Bus d'adresses mémoire externe (A10).","","",[],"up"),
+                g("R",45,"D36","PC1",[],[],true,"Bus d'adresses mémoire externe (A9).","","",[],"up"),
+                g("R",46,"D37","PC0",[],[],true,"Bus d'adresses mémoire externe (A8).","","",[],"up"),
+                g("R",47,"D38","PD7",["T0"],[],true,"","","",[],"up"),
+                g("R",48,"D39","PG2",[],[],true,"Signal ALE du bus mémoire externe (non utilisé par défaut).","","",[],"up"),
+                g("R",49,"D40","PG1",[],[],true,"Signal RD du bus mémoire externe.","","",[],"up"),
+                g("R",50,"D41","PG0",[],[],true,"Signal WR du bus mémoire externe.","","",[],"up"),
+                g("R",51,"D42","PL7",[],[],true,"","","",[],"up"),
+                g("R",52,"D43","PL6",[],[],true,"","","",[],"up"),
+                g("R",53,"D44","PL5",["OC5C"],[],true,"Sortie PWM (~).","","",[],"up"),
+                g("R",54,"D45","PL4",["OC5B"],[],true,"Sortie PWM (~).","","",[],"up"),
+                g("R",55,"D46","PL3",["OC5A"],[],true,"Sortie PWM (~).","","",[],"up"),
+                g("R",56,"D47","PL2",["T5"],[],true,"","","",[],"up"),
+                g("R",57,"D48","PL1",["ICP5"],[],true,"","","",[],"up"),
+                g("R",58,"D49","PL0",["ICP4"],[],true,"","","",[],"up"),
+                g("R",59,"D50","PB3",["MISO"],[],true,"MISO de l'SPI matériel (aussi sur l'ICSP).","","",[],"up"),
+                g("R",60,"D51","PB2",["MOSI"],[],true,"MOSI de l'SPI matériel (aussi sur l'ICSP).","","",[],"up"),
+                g("R",61,"D52","PB1",["SCK"],[],true,"SCK de l'SPI matériel (aussi sur l'ICSP).","","",[],"up"),
+                g("R",62,"D53","PB0",["SS"],[],true,"SS de l'SPI matériel : doit rester en sortie pour que l'ATmega reste maître SPI.","","",[],"up"),
+                pw("R",63,"GND","0 V","Masse.",true,"GND","gnd")
+            ];
+            return { CONFIG: CONFIG, pins: pins };
+        } };
+        BOARDS["giga-r1-wifi"] = { label: "GIGA R1 WiFi", mcu: "STM32H747XI", build: function () {
+            const CONFIG = {
+              "board": {
+                "name": "GIGA R1 WiFi",
+                "color": "#0a6a73",
+                "stroke": "#064349",
+                "textColor": "#bfe9ec",
+                "usb": true,
+                "chip": [
+                  "STM32",
+                  "H747XI"
+                ],
+                "crystal": null,
+                "buttons": [
+                  {
+                    "x": 50,
+                    "label": "RESET"
+                  },
+                  {
+                    "x": 80,
+                    "label": "BOOT0"
+                  }
+                ],
+                "extraSvg": ""
+              },
+              "badges": [
+                [
+                  "primary",
+                  "Électronique"
+                ],
+                [
+                  "secondary",
+                  "Microcontrôleur"
+                ],
+                [
+                  "accent",
+                  "STM32"
+                ]
+              ],
+              "text": {
+                "title": "Arduino GIGA R1 WiFi",
+                "subtitle": "Brochage STM32H747XI",
+                "lead": "Vue de la carte <strong>Arduino GIGA R1 WiFi</strong> (STM32H747XI, double cœur Cortex-M7 480 MHz + M4 240 MHz, logique <strong>3,3 V</strong>) au format <strong>Mega</strong> : D0 → D53, A0 → A7 plus quatre entrées analogiques pures (A8 → A11), deux DAC et le CAN. Il n'existe pas de GIGA R1 sans Wi-Fi : « GIGA » et « GIGA WiFi » désignent la même carte.",
+                "sideLeft": "Rangée gauche · alimentation, A0 → A7, A8 → A11, DAC0, DAC1, CANRX, CANTX",
+                "sideRight": "Rangée droite · SCL, SDA, AREF, GND, 13 → 8, 7 → 0, 14 → 21, puis 5V, D22 → D53, GND",
+                "hint": "Vue de dessus, USB-C en haut. Le <strong>numéro dans le cadre</strong> est le nom Arduino de la broche. <strong>Disposition à vérifier :</strong> les groupes D0–D53 suivent le format Mega ; l'ordre exact de la rangée gauche après A7 (A8 → A11, DAC, CAN) n'a pas pu être confronté à un schéma coté.",
+                "foot": "Fonctions d'après les tables mbed-os de la carte GIGA (sous-ensemble utile des fonctions alternatives du STM32H747, pas la table AF complète). Pas de remap Arduino : les fonctions des broches sont fixes. « PU / PD » = pull-up ou pull-down au choix (≈ 40 kΩ), réglé par logiciel.",
+                "searchPlaceholder": "Rechercher : 13, PH6, SPI5, TIM1, A0, CAN…"
+              },
+              "aux": [
+                {
+                  "side": "L",
+                  "port": "PH12",
+                  "chip": "SDA1",
+                  "cls": "i2c",
+                  "note": "D102 : second bus I2C (Wire1), I2C4 d'après mbed"
+                },
+                {
+                  "side": "L",
+                  "port": "PB6",
+                  "chip": "SCL1",
+                  "cls": "i2c",
+                  "note": "D101 : second bus I2C (Wire1), I2C1 / I2C4 d'après mbed"
+                },
+                {
+                  "side": "R",
+                  "port": "PI12 · PJ13 · PE3",
+                  "chip": "LED RGB",
+                  "cls": "btn",
+                  "note": "D86 rouge, D87 vert, D88 bleu (actives à l'état bas)"
+                },
+                {
+                  "side": "R",
+                  "port": "PG9 · PD7 · PB3",
+                  "chip": "SPI1",
+                  "cls": "spi",
+                  "note": "en-tête SPI dédié (D89 MISO, D90 MOSI, D91 SCK)"
+                },
+                {
+                  "side": "R",
+                  "port": "PA15",
+                  "chip": "USB HOST",
+                  "cls": "usb",
+                  "note": "D92 : activation de l'alimentation du port USB-A hôte"
+                },
+                {
+                  "side": "L",
+                  "port": "PC13",
+                  "chip": "BOOT0",
+                  "cls": "boot",
+                  "note": "D100 : bouton BOOT0 (bootloader ST en DFU)"
+                }
+              ],
+              "legend": [
+                "<i class=\"mm-lv mm-lv3 mm-inl\">3</i> 3,3 V uniquement",
+                "<i class=\"mm-pull mm-inl\">PU/PD</i> pull-up / pull-down activable",
+                "<i class=\"mm-num mm-inl\">13</i> numéro imprimé sur la carte",
+                "<i class=\"mm-c mm-c-al mm-inl\">D76</i> numéro Arduino équivalent (alias)"
+              ],
+              "cards": [
+                {
+                  "kind": "warning",
+                  "html": "<strong>À savoir :</strong><ul><li>Toutes les E/S sont en <strong>3,3 V</strong> : la documentation dit de ne pas relier directement une sortie 5 V à une entrée GIGA.</li><li>Courant : 8 mA par broche conseillés (fiche produit) ; 20 mA maximum par broche et 140 mA au total sur les E/S d'après la fiche détaillée.</li><li>A8 → A11 sont des entrées <strong>analogiques seulement</strong> (pads « _C » du STM32H747), sans fonction numérique.</li><li>Le résultat PWM varie selon la source (12 ou 13 sorties PWM annoncées) : à confirmer dans le code du cœur.</li><li>Double cœur : une même ressource ne peut pas être pilotée en même temps par le M7 et le M4.</li></ul>"
+                },
+                {
+                  "kind": "warning",
+                  "html": "<strong>Points à confirmer sur la carte :</strong> l'ordre exact de la rangée gauche après A7 (A8 → A11, DAC0, DAC1, CANRX, CANTX), le côté des broches paires / impaires du double en-tête D22–D53 et la position des broches SDA1 / SCL1 ne figuraient pas dans les documents accessibles ; les noms, ports et fonctions, eux, viennent du code du cœur et des tables mbed."
+                },
+                {
+                  "kind": "info",
+                  "html": "<strong>Connecteurs internes (non sortis sur les en-têtes) :</strong> caméra D54 → D67 — D54 PI5, D55 PH8, D56 PA6, D57 PJ9, D58 PI7, D59 PI6, D60 PI4, D61 PH14, D62 PG11, D63 PH11, D64 PH10, D65 PH9, D66 PA1, D67 PD4. Écran D68 → D75 — D68 PC6, D69 PI0, D70 PI1, D71 PI2, D72 PI3, D73 PC1, D74 PB12, D75 PD3."
+                },
+                {
+                  "kind": "info",
+                  "html": "<strong>Sources &amp; vérification :</strong> numéros et ports d'après <code>g_APinDescription</code> du cœur <em>ArduinoCore-mbed</em> (variant <code>GIGA</code>) ; fonctions d'après <code>PeripheralPins.c</code> de la cible GIGA dans <em>arduino/mbed-os</em> (fonctions HRTIM et USB-HS ULPI non affichées) ; alimentation et courants d'après les fiches produit (VIN 6–24 V)."
+                }
+              ],
+              "silk": {
+                "re": "^(D\\d+|A\\d+|DAC\\d)$",
+                "strip": "^D(?=\\d)"
+              },
+              "portFmt": null,
+              "cats": [
+                [
+                  "all",
+                  "Tout"
+                ],
+                [
+                  "ADC",
+                  "ADC / DAC"
+                ],
+                [
+                  "UART",
+                  "UART"
+                ],
+                [
+                  "SPI",
+                  "SPI"
+                ],
+                [
+                  "I2C",
+                  "I2C"
+                ],
+                [
+                  "TIM",
+                  "Timers / PWM"
+                ],
+                [
+                  "CAN",
+                  "CAN"
+                ],
+                [
+                  "V3",
+                  "3,3 V (tout)"
+                ],
+                [
+                  "PWR",
+                  "Alim"
+                ]
+              ],
+              "catRe": {
+                "ADC": "^(ADC_|DAC)",
+                "UART": "UART",
+                "SPI": "^SPI",
+                "I2C": "^I2C",
+                "TIM": "^TIM",
+                "CAN": "^CAN"
+              },
+              "funcMap": [
+                {
+                  "re": "^ADC_INP\\d+$",
+                  "t": "Analog In",
+                  "c": "an",
+                  "once": true
+                },
+                {
+                  "re": "^DAC\\d_OUT\\d$",
+                  "t": "DAC",
+                  "c": "an"
+                },
+                {
+                  "re": "^(UART|LPUART)(\\d)_(TX|RX)$",
+                  "t": "$1$2 $3",
+                  "c": "ser"
+                },
+                {
+                  "re": "^I2C(\\d)_(SDA|SCL)$",
+                  "t": "I2C$1 $2",
+                  "c": "i2c"
+                },
+                {
+                  "re": "^SPI(\\d)_(MOSI|MISO|SCK|NSS)$",
+                  "t": "SPI$1 $2",
+                  "c": "spi"
+                },
+                {
+                  "re": "^TIM(\\d+)_CH(\\d)(N?)$",
+                  "t": "PWM$1/$2$3",
+                  "c": "pwm"
+                },
+                {
+                  "re": "^CAN(\\d)_(TX|RX)$",
+                  "t": "CAN$1 $2",
+                  "c": "usb"
+                },
+                {
+                  "re": "^QSPI_.*$",
+                  "t": "QSPI",
+                  "c": "misc",
+                  "once": true
+                },
+                {
+                  "re": "^USB_OTG_FS_(DP|DM)$",
+                  "t": "USB $1",
+                  "c": "usb"
+                }
+              ],
+              "texts": {
+                "pullBoth": "Pull-up ou pull-down au choix (≈ 40 kΩ, par logiciel)",
+                "pullUp": "Pull-up interne seulement",
+                "pullDown": "Pull-down interne seulement",
+                "pullNone": "Aucune pull interne (entrée analogique pure)",
+                "float": "Entrée flottante / analogique (état du STM32 au reset)",
+                "rstTag": "PU fixe",
+                "rstTip": "Pull-up interne fixe (≈ 40 kΩ), non configurable",
+                "rstLevel": "3,3 V uniquement (entrée de reset)",
+                "ft": "5 V toléré",
+                "v3": "3,3 V uniquement",
+                "ftShort": "5 V toléré",
+                "v3Short": "3,3 V uniquement",
+                "aliasLabel": "Alias (numéro Arduino)",
+                "posSuffix": "e position depuis le haut (USB en haut)",
+                "badgeOk": "5 V ✔",
+                "badgeLow": "3,3 V",
+                "badgeRst": "3,3 V"
+              }
+            };
+            const pins = [
+                pw("L",1,"NC","—","Broche réservée, non connectée (compatible avec la disposition Mega).",false,"NC","nc"),
+                pw("L",2,"IOREF","3,3 V","Tension de référence des E/S : 3,3 V.",false,"IOREF","pwr"),
+                rst("L",3,"RESET","NRST","Reset actif bas (broche NRST du STM32H747), relié au bouton RESET.","RESET"),
+                pw("L",4,"3V3","3,3 V","Rail 3,3 V de la carte.",false,"+3.3V","pwr"),
+                pw("L",5,"5V","5 V","Rail 5 V disponible pour les périphériques ; les E/S, elles, restent en 3,3 V.",false,"+5V","pwr"),
+                pw("L",6,"GND","0 V","Masse.",true,"GND","gnd"),
+                pw("L",7,"GND","0 V","Masse.",true,"GND","gnd"),
+                pw("L",8,"VIN","6–24 V","Entrée d'alimentation du convertisseur (plage 6–24 V annoncée pour la GIGA).",false,"VIN","pwr"),
+                g("L",10,"A0","PC4",["ADC_INP4"],[],false,"Entrée analogique 0–3,3 V (D76).","","D76",[],"both"),
+                g("L",11,"A1","PC5",["ADC_INP8"],[],false,"Entrée analogique 0–3,3 V (D77).","","D77",[],"both"),
+                g("L",12,"A2","PB0",["ADC_INP9", "TIM1_CH2N", "TIM3_CH3", "TIM8_CH2N", "UART4_CTS"],[],false,"Entrée analogique 0–3,3 V (D78).","","D78",[],"both"),
+                g("L",13,"A3","PB1",["ADC_INP5", "TIM1_CH3N", "TIM3_CH4", "TIM8_CH3N"],[],false,"Entrée analogique 0–3,3 V (D79).","","D79",[],"both"),
+                g("L",14,"A4","PC3",["ADC_INP13", "SPI2_MOSI"],[],false,"Entrée analogique 0–3,3 V (D80).","","D80",[],"both"),
+                g("L",15,"A5","PC2",["ADC_INP12", "SPI2_MISO"],[],false,"Entrée analogique 0–3,3 V (D81).","","D81",[],"both"),
+                g("L",16,"A6","PC0",["ADC_INP10"],[],false,"Entrée analogique 0–3,3 V (D82).","","D82",[],"both"),
+                g("L",17,"A7","PA0",["ADC_INP16", "UART4_TX", "UART2_CTS"],[],false,"Entrée analogique 0–3,3 V (D83). Aussi entrée micro de la prise jack audio.","","D83",[],"both"),
+                g("L",18,"A8","PC2C",["ADC_INP0"],[],false,"Entrée analogique uniquement (ADC3_INP0) : aucune fonction numérique ni pull.","","",[],"none"),
+                g("L",19,"A9","PC3C",["ADC_INP1"],[],false,"Entrée analogique uniquement (ADC3_INP1) : aucune fonction numérique ni pull.","","",[],"none"),
+                g("L",20,"A10","PA1C",["ADC_INP1"],[],false,"Entrée analogique uniquement (ADC2_INP1) : aucune fonction numérique ni pull.","","",[],"none"),
+                g("L",21,"A11","PA0C",["ADC_INP0"],[],false,"Entrée analogique uniquement (ADC2_INP0) : aucune fonction numérique ni pull.","","",[],"none"),
+                g("L",22,"DAC0","PA4",["ADC_INP18", "DAC1_OUT1", "SPI1_NSS", "SPI3_NSS", "SPI6_NSS"],[],false,"Sortie DAC 12 bits ; aussi vers la prise jack audio (voie droite). Aussi A12 dans le cœur (D84).","","D84",[],"both"),
+                g("L",23,"DAC1","PA5",["ADC_INP19", "DAC1_OUT2", "TIM8_CH1N", "SPI1_SCK", "SPI6_SCK"],[],false,"Sortie DAC 12 bits ; aussi vers la prise jack audio (voie gauche). Aussi A13 dans le cœur (D85).","","D85",[],"both"),
+                g("L",24,"CANRX","PB5",["TIM3_CH2", "UART5_RX", "SPI1_MOSI", "SPI3_MOSI", "SPI6_MOSI", "CAN2_RX"],[],false,"CAN RX (FDCAN2) : à relier à un transceiver CAN externe. D93 dans le cœur.","","D93",[],"both"),
+                g("L",25,"CANTX","PB13",["TIM1_CH1N", "UART5_TX", "UART3_CTS", "SPI2_SCK", "CAN2_TX"],[],false,"CAN TX (FDCAN2) : à relier à un transceiver CAN externe. D94 dans le cœur.","","D94",[],"both"),
+                g("R",1,"SCL","PH4",["ADC_INP15", "I2C2_SCL"],[],false,"Doublon de D21 / SCL (I2C2), près d'AREF.","","D21",[],"both"),
+                g("R",2,"SDA","PB11",["I2C2_SDA", "UART3_RX"],[],false,"Doublon de D20 / SDA (I2C2), près d'AREF.","","D20",[],"both"),
+                pw("R",3,"AREF","VREF+","Référence analogique (VREF+ du STM32).",false,"AREF","sig"),
+                pw("R",4,"GND","0 V","Masse.",true,"GND","gnd"),
+                g("R",5,"D13","PH6",["TIM12_CH1", "SPI5_SCK"],[],false,"","","",[],"both"),
+                g("R",6,"D12","PJ11",["TIM1_CH2", "TIM8_CH2N", "SPI5_MISO"],[],false,"","","",[],"both"),
+                g("R",7,"D11","PJ10",["TIM1_CH2N", "TIM8_CH2", "SPI5_MOSI"],[],false,"","","",[],"both"),
+                g("R",8,"D10","PK1",["TIM1_CH1", "TIM8_CH3N", "SPI5_NSS"],[],false,"","","",[],"both"),
+                g("R",9,"D9","PB9",["I2C1_SDA", "I2C4_SDA", "TIM4_CH4", "TIM17_CH1", "UART4_TX", "SPI2_NSS", "CAN1_TX"],[],false,"","","",[],"both"),
+                g("R",10,"D8","PB8",["I2C1_SCL", "I2C4_SCL", "TIM4_CH3", "TIM16_CH1", "UART4_RX", "CAN1_RX"],[],false,"","","",[],"both"),
+                g("R",12,"D7","PB4",["TIM3_CH1", "UART7_TX", "SPI1_MISO", "SPI3_MISO", "SPI6_MISO", "SPI2_NSS"],[],false,"","","",[],"both"),
+                g("R",13,"D6","PD13",["I2C4_SDA", "TIM4_CH2", "QSPI_DATA3"],[],false,"","","",[],"both"),
+                g("R",14,"D5","PA7",["ADC_INP7", "TIM1_CH1N", "TIM3_CH2", "TIM8_CH1N", "TIM14_CH1", "SPI1_MOSI", "SPI6_MOSI"],[],false,"","","",[],"both"),
+                g("R",15,"D4","PJ8",["TIM1_CH3N", "TIM8_CH1", "UART8_TX"],[],false,"","","",[],"both"),
+                g("R",16,"D3","PA2",["ADC_INP14", "TIM15_CH1", "UART2_TX"],[],false,"","","",[],"both"),
+                g("R",17,"D2","PA3",["ADC_INP15", "TIM15_CH2", "UART2_RX"],[],false,"","","",[],"both"),
+                g("R",18,"D1","PA9",["UART1_TX", "LPUART1_TX"],[],false,"Étiquette du cœur : TX.","","",[],"both"),
+                g("R",19,"D0","PB7",["I2C1_SDA", "I2C4_SDA", "TIM4_CH2", "TIM17_CH1N", "UART1_RX", "LPUART1_RX"],[],false,"Étiquette du cœur : RX.","","",[],"both"),
+                g("R",21,"D14","PG14",["UART6_TX", "SPI6_MOSI"],[],false,"Étiquette du cœur : TX3.","","",[],"both"),
+                g("R",22,"D15","PC7",["TIM3_CH2", "TIM8_CH2", "UART6_RX"],[],false,"Étiquette du cœur : RX3.","","",[],"both"),
+                g("R",23,"D16","PH13",["TIM8_CH1N", "UART4_TX", "CAN1_TX"],[],false,"Étiquette du cœur : TX2.","","",[],"both"),
+                g("R",24,"D17","PI9",["UART4_RX", "CAN1_RX"],[],false,"Étiquette du cœur : RX2.","","",[],"both"),
+                g("R",25,"D18","PD5",["UART2_TX"],[],false,"Étiquette du cœur : TX1.","","",[],"both"),
+                g("R",26,"D19","PD6",["UART2_RX", "SPI3_MOSI"],[],false,"Étiquette du cœur : RX1.","","",[],"both"),
+                g("R",27,"D20","PB11",["I2C2_SDA", "UART3_RX"],[],false,"Étiquette du cœur : SDA.","","",[],"both"),
+                g("R",28,"D21","PH4",["ADC_INP15", "I2C2_SCL"],[],false,"Étiquette du cœur : SCL.","","",[],"both"),
+                pw("R",30,"5V","5 V","Rail 5 V, en-tête double rangée D22–D53.",false,"+5V","pwr"),
+                g("R",31,"D22","PJ12",[],[],false,"","","",[],"both"),
+                g("R",32,"D23","PG13",["UART6_CTS", "SPI6_SCK"],[],false,"","","",[],"both"),
+                g("R",33,"D24","PG12",["UART6_RTS", "SPI6_MISO"],[],false,"","","",[],"both"),
+                g("R",34,"D25","PJ0",[],[],false,"","","",[],"both"),
+                g("R",35,"D26","PJ14",[],[],false,"","","",[],"both"),
+                g("R",36,"D27","PJ1",[],[],false,"","","",[],"both"),
+                g("R",37,"D28","PJ15",[],[],false,"","","",[],"both"),
+                g("R",38,"D29","PJ2",[],[],false,"","","",[],"both"),
+                g("R",39,"D30","PK3",[],[],false,"","","",[],"both"),
+                g("R",40,"D31","PJ3",[],[],false,"","","",[],"both"),
+                g("R",41,"D32","PK4",[],[],false,"","","",[],"both"),
+                g("R",42,"D33","PJ4",[],[],false,"","","",[],"both"),
+                g("R",43,"D34","PK5",[],[],false,"","","",[],"both"),
+                g("R",44,"D35","PJ5",[],[],false,"","","",[],"both"),
+                g("R",45,"D36","PK6",[],[],false,"","","",[],"both"),
+                g("R",46,"D37","PJ6",["TIM8_CH2"],[],false,"","","",[],"both"),
+                g("R",47,"D38","PJ7",["TIM8_CH2N"],[],false,"","","",[],"both"),
+                g("R",48,"D39","PI14",[],[],false,"","","",[],"both"),
+                g("R",49,"D40","PE6",["TIM15_CH2", "SPI4_MOSI"],[],false,"","","",[],"both"),
+                g("R",50,"D41","PK7",[],[],false,"","","",[],"both"),
+                g("R",51,"D42","PI15",[],[],false,"","","",[],"both"),
+                g("R",52,"D43","PI10",[],[],false,"","","",[],"both"),
+                g("R",53,"D44","PG10",["SPI1_NSS"],[],false,"","","",[],"both"),
+                g("R",54,"D45","PI13",[],[],false,"","","",[],"both"),
+                g("R",55,"D46","PH15",["TIM8_CH3N"],[],false,"","","",[],"both"),
+                g("R",56,"D47","PB2",["SPI3_MOSI", "QSPI_SCLK"],[],false,"","","",[],"both"),
+                g("R",57,"D48","PK0",["TIM1_CH1N", "TIM8_CH3", "SPI5_SCK"],[],false,"","","",[],"both"),
+                g("R",58,"D49","PE4",["TIM15_CH1N", "SPI4_NSS"],[],false,"","","",[],"both"),
+                g("R",59,"D50","PI11",[],[],false,"","","",[],"both"),
+                g("R",60,"D51","PE5",["TIM15_CH1", "SPI4_MISO"],[],false,"","","",[],"both"),
+                g("R",61,"D52","PK2",[],[],false,"","","",[],"both"),
+                g("R",62,"D53","PG7",[],[],false,"","","",[],"both"),
+                pw("R",63,"GND","0 V","Masse.",true,"GND","gnd")
+            ];
+            return { CONFIG: CONFIG, pins: pins };
+        } };
+        BOARDS["uno-r4-minima"] = { label: "Uno R4 Minima", mcu: "RA4M1", build: function () {
+            const CONFIG = {
+              "board": {
+                "name": "UNO R4 Minima",
+                "color": "#00878f",
+                "stroke": "#005b61",
+                "textColor": "#bfe9ec",
+                "usb": true,
+                "chip": [
+                  "RA4M1"
+                ],
+                "crystal": null,
+                "buttons": [
+                  {
+                    "x": 65,
+                    "label": "RESET"
+                  }
+                ],
+                "extraSvg": ""
+              },
+              "badges": [
+                [
+                  "primary",
+                  "Électronique"
+                ],
+                [
+                  "secondary",
+                  "Microcontrôleur"
+                ],
+                [
+                  "accent",
+                  "Renesas"
+                ]
+              ],
+              "text": {
+                "title": "Arduino UNO R4 Minima",
+                "subtitle": "Brochage Renesas RA4M1 (R7FA4M1AB3CFM)",
+                "lead": "Vue de la carte <strong>Arduino UNO R4 Minima</strong> (microcontrôleur Renesas <strong>RA4M1</strong>, Cortex-M4 48 MHz, logique <strong>5 V</strong>). Les fonctions de chaque broche sont lues dans les tables du cœur Arduino : <strong>PWM</strong> (GPT), <strong>SCI</strong> (UART / SPI / I2C simple), <strong>IIC</strong>, <strong>SPI</strong>, <strong>CAN</strong>, ADC, DAC.",
+                "sideLeft": "Rangée gauche · en-têtes alimentation et A0 → A5",
+                "sideRight": "Rangée droite · SCL, SDA, AREF, GND, 13 → 8 puis 7 → 0",
+                "hint": "Vue de dessus, USB-C en haut (quart de tour par rapport à la vue habituelle). Le <strong>numéro dans le cadre</strong> est celui imprimé sur la carte. Les trous correspondent aux espaces entre en-têtes.",
+                "foot": "Fonctions : <code>GTIOCnA/B</code> = sortie de timer GPT (PWM), <code>SCIn</code> = UART / SPI simple / I2C simple selon le mode, <code>IIC</code> = I2C matériel, <code>SPIn</code> = SPI matériel, <code>IRQn</code> = interruption externe, <code>ANxxx</code> = canal ADC. Pas de remap : un même signal peut être disponible sur plusieurs broches.",
+                "searchPlaceholder": "Rechercher : 13, P111, SPI, IRQ3, A0…"
+              },
+              "aux": [
+                {
+                  "side": "L",
+                  "port": "P500",
+                  "chip": "VMES",
+                  "cls": "an",
+                  "note": "D20 : mesure de la tension (non sortie)"
+                },
+                {
+                  "side": "R",
+                  "port": "P012 · P013",
+                  "chip": "TX · RX LED",
+                  "cls": "btn",
+                  "note": "LED_TX (D21) / LED_RX (D22), non sorties"
+                },
+                {
+                  "side": "R",
+                  "port": "P108 · P300",
+                  "chip": "SWDIO · SWCLK",
+                  "cls": "dbg",
+                  "note": "sur l'en-tête SWD (aussi D25 / D26 dans le cœur)"
+                },
+                {
+                  "side": "R",
+                  "port": "P501 · P502",
+                  "chip": "TX · RX",
+                  "cls": "ser",
+                  "note": "liaison série de l'en-tête SWD (D23 / D24)"
+                }
+              ],
+              "legend": [
+                "<i class=\"mm-lv mm-lv5 mm-inl\">5</i> logique 5 V",
+                "<i class=\"mm-pull mm-inl\">PU</i> pull-up interne activable",
+                "<i class=\"mm-num mm-inl\">13</i> numéro imprimé sur la carte",
+                "<i class=\"mm-c mm-c-al mm-inl\">A5</i> doublon d'une autre broche"
+              ],
+              "cards": [
+                {
+                  "kind": "warning",
+                  "html": "<strong>À savoir :</strong><ul><li>Les E/S sont en <strong>5 V</strong> ; <strong>seul le module ESP32-S3 est en 3,3 V</strong> (le RA4M1 lui parle via un convertisseur de niveau).</li><li>Courant par broche : <strong>8 mA</strong> conseillé d'après le datasheet (bien moins que sur l'Uno R3) : pas de charge directe.</li><li>La documentation ne précise pas broche par broche la tolérance 5 V : ne pas appliquer plus de 5 V.</li><li>PWM marqué ~ sur la carte : D3, D5, D6, D9, D10, D11. A0 est la seule sortie DAC.</li><li>ICSP (6 broches : CIPO, +5V, SCK, COPI, RESET, GND) et en-tête SWD (10 broches : +5V, SWDIO, GND, SWCLK, GND, NC, RX, TX, GND, NC) présents mais non détaillés ici.</li></ul>"
+                },
+                {
+                  "kind": "warning",
+                  "html": "<strong>Incohérences relevées dans la documentation Arduino :</strong> D0 et D1 sont toutes deux libellées « TX0 » dans la table de fonctions, et les libellés CAN de D4 / D5 y sont inversés par rapport à leur description. Cette page suit le <strong>code du cœur</strong> (D0 = RX, D1 = TX ; CAN : voir les puces de chaque broche)."
+                },
+                {
+                  "kind": "info",
+                  "html": "<strong>Sources &amp; vérification :</strong> numéros, ports (<code>Pxyz</code>) et fonctions lus dans <code>g_pin_cfg</code> et <code>pinmux.inc</code> du cœur <em>ArduinoCore-renesas</em> (variant <code>MINIMA</code>) ; ordre des en-têtes d'après le datasheet UNO R4 (ABX00080 pour la Minima). Le datasheet ne donne pas les numéros de port Renesas : ils proviennent du code."
+                }
+              ],
+              "silk": {
+                "re": "^(D\\d+|A\\d+)$",
+                "strip": "^D"
+              },
+              "portFmt": null,
+              "cats": [
+                [
+                  "all",
+                  "Tout"
+                ],
+                [
+                  "ADC",
+                  "ADC / DAC"
+                ],
+                [
+                  "UART",
+                  "UART (SCI)"
+                ],
+                [
+                  "SPI",
+                  "SPI"
+                ],
+                [
+                  "I2C",
+                  "I2C"
+                ],
+                [
+                  "TIM",
+                  "PWM (GPT)"
+                ],
+                [
+                  "CAN",
+                  "CAN"
+                ],
+                [
+                  "IRQ",
+                  "Interruptions"
+                ],
+                [
+                  "PWR",
+                  "Alim"
+                ]
+              ],
+              "catRe": {
+                "ADC": "^(AN\\d|DAC)",
+                "UART": "^SCI\\d_(TXD|RXD)",
+                "SPI": "^SPI",
+                "I2C": "^IIC",
+                "TIM": "^GTIOC",
+                "CAN": "^CAN",
+                "IRQ": "^IRQ"
+              },
+              "funcMap": [
+                {
+                  "re": "^AN\\d+$",
+                  "t": "Analog In",
+                  "c": "an",
+                  "once": true
+                },
+                {
+                  "re": "^DAC\\d$",
+                  "t": "DAC",
+                  "c": "an"
+                },
+                {
+                  "re": "^SCI(\\d)_(TXD|RXD)$",
+                  "t": "SCI$1 $2",
+                  "c": "ser"
+                },
+                {
+                  "re": "^IIC(\\d)_(SCL|SDA)$",
+                  "t": "I2C$1 $2",
+                  "c": "i2c"
+                },
+                {
+                  "re": "^SPI(\\d)_(MOSI|MISO|SCK)$",
+                  "t": "SPI$1 $2",
+                  "c": "spi"
+                },
+                {
+                  "re": "^GTIOC(\\d)([AB])$",
+                  "t": "PWM$1$2",
+                  "c": "pwm"
+                },
+                {
+                  "re": "^CAN0_(TX|RX)$",
+                  "t": "CAN $1",
+                  "c": "usb"
+                },
+                {
+                  "re": "^IRQ(\\d+)$",
+                  "t": "IRQ$1",
+                  "c": "misc"
+                }
+              ],
+              "texts": {
+                "pullBoth": "Pull-up ou pull-down au choix",
+                "pullUp": "Pull-up interne seulement (activée par logiciel : INPUT_PULLUP) ; pas de pull-down interne",
+                "pullDown": "Pull-down interne seulement",
+                "pullNone": "Aucune pull interne : entrée analogique seule",
+                "float": "Entrée (haute impédance)",
+                "rstTag": "",
+                "rstTip": "Reset actif bas",
+                "rstLevel": "5 V (entrée de reset, actif bas)",
+                "ft": "Logique 5 V (E/S alimentées en 5 V)",
+                "v3": "3,3 V uniquement",
+                "ftShort": "Logique 5 V",
+                "v3Short": "3,3 V",
+                "aliasLabel": "Équivalent",
+                "posSuffix": "e position depuis le haut (USB en haut)",
+                "badgeOk": "5 V",
+                "badgeLow": "3,3 V",
+                "badgeRst": "5 V"
+              }
+            };
+            const pins = [
+                pw("L",1,"BOOT","mode","Sélection du mode (BOOT) : un niveau bas au reset force le bootloader série du RA4M1 (liaison documentée comme « Mode selection »).",false,"BOOT","sig"),
+                pw("L",2,"IOREF","5 V","Tension de référence des E/S (5 V) pour les shields.",false,"IOREF","pwr"),
+                rst("L",3,"RESET","RES#","Reset actif bas, relié au bouton RESET de la carte.","RESET"),
+                pw("L",4,"3V3","3,3 V","Rail 3,3 V alimenté par le régulateur USB du microcontrôleur (et non par le convertisseur principal) : courant limité, voir le datasheet.",false,"+3.3V","pwr"),
+                pw("L",5,"5V","5 V","Rail 5 V (sortie, ou entrée si alimentation externe stabilisée).",false,"+5V","pwr"),
+                pw("L",6,"GND","0 V","Masse.",true,"GND","gnd"),
+                pw("L",7,"GND","0 V","Masse.",true,"GND","gnd"),
+                pw("L",8,"VIN","6–24 V","Entrée d'alimentation du convertisseur de la carte (6–24 V d'après la documentation de la famille UNO R4 ; à confirmer dans le datasheet).",false,"VIN","pwr"),
+                g("L",10,"A0","P014",["AN009"],[],true,"Seule sortie DAC 12 bits (DAC0) ; entrée analogique.","","",[],"up"),
+                g("L",11,"A1","P000",["AN000", "IRQ6"],[],true,"Entrée analogique ; entrée + de l'ampli-op interne (OPAMP).","","",[],"up"),
+                g("L",12,"A2","P001",["AN001", "IRQ7"],[],true,"Entrée analogique ; entrée − de l'ampli-op interne (OPAMP).","","",[],"up"),
+                g("L",13,"A3","P002",["AN002", "IRQ2"],[],true,"Entrée analogique ; sortie de l'ampli-op interne (OPAMP).","","",[],"up"),
+                g("L",14,"A4","P101",["AN021", "GTIOC5A", "IIC1_SDA", "IRQ1", "SCI0_TXD", "SCI1_CTS", "SPI0_MOSI"],[],true,"SDA de Wire (I2C, IIC1) ; entrée analogique.","","",[],"up"),
+                g("L",15,"A5","P100",["AN022", "GTIOC5B", "IIC1_SCL", "IRQ2", "SCI0_RXD", "SCI1_SCK", "SPI0_MISO"],[],true,"SCL de Wire (I2C, IIC1) ; entrée analogique.","","",[],"up"),
+                g("R",1,"SCL","P100",["AN022", "GTIOC5B", "IIC1_SCL", "IRQ2", "SCI0_RXD", "SCI1_SCK", "SPI0_MISO"],[],true,"Doublon de A5 / SCL (même broche du microcontrôleur).","","A5",[],"up"),
+                g("R",2,"SDA","P101",["AN021", "GTIOC5A", "IIC1_SDA", "IRQ1", "SCI0_TXD", "SCI1_CTS", "SPI0_MOSI"],[],true,"Doublon de A4 / SDA (même broche du microcontrôleur).","","A4",[],"up"),
+                pw("R",3,"AREF","réf. ADC","Référence analogique externe.",false,"AREF","sig"),
+                pw("R",4,"GND","0 V","Masse.",true,"GND","gnd"),
+                g("R",5,"D13","P111",["GTIOC3A", "IRQ4", "SCI2_SCK", "SCI9_SCK", "SPI1_SCK"],[],true,"LED_BUILTIN (L).  SCK de l'SPI par défaut.","","",[],"up"),
+                g("R",6,"D12","P110",["CAN0_RX", "GTIOC1B", "IRQ3", "SCI2_CTS", "SCI9_RXD", "SPI1_MISO"],[],true,"CIPO (MISO) de l'SPI par défaut.","","",[],"up"),
+                g("R",7,"D11","P109",["CAN0_TX", "GTIOC1A", "SCI1_SCK", "SCI9_TXD", "SPI1_MOSI"],[],true,"Sortie PWM (~) : marquée sur la carte.  COPI (MOSI) de l'SPI par défaut.","","",[],"up"),
+                g("R",8,"D10","P112",["GTIOC3B", "SCI1_SCK", "SCI2_TXD"],[],true,"Sortie PWM (~) : marquée sur la carte.  CS de l'SPI par défaut.","","",[],"up"),
+                g("R",9,"D9","P303",["GTIOC7B"],[],true,"Sortie PWM (~) : marquée sur la carte.","","",[],"up"),
+                g("R",10,"D8","P304",["GTIOC7A", "IRQ9"],[],true,"","","",[],"up"),
+                g("R",12,"D7","P107",["GTIOC0A"],[],true,"","","",[],"up"),
+                g("R",13,"D6","P106",["GTIOC0B"],[],true,"Sortie PWM (~) : marquée sur la carte.","","",[],"up"),
+                g("R",14,"D5","P102",["AN020", "CAN0_RX", "GTIOC2B", "SCI0_SCK", "SCI2_TXD", "SPI0_SCK"],[],true,"Sortie PWM (~) : marquée sur la carte.  CAN RX (CAN0, côté transceiver externe).","","",[],"up"),
+                g("R",15,"D4","P103",["AN019", "CAN0_TX", "GTIOC2A", "SCI0_CTS"],[],true,"CAN TX (CAN0, côté transceiver externe).","","",[],"up"),
+                g("R",16,"D3","P104",["GTIOC1B", "IRQ1", "SCI0_RXD"],[],true,"Sortie PWM (~) : marquée sur la carte.","","",[],"up"),
+                g("R",17,"D2","P105",["GTIOC1A", "IRQ0"],[],true,"","","",[],"up"),
+                g("R",18,"D1","P302",["GTIOC4A", "IRQ5", "SCI2_TXD"],[],true,"TX de Serial1 (SCI2) ; interruption IRQ5.","","",[],"up"),
+                g("R",19,"D0","P301",["GTIOC4B", "IRQ6", "SCI2_RXD", "SCI9_CTS"],[],true,"RX de Serial1 (SCI2) ; interruption IRQ6.","","",[],"up")
+            ];
+            return { CONFIG: CONFIG, pins: pins };
+        } };
+        BOARDS["uno-r4-wifi"] = { label: "Uno R4 WiFi + matrice LED", mcu: "RA4M1 + ESP32-S3", build: function () {
+            const CONFIG = {
+              "board": {
+                "name": "UNO R4 WiFi",
+                "color": "#00878f",
+                "stroke": "#005b61",
+                "textColor": "#bfe9ec",
+                "usb": true,
+                "chip": [
+                  "RA4M1"
+                ],
+                "crystal": null,
+                "buttons": [
+                  {
+                    "x": 65,
+                    "label": "RESET"
+                  }
+                ],
+                "extraSvg": "<rect x=\"40\" y=\"172\" width=\"50\" height=\"22\" rx=\"2\" fill=\"#15181a\" stroke=\"#4ecdc4\" stroke-width=\"1\"/><text x=\"65\" y=\"186\" text-anchor=\"middle\" font-size=\"5\" fill=\"#4ecdc4\" font-family=\"monospace\">ESP32-S3</text><circle cx=\"36\" cy=\"206\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"41\" cy=\"206\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"46\" cy=\"206\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"51\" cy=\"206\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"56\" cy=\"206\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"61\" cy=\"206\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"66\" cy=\"206\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"71\" cy=\"206\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"76\" cy=\"206\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"81\" cy=\"206\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"86\" cy=\"206\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"91\" cy=\"206\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"36\" cy=\"211\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"41\" cy=\"211\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"46\" cy=\"211\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"51\" cy=\"211\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"56\" cy=\"211\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"61\" cy=\"211\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"66\" cy=\"211\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"71\" cy=\"211\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"76\" cy=\"211\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"81\" cy=\"211\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"86\" cy=\"211\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"91\" cy=\"211\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"36\" cy=\"216\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"41\" cy=\"216\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"46\" cy=\"216\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"51\" cy=\"216\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"56\" cy=\"216\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"61\" cy=\"216\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"66\" cy=\"216\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"71\" cy=\"216\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"76\" cy=\"216\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"81\" cy=\"216\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"86\" cy=\"216\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"91\" cy=\"216\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"36\" cy=\"221\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"41\" cy=\"221\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"46\" cy=\"221\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"51\" cy=\"221\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"56\" cy=\"221\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"61\" cy=\"221\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"66\" cy=\"221\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"71\" cy=\"221\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"76\" cy=\"221\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"81\" cy=\"221\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"86\" cy=\"221\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"91\" cy=\"221\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"36\" cy=\"226\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"41\" cy=\"226\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"46\" cy=\"226\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"51\" cy=\"226\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"56\" cy=\"226\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"61\" cy=\"226\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"66\" cy=\"226\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"71\" cy=\"226\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"76\" cy=\"226\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"81\" cy=\"226\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"86\" cy=\"226\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"91\" cy=\"226\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"36\" cy=\"231\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"41\" cy=\"231\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"46\" cy=\"231\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"51\" cy=\"231\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"56\" cy=\"231\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"61\" cy=\"231\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"66\" cy=\"231\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"71\" cy=\"231\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"76\" cy=\"231\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"81\" cy=\"231\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"86\" cy=\"231\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"91\" cy=\"231\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"36\" cy=\"236\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"41\" cy=\"236\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"46\" cy=\"236\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"51\" cy=\"236\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"56\" cy=\"236\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"61\" cy=\"236\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"66\" cy=\"236\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"71\" cy=\"236\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"76\" cy=\"236\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"81\" cy=\"236\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"86\" cy=\"236\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"91\" cy=\"236\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"36\" cy=\"241\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"41\" cy=\"241\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"46\" cy=\"241\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"51\" cy=\"241\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"56\" cy=\"241\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"61\" cy=\"241\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"66\" cy=\"241\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"71\" cy=\"241\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"76\" cy=\"241\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"81\" cy=\"241\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"86\" cy=\"241\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/><circle cx=\"91\" cy=\"241\" r=\"1.6\" fill=\"#e74c3c\" opacity=\"0.85\"/>"
+              },
+              "badges": [
+                [
+                  "primary",
+                  "Électronique"
+                ],
+                [
+                  "secondary",
+                  "Microcontrôleur"
+                ],
+                [
+                  "accent",
+                  "Renesas"
+                ]
+              ],
+              "text": {
+                "title": "Arduino UNO R4 WiFi",
+                "subtitle": "Brochage Renesas RA4M1 (R7FA4M1AB3CFM)",
+                "lead": "Vue de la carte <strong>Arduino UNO R4 WiFi</strong> (microcontrôleur Renesas <strong>RA4M1</strong>, Cortex-M4 48 MHz, logique <strong>5 V</strong>). Les fonctions de chaque broche sont lues dans les tables du cœur Arduino : <strong>PWM</strong> (GPT), <strong>SCI</strong> (UART / SPI / I2C simple), <strong>IIC</strong>, <strong>SPI</strong>, <strong>CAN</strong>, ADC, DAC. Elle ajoute un module <strong>ESP32-S3</strong> (Wi-Fi / Bluetooth) et une <strong>matrice de 96 LED rouges (12 × 8)</strong> pilotée en charlieplexing par 11 broches internes (D28 → D38).",
+                "sideLeft": "Rangée gauche · en-têtes alimentation et A0 → A5",
+                "sideRight": "Rangée droite · SCL, SDA, AREF, GND, 13 → 8 puis 7 → 0",
+                "hint": "Vue de dessus, USB-C en haut (quart de tour par rapport à la vue habituelle). Le <strong>numéro dans le cadre</strong> est celui imprimé sur la carte. Les trous correspondent aux espaces entre en-têtes.",
+                "foot": "Fonctions : <code>GTIOCnA/B</code> = sortie de timer GPT (PWM), <code>SCIn</code> = UART / SPI simple / I2C simple selon le mode, <code>IIC</code> = I2C matériel, <code>SPIn</code> = SPI matériel, <code>IRQn</code> = interruption externe, <code>ANxxx</code> = canal ADC. Pas de remap : un même signal peut être disponible sur plusieurs broches.",
+                "searchPlaceholder": "Rechercher : 13, P111, SPI, IRQ3, A0…"
+              },
+              "aux": [
+                {
+                  "side": "L",
+                  "port": "VRTC",
+                  "chip": "OFF · GND",
+                  "cls": "misc",
+                  "note": "en-tête 3 broches OFF / GND / VRTC : VRTC = pile pour la RTC seule ; OFF à la masse = arrêt de la carte"
+                },
+                {
+                  "side": "R",
+                  "port": "QWIIC",
+                  "chip": "SCL P400",
+                  "cls": "i2c",
+                  "note": "Wire1 (IIC0) : connecteur Qwiic, D26"
+                },
+                {
+                  "side": "R",
+                  "port": "QWIIC",
+                  "chip": "SDA P401",
+                  "cls": "i2c",
+                  "note": "Wire1 (IIC0) : connecteur Qwiic, D27"
+                },
+                {
+                  "side": "L",
+                  "port": "P408",
+                  "chip": "USB SW",
+                  "cls": "usb",
+                  "note": "D21 : commutateur USB (à 1 pour que le RA4M1 prenne le port, d'après le cœur)"
+                },
+                {
+                  "side": "R",
+                  "port": "P109 · P110",
+                  "chip": "D22 · D23",
+                  "cls": "ser",
+                  "note": "liaison série interne (TX / RX) d'après le cœur"
+                },
+                {
+                  "side": "R",
+                  "port": "P501 · P502",
+                  "chip": "D24 · D25",
+                  "cls": "ser",
+                  "note": "liaison série interne vers l'ESP32-S3 (TX / RX WIFI) d'après le cœur"
+                },
+                {
+                  "side": "L",
+                  "port": "D28 → D38",
+                  "chip": "MATRICE",
+                  "cls": "btn",
+                  "note": "matrice LED 12 × 8 (charlieplexing, 11 broches) : P003, P004, P011, P012, P013, P015, P204, P205, P206, P212, P213"
+                }
+              ],
+              "legend": [
+                "<i class=\"mm-lv mm-lv5 mm-inl\">5</i> logique 5 V",
+                "<i class=\"mm-pull mm-inl\">PU</i> pull-up interne activable",
+                "<i class=\"mm-num mm-inl\">13</i> numéro imprimé sur la carte",
+                "<i class=\"mm-c mm-c-al mm-inl\">A5</i> doublon d'une autre broche"
+              ],
+              "cards": [
+                {
+                  "kind": "warning",
+                  "html": "<strong>À savoir :</strong><ul><li>Les E/S sont en <strong>5 V</strong> ; <strong>seul le module ESP32-S3 est en 3,3 V</strong> (le RA4M1 lui parle via un convertisseur de niveau).</li><li>Courant par broche : <strong>8 mA</strong> conseillé d'après le datasheet (bien moins que sur l'Uno R3) : pas de charge directe.</li><li>La documentation ne précise pas broche par broche la tolérance 5 V : ne pas appliquer plus de 5 V.</li><li>PWM marqué ~ sur la carte : D3, D5, D6, D9, D10, D11. A0 est la seule sortie DAC.</li><li>ICSP (6 broches : CIPO, +5V, SCK, COPI, RESET, GND) et en-tête SWD (10 broches : +5V, SWDIO, GND, SWCLK, GND, NC, RX, TX, GND, NC) présents mais non détaillés ici.</li></ul>"
+                },
+                {
+                  "kind": "warning",
+                  "html": "<strong>Incohérences relevées dans la documentation Arduino :</strong> D0 et D1 sont toutes deux libellées « TX0 » dans la table de fonctions, et les libellés CAN de D4 / D5 y sont inversés par rapport à leur description. Cette page suit le <strong>code du cœur</strong> (D0 = RX, D1 = TX ; CAN : voir les puces de chaque broche)."
+                },
+                {
+                  "kind": "info",
+                  "html": "<strong>Sources &amp; vérification :</strong> numéros, ports (<code>Pxyz</code>) et fonctions lus dans <code>g_pin_cfg</code> et <code>pinmux.inc</code> du cœur <em>ArduinoCore-renesas</em> (variant <code>UNOWIFIR4</code>) ; ordre des en-têtes d'après le datasheet UNO R4 (ABX00080 pour la Minima). Le datasheet ne donne pas les numéros de port Renesas : ils proviennent du code."
+                }
+              ],
+              "silk": {
+                "re": "^(D\\d+|A\\d+)$",
+                "strip": "^D"
+              },
+              "portFmt": null,
+              "cats": [
+                [
+                  "all",
+                  "Tout"
+                ],
+                [
+                  "ADC",
+                  "ADC / DAC"
+                ],
+                [
+                  "UART",
+                  "UART (SCI)"
+                ],
+                [
+                  "SPI",
+                  "SPI"
+                ],
+                [
+                  "I2C",
+                  "I2C"
+                ],
+                [
+                  "TIM",
+                  "PWM (GPT)"
+                ],
+                [
+                  "CAN",
+                  "CAN"
+                ],
+                [
+                  "IRQ",
+                  "Interruptions"
+                ],
+                [
+                  "PWR",
+                  "Alim"
+                ]
+              ],
+              "catRe": {
+                "ADC": "^(AN\\d|DAC)",
+                "UART": "^SCI\\d_(TXD|RXD)",
+                "SPI": "^SPI",
+                "I2C": "^IIC",
+                "TIM": "^GTIOC",
+                "CAN": "^CAN",
+                "IRQ": "^IRQ"
+              },
+              "funcMap": [
+                {
+                  "re": "^AN\\d+$",
+                  "t": "Analog In",
+                  "c": "an",
+                  "once": true
+                },
+                {
+                  "re": "^DAC\\d$",
+                  "t": "DAC",
+                  "c": "an"
+                },
+                {
+                  "re": "^SCI(\\d)_(TXD|RXD)$",
+                  "t": "SCI$1 $2",
+                  "c": "ser"
+                },
+                {
+                  "re": "^IIC(\\d)_(SCL|SDA)$",
+                  "t": "I2C$1 $2",
+                  "c": "i2c"
+                },
+                {
+                  "re": "^SPI(\\d)_(MOSI|MISO|SCK)$",
+                  "t": "SPI$1 $2",
+                  "c": "spi"
+                },
+                {
+                  "re": "^GTIOC(\\d)([AB])$",
+                  "t": "PWM$1$2",
+                  "c": "pwm"
+                },
+                {
+                  "re": "^CAN0_(TX|RX)$",
+                  "t": "CAN $1",
+                  "c": "usb"
+                },
+                {
+                  "re": "^IRQ(\\d+)$",
+                  "t": "IRQ$1",
+                  "c": "misc"
+                }
+              ],
+              "texts": {
+                "pullBoth": "Pull-up ou pull-down au choix",
+                "pullUp": "Pull-up interne seulement (activée par logiciel : INPUT_PULLUP) ; pas de pull-down interne",
+                "pullDown": "Pull-down interne seulement",
+                "pullNone": "Aucune pull interne : entrée analogique seule",
+                "float": "Entrée (haute impédance)",
+                "rstTag": "",
+                "rstTip": "Reset actif bas",
+                "rstLevel": "5 V (entrée de reset, actif bas)",
+                "ft": "Logique 5 V (E/S alimentées en 5 V)",
+                "v3": "3,3 V uniquement",
+                "ftShort": "Logique 5 V",
+                "v3Short": "3,3 V",
+                "aliasLabel": "Équivalent",
+                "posSuffix": "e position depuis le haut (USB en haut)",
+                "badgeOk": "5 V",
+                "badgeLow": "3,3 V",
+                "badgeRst": "5 V"
+              }
+            };
+            const pins = [
+                pw("L",1,"BOOT","mode","Sélection du mode (BOOT) : un niveau bas au reset force le bootloader série du RA4M1 (liaison documentée comme « Mode selection »).",false,"BOOT","sig"),
+                pw("L",2,"IOREF","5 V","Tension de référence des E/S (5 V) pour les shields.",false,"IOREF","pwr"),
+                rst("L",3,"RESET","RES#","Reset actif bas, relié au bouton RESET de la carte.","RESET"),
+                pw("L",4,"3V3","3,3 V","Rail 3,3 V alimenté par le régulateur USB du microcontrôleur (et non par le convertisseur principal) : courant limité, voir le datasheet.",false,"+3.3V","pwr"),
+                pw("L",5,"5V","5 V","Rail 5 V (sortie, ou entrée si alimentation externe stabilisée).",false,"+5V","pwr"),
+                pw("L",6,"GND","0 V","Masse.",true,"GND","gnd"),
+                pw("L",7,"GND","0 V","Masse.",true,"GND","gnd"),
+                pw("L",8,"VIN","6–24 V","Entrée d'alimentation du convertisseur de la carte (6–24 V d'après la documentation de la famille UNO R4 ; à confirmer dans le datasheet).",false,"VIN","pwr"),
+                g("L",10,"A0","P014",["AN009"],[],true,"Seule sortie DAC 12 bits (DAC0) ; entrée analogique.","","",[],"up"),
+                g("L",11,"A1","P000",["AN000", "IRQ6"],[],true,"Entrée analogique ; entrée + de l'ampli-op interne (OPAMP).","","",[],"up"),
+                g("L",12,"A2","P001",["AN001", "IRQ7"],[],true,"Entrée analogique ; entrée − de l'ampli-op interne (OPAMP).","","",[],"up"),
+                g("L",13,"A3","P002",["AN002", "IRQ2"],[],true,"Entrée analogique ; sortie de l'ampli-op interne (OPAMP).","","",[],"up"),
+                g("L",14,"A4","P101",["AN021", "GTIOC5A", "IIC1_SDA", "IRQ1", "SCI0_TXD", "SCI1_CTS", "SPI0_MOSI"],[],true,"SDA de Wire (I2C, IIC1) ; entrée analogique.","","",[],"up"),
+                g("L",15,"A5","P100",["AN022", "GTIOC5B", "IIC1_SCL", "IRQ2", "SCI0_RXD", "SCI1_SCK", "SPI0_MISO"],[],true,"SCL de Wire (I2C, IIC1) ; entrée analogique.","","",[],"up"),
+                g("R",1,"SCL","P100",["AN022", "GTIOC5B", "IIC1_SCL", "IRQ2", "SCI0_RXD", "SCI1_SCK", "SPI0_MISO"],[],true,"Doublon de A5 / SCL (même broche du microcontrôleur).","","A5",[],"up"),
+                g("R",2,"SDA","P101",["AN021", "GTIOC5A", "IIC1_SDA", "IRQ1", "SCI0_TXD", "SCI1_CTS", "SPI0_MOSI"],[],true,"Doublon de A4 / SDA (même broche du microcontrôleur).","","A4",[],"up"),
+                pw("R",3,"AREF","réf. ADC","Référence analogique externe.",false,"AREF","sig"),
+                pw("R",4,"GND","0 V","Masse.",true,"GND","gnd"),
+                g("R",5,"D13","P102",["AN020", "CAN0_RX", "GTIOC2B", "SCI0_SCK", "SCI2_TXD", "SPI0_SCK"],[],true,"LED_BUILTIN (L).  SCK de l'SPI par défaut. CAN RX (CAN0, côté transceiver externe).","","",[],"up"),
+                g("R",6,"D12","P410",["GTIOC6B", "IRQ5", "SCI0_RXD", "SPI0_MISO"],[],true,"CIPO (MISO) de l'SPI par défaut.","","",[],"up"),
+                g("R",7,"D11","P411",["GTIOC6A", "IRQ4", "SCI0_TXD", "SPI0_MOSI"],[],true,"Sortie PWM (~) : marquée sur la carte.  COPI (MOSI) de l'SPI par défaut.","","",[],"up"),
+                g("R",8,"D10","P103",["AN019", "CAN0_TX", "GTIOC2A", "SCI0_CTS"],[],true,"Sortie PWM (~) : marquée sur la carte.  CS de l'SPI par défaut. CAN TX (CAN0, côté transceiver externe).","","",[],"up"),
+                g("R",9,"D9","P303",["GTIOC7B"],[],true,"Sortie PWM (~) : marquée sur la carte.","","",[],"up"),
+                g("R",10,"D8","P304",["GTIOC7A", "IRQ9"],[],true,"","","",[],"up"),
+                g("R",12,"D7","P112",["GTIOC3B", "SCI1_SCK", "SCI2_TXD"],[],true,"","","",[],"up"),
+                g("R",13,"D6","P111",["GTIOC3A", "IRQ4", "SCI2_SCK", "SCI9_SCK", "SPI1_SCK"],[],true,"Sortie PWM (~) : marquée sur la carte.","","",[],"up"),
+                g("R",14,"D5","P107",["GTIOC0A"],[],true,"Sortie PWM (~) : marquée sur la carte.","","",[],"up"),
+                g("R",15,"D4","P106",["GTIOC0B"],[],true,"","","",[],"up"),
+                g("R",16,"D3","P105",["GTIOC1A", "IRQ0"],[],true,"Sortie PWM (~) : marquée sur la carte.","","",[],"up"),
+                g("R",17,"D2","P104",["GTIOC1B", "IRQ1", "SCI0_RXD"],[],true,"","","",[],"up"),
+                g("R",18,"D1","P302",["GTIOC4A", "IRQ5", "SCI2_TXD"],[],true,"TX de Serial1 (SCI2) ; interruption IRQ5.","","",[],"up"),
+                g("R",19,"D0","P301",["GTIOC4B", "IRQ6", "SCI2_RXD", "SCI9_CTS"],[],true,"RX de Serial1 (SCI2) ; interruption IRQ6.","","",[],"up")
+            ];
+            return { CONFIG: CONFIG, pins: pins };
+        } };
+            let ro = null, layoutFn = null;
+            window.addEventListener('resize', function () { if (layoutFn) layoutFn(); });
+            document.addEventListener('contentLoaded', function () { if (layoutFn) layoutFn(); });
+
+            function mount(CONFIG, pins) {
+            const T = CONFIG.texts;
+            const FLOAT = T.float;
+            pins.forEach(p => { if (p.t === 'gpio' && !p.rs) p.rs = FLOAT; });
+            const $ = id => document.getElementById(id);
+            const page = root.closest('.page-content') || document;
+
+            // ----- Textes et blocs pilotés par la configuration -----
+            page.querySelectorAll('[data-cfg]').forEach(el => {
+                const v = CONFIG.text[el.dataset.cfg];
+                if (v != null) el.innerHTML = v;
+            });
+            $('mm-search').placeholder = CONFIG.text.searchPlaceholder;
+            $('mm-badges').innerHTML = CONFIG.badges.map(b => '<span class="badge badge-' + b[0] + '">' + b[1] + '</span>').join('\n');
+            $('mm-legend').innerHTML = CONFIG.legend.map(h => '<span>' + h + '</span>').join('');
+            $('mm-aux').innerHTML = (CONFIG.aux || []).map(a => {
+                const pt = '<span class="mm-pt io">' + a.port + '</span>';
+                const ch = '<span class="mm-c mm-c-' + a.cls + '">' + a.chip + '</span>';
+                const nt = '<span class="mm-note">' + a.note + '</span>';
+                return '<div class="mm-auxitem">' + (a.side === 'R' ? nt + ch + pt : pt + ch + nt) + '</div>';
+            }).join('');
+            root.querySelectorAll(':scope > .card-alert').forEach(n => n.remove());
+            CONFIG.cards.forEach(c => {
+                const d = document.createElement('div');
+                d.className = 'card-alert ' + c.kind;
+                d.innerHTML = '<div class="card-body">' + c.html + '</div>';
+                root.appendChild(d);
+            });
+
+            // ----- Normalisation des broches -----
+            // Ordre : rangée gauche (haut → bas), puis rangée droite (haut → bas)
+            pins.sort((a, b) => (a.s === b.s ? a.r - b.r : (a.s === 'L' ? -1 : 1)));
+            const portFmt = CONFIG.portFmt ? [new RegExp(CONFIG.portFmt[0]), CONFIG.portFmt[1]] : null;
+            pins.forEach(p => {
+                p.mb = p.t === 'gpio' ? (portFmt ? p.p.replace(portFmt[0], portFmt[1]) : p.p)
+                     : (p.t === 'rst' ? (p.disp || 'RESET') : p.disp);
+            });
+            const ROWS = Math.max.apply(null, pins.map(p => p.r));
+
+            const CATS = CONFIG.cats;
+            const CAT_RE = {};
+            Object.keys(CONFIG.catRe).forEach(k => { CAT_RE[k] = new RegExp(CONFIG.catRe[k]); });
+            const FUNC_MAP = CONFIG.funcMap.map(m => ({ re: new RegExp(m.re), t: m.t, c: m.c, once: !!m.once }));
+            const silkRe = new RegExp(CONFIG.silk.re);
+            const silkStrip = CONFIG.silk.strip ? new RegExp(CONFIG.silk.strip) : null;
+            const state = { q: '', cat: 'all', sel: -1 };
+            const allFuncs = p => p.f.concat(p.m);
+
+            const isNum = p => silkRe.test(p.l);
+            const numText = p => (isNum(p) && silkStrip) ? p.l.replace(silkStrip, '') : p.l;
+            const plOf = p => p.pl || 'both';
+            const PULL_TXT = { both: T.pullBoth, up: T.pullUp, down: T.pullDown, none: T.pullNone };
+            const PULL_TAG = { both: 'PU/PD', up: 'PU', down: 'PD', none: '' };
+            const PULL_SHORT = { both: 'PU / PD', up: 'PU', down: 'PD', none: 'aucune' };
+
+            // ----- Puces de fonctions (style du schéma de référence) -----
+            function chipsFor(p) {
+                const out = [];
+                if (p.al) out.push({ t: p.al, c: 'al' });
+                p.x.forEach(x => out.push({ t: x[0], c: x[1] }));
+                const add = (arr, rm) => {
+                    arr.forEach(f => {
+                        const m = FUNC_MAP.find(e => e.re.test(f));
+                        if (!m) return;
+                        const t = f.replace(m.re, m.t);
+                        if (m.once && out.some(o => o.t === t && o.c === m.c)) return;
+                        out.push({ t, c: m.c, rm });
+                    });
+                };
+                add(p.f, false);
+                add(p.m, true);
+                return out;
+            }
+
+            function pullTag(p) {
+                if (p.t === 'pwr') return '';
+                if (p.t === 'rst') return T.rstTag ? '<i class="mm-pull" title="' + T.rstTip + '">' + T.rstTag + '</i>' : '';
+                const base = PULL_TAG[plOf(p)];
+                if (!base) return '';
+                const arrow = /^Pull-up/.test(p.rs) ? ' ↑' : (/^Pull-down/.test(p.rs) ? ' ↓' : '');
+                const tip = PULL_TXT[plOf(p)] + (p.rs !== FLOAT ? ' · État au reset : ' + p.rs : '');
+                return '<i class="mm-pull" title="' + tip + '">' + base + arrow + '</i>';
+            }
+
+            function dotHTML(p) {
+                const col = p.t === 'pwr' ? ((p.gnd || p.kind === 'nc' || p.kind === 'sig') ? '#6a7a7a' : '#e74c3c') : (p.ft ? '#2ecc71' : '#e74c3c');
+                return '<i style="display:inline-block;width:10px;height:10px;border-radius:50%;background:' + col + ';vertical-align:middle;margin-right:4px"></i>';
+            }
+
+            function rowHTML(p) {
+                const MAXC = 4;
+                const chips = chipsFor(p);
+                const shown = chips.slice(0, MAXC);
+                const hidden = chips.slice(MAXC);
+                let cs = shown.map(c => '<span class="mm-c mm-c-' + c.c + (c.rm ? ' mm-rm' : '') + '"' +
+                    (c.rm ? ' title="Après remap"' : '') + '>' + c.t + '</span>').join('');
+                if (hidden.length) cs += '<span class="mm-c mm-c-misc" title="' + hidden.map(c => c.t).join(', ') + '">+' + hidden.length + '</span>';
+                let lv;
+                if (p.t === 'pwr') lv = '<span class="mm-lv mm-lv0"></span>';
+                else lv = '<span class="mm-lv ' + (p.ft ? 'mm-lv5' : 'mm-lv3') + '" title="' + (p.ft ? T.ftShort : T.v3Short) + '">' + (p.ft ? '5' : '3') + '</span>';
+                const ptCls = p.t === 'pwr' ? p.kind : (p.t === 'rst' ? 'rst' : 'io');
+                return lv +
+                    '<span class="mm-pt ' + ptCls + '">' + p.mb + '</span>' +
+                    '<span class="mm-cs">' + cs + pullTag(p) + '</span>' +
+                    '<span class="mm-line"></span>' +
+                    '<span class="mm-num' + (isNum(p) ? '' : ' mm-num-x') + '" title="Imprimé sur la carte : ' + p.l + '">' + numText(p) + '</span>';
+            }
+
+            function levelText(p) {
+                if (p.t === 'pwr') return p.kind === 'nc' ? 'Non connectée' : (p.kind === 'sig' ? 'Signal de référence / commande (voir la remarque)' : (p.gnd ? 'Masse (0 V)' : 'Alimentation : ' + p.sh));
+                if (p.t === 'rst') return T.rstLevel;
+                return p.ft ? T.ft : T.v3;
+            }
+            function pullText(p) {
+                if (p.t === 'pwr') return 'Sans objet';
+                if (p.t === 'rst') return T.rstTip;
+                return PULL_TXT[plOf(p)];
+            }
+            function levelBadge(p) {
+                if (p.t === 'pwr') return '<span class="badge badge-secondary">' + p.sh + '</span>';
+                if (p.t === 'rst') return '<span class="badge badge-warning">' + (T.badgeRst || '3,3 V') + '</span>';
+                return p.ft ? '<span class="badge badge-success">' + (T.badgeOk || '5 V ✔') + '</span>' : '<span class="badge badge-warning">' + (T.badgeLow || '3,3 V') + '</span>';
+            }
+            function pullShort(p) {
+                if (p.t === 'pwr') return '—';
+                if (p.t === 'rst') return T.rstTag || '—';
+                return PULL_SHORT[plOf(p)] + (plOf(p) !== 'none' && p.rs !== FLOAT ? ' (reset : ' + p.rs.replace(/ \(.*\)/, '').toLowerCase() + ')' : '');
+            }
+
+            // ----- Carte (SVG central) : dimensions déduites du nombre de rangées -----
+            (function drawBoard() {
+                const B = CONFIG.board;
+                const Y0 = 44, H = 30;
+                const SH = Y0 + H * ROWS + 8;
+                const tx = B.textColor;
+                let s = '<svg viewBox="0 0 130 ' + SH + '" width="130" height="' + SH + '" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="' + B.name + '">';
+                s += '<rect x="28" y="34" width="74" height="' + (H * ROWS + 12) + '" rx="6" fill="' + B.color + '" stroke="' + B.stroke + '" stroke-width="2"/>';
+                if (B.usb) {
+                    s += '<rect x="46" y="4" width="38" height="36" rx="3" fill="#c9cfd2" stroke="#7b8488" stroke-width="2"/>';
+                    s += '<rect x="53" y="12" width="24" height="10" rx="1" fill="#5a6266"/>';
+                }
+                s += '<rect x="48" y="130" width="34" height="34" rx="2" fill="#15181a" stroke="#4ecdc4" stroke-width="1"/>';
+                B.chip.forEach((line, i) => {
+                    s += '<text x="65" y="' + (145 + 9 * i) + '" text-anchor="middle" font-size="6" fill="#4ecdc4" font-family="monospace">' + line + '</text>';
+                });
+                if (B.crystal) {
+                    s += '<rect x="56" y="200" width="18" height="8" rx="4" fill="#d9d9d9" stroke="#7b8488"/>';
+                    s += '<text x="65" y="222" text-anchor="middle" font-size="6" fill="' + tx + '" font-family="monospace">' + B.crystal + '</text>';
+                }
+                s += '<text x="65" y="262" text-anchor="middle" font-size="9" fill="' + tx + '" font-family="sans-serif" font-weight="700">' + B.name + '</text>';
+                const by = SH - 92;
+                (B.buttons || []).forEach(b => {
+                    s += '<circle cx="' + b.x + '" cy="' + by + '" r="6" fill="#222" stroke="#999"/><text x="' + b.x + '" y="' + (by + 18) + '" text-anchor="middle" font-size="6" fill="' + tx + '" font-family="monospace">' + b.label + '</text>';
+                });
+                s += (B.extraSvg || '');
+                for (let i = 0; i < ROWS; i++) {
+                    const y = Y0 + H * i + H / 2;
+                    s += '<line x1="0" y1="' + y + '" x2="34" y2="' + y + '" stroke="currentColor" stroke-opacity="0.5"/>';
+                    s += '<line x1="96" y1="' + y + '" x2="130" y2="' + y + '" stroke="currentColor" stroke-opacity="0.5"/>';
+                    s += '<circle cx="35" cy="' + y + '" r="3.2" fill="#d4af37"/><circle cx="95" cy="' + y + '" r="3.2" fill="#d4af37"/>';
+                }
+                s += '</svg>';
+                $('mm-boardsvg').innerHTML = s;
+            })();
+
+            // ----- Rangées -----
+            const leftEl = $('mm-left');
+            const rightEl = $('mm-right');
+            leftEl.innerHTML = ''; rightEl.innerHTML = '';
+            const nextRank = { L: 1, R: 1 };
+            pins.forEach((p, i) => {
+                // rang manquant (ex. un côté plus court) : ligne vide pour garder l'alignement avec la carte
+                for (; nextRank[p.s] < p.r; nextRank[p.s]++) {
+                    const gap = document.createElement('div');
+                    gap.style.height = '30px';
+                    (p.s === 'L' ? leftEl : rightEl).appendChild(gap);
+                }
+                nextRank[p.s] = p.r + 1;
+                const row = document.createElement('div');
+                row.className = 'mm-row';
+                row.dataset.i = i;
+                row.tabIndex = 0;
+                row.setAttribute('role', 'button');
+                row.setAttribute('aria-label', 'Broche ' + numText(p) + ' ' + p.mb);
+                row.innerHTML = rowHTML(p);
+                row.addEventListener('click', () => select(i));
+                row.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(i); } });
+                (p.s === 'L' ? leftEl : rightEl).appendChild(row);
+            });
+
+            // ----- Tableau -----
+            const tbody = $('mm-tbody');
+            tbody.innerHTML = '';
+            pins.forEach((p, i) => {
+                const tr = document.createElement('tr');
+                tr.dataset.i = i;
+                const fn = p.f.concat(p.m.map(f => f + '*')).join(', ') || '—';
+                tr.innerHTML =
+                    '<td class="mono">' + numText(p) + '</td>' +
+                    '<td>' + (p.s === 'L' ? 'G' : 'D') + '</td>' +
+                    '<td class="mono">' + (p.al || '—') + '</td>' +
+                    '<td class="mono">' + (p.t === 'pwr' ? '—' : p.mb) + '</td>' +
+                    '<td class="fn">' + fn + '</td>' +
+                    '<td>' + pullShort(p) + '</td>' +
+                    '<td>' + levelBadge(p) + '</td>';
+                tr.addEventListener('click', () => select(i));
+                tbody.appendChild(tr);
+            });
+
+            // ----- Détail -----
+            const detail = $('mm-detail');
+            detail.innerHTML = '<p class="text-muted" style="margin:0;">Sélectionne une broche dans le schéma ou dans le tableau.</p>';
+            const view = $('mm-view');
+            function select(i) {
+                state.sel = i;
+                const p = pins[i];
+                const tags = p.f.map(f => '<span class="mm-tag">' + f + '</span>').join('') +
+                    p.m.map(f => '<span class="mm-tag remap">' + f + ' (remap)</span>').join('');
+                let html =
+                    '<div class="mm-d-head"><span class="mm-d-title">' + (isNum(p) ? 'Broche ' : '') + numText(p) + '</span>' +
+                    '<span class="mm-d-sub">' + (p.t === 'pwr' ? 'Alimentation' : p.mb + ' (' + p.p + ')') + '</span></div>' +
+                    '<dl class="mm-d-grid">' +
+                    '<dt>Sur la carte</dt><dd>' + numText(p) + ' — rangée ' + (p.s === 'L' ? 'gauche' : 'droite') + ', ' + p.r + T.posSuffix + '</dd>';
+                if (p.al) html += '<dt>' + T.aliasLabel + '</dt><dd>' + p.al + '</dd>';
+                if (tags) html += '<dt>Fonctions</dt><dd>' + tags + '</dd>';
+                html += '<dt>Pull-up / pull-down</dt><dd>' + pullText(p) + '</dd>';
+                if (p.t === 'gpio') html += '<dt>État au reset</dt><dd>' + p.rs + '</dd>';
+                html += '<dt>Niveau logique</dt><dd>' + dotHTML(p) + levelText(p) + '</dd>';
+                if (p.n) html += '<dt>Remarque</dt><dd>' + p.n + '</dd>';
+                html += '</dl>';
+                detail.innerHTML = html;
+                refresh();
+                const card = $('mm-detail-card');
+                if (card && view.classList.contains('mm-stack') && card.scrollIntoView) card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+
+            // ----- Filtres -----
+            function matches(p) {
+                if (state.cat !== 'all') {
+                    if (state.cat === 'FT') { if (p.ft !== true) return false; }
+                    else if (state.cat === 'V3') { if (p.t === 'pwr' || p.ft !== false) return false; }
+                    else if (state.cat === 'PWR') { if (p.t !== 'pwr') return false; }
+                    else if (!allFuncs(p).some(f => CAT_RE[state.cat].test(f))) return false;
+                }
+                if (state.q) {
+                    if (/^\d+$/.test(state.q)) return numText(p).toLowerCase() === state.q;
+                    const hay = (p.l + ' ' + p.p + ' ' + p.mb + ' ' + p.al + ' ' + allFuncs(p).join(' ') + ' ' + p.n).toLowerCase();
+                    if (hay.indexOf(state.q) === -1) return false;
+                }
+                return true;
+            }
+
+            const chipsEl = $('mm-chips');
+            chipsEl.innerHTML = '';
+            CATS.forEach(([key, label]) => {
+                const b = document.createElement('button');
+                b.type = 'button';
+                b.className = 'mm-chip-btn' + (key === 'all' ? ' active' : '');
+                b.textContent = label;
+                b.addEventListener('click', () => {
+                    state.cat = key;
+                    chipsEl.querySelectorAll('.mm-chip-btn').forEach(c => c.classList.toggle('active', c === b));
+                    refresh();
+                });
+                chipsEl.appendChild(b);
+            });
+            $('mm-search').value = '';
+            $('mm-search').oninput = e => {
+                state.q = e.target.value.trim().toLowerCase();
+                refresh();
+            };
+
+            function refresh() {
+                let shown = 0;
+                root.querySelectorAll('.mm-row').forEach(el => {
+                    const i = +el.dataset.i;
+                    const ok = matches(pins[i]);
+                    el.classList.toggle('mm-dim', !ok);
+                    el.classList.toggle('sel', i === state.sel);
+                    if (ok) shown++;
+                });
+                tbody.querySelectorAll('tr').forEach(tr => {
+                    const i = +tr.dataset.i;
+                    tr.style.display = matches(pins[i]) ? '' : 'none';
+                    tr.classList.toggle('sel', i === state.sel);
+                });
+                $('mm-count').textContent = shown + ' / ' + pins.length + ' broches correspondent';
+            }
+
+            // ----- Mise en page adaptative : schéma large ou liste empilée -----
+            function layout() {
+                const w = root.getBoundingClientRect().width;
+                if (!w) return;
+                view.classList.toggle('mm-stack', w < 940);
+            }
+            layoutFn = layout;
+            if (ro) ro.disconnect();
+            if (window.ResizeObserver) { ro = new ResizeObserver(layout); ro.observe(root); }
+
+            layout();
+            refresh();
+
+            }
+
+            // ----- Sélecteur de carte -----
+            const keys = Object.keys(BOARDS);
+            const pick = document.getElementById('mm-boards');
+            keys.forEach(function (k) {
+                const b = document.createElement('button');
+                b.type = 'button';
+                b.className = 'mm-chip-btn mm-board-btn';
+                b.dataset.key = k;
+                b.innerHTML = '<b></b><small></small>';
+                b.firstChild.textContent = BOARDS[k].label;
+                b.lastChild.textContent = BOARDS[k].mcu;
+                b.addEventListener('click', function () { show(k); });
+                pick.appendChild(b);
+            });
+            function show(k) {
+                if (!BOARDS[k]) k = keys[0];
+                pick.querySelectorAll('.mm-board-btn').forEach(function (c) { c.classList.toggle('active', c.dataset.key === k); });
+                const r = BOARDS[k].build();
+                mount(r.CONFIG, r.pins);
+                try { history.replaceState(null, '', '#' + k); } catch (err) { /* page intégrée : pas de hash */ }
+                try { window.__mmCurrent = k; } catch (err) {}
+            }
+            window.addEventListener('hashchange', function () { show(location.hash.replace('#', '')); });
+            show(location.hash.replace('#', '') || keys[0]);
+        })();
+    </script>
+    </div>
+</body>
+</html>

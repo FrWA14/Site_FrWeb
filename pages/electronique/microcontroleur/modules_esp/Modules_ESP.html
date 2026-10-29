@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Modules Wi-Fi / Bluetooth Espressif - Brochage - FrWA Conception</title>
+    <meta name="description" content="Brochage interactif des modules Wi-Fi/Bluetooth Espressif : ESP-01S, ESP-12F (ESP8266), ESP32-WROOM-32E, ESP32-S3-WROOM-1 — numéros de pads, fonctions, strapping.">
+    <meta name="tags" content="Électronique, Microcontrôleur, Modules">
+</head>
+<body>
+    <div class="page-content">
+        <div class="page-banner mm-banner">
+            <div class="page-banner-overlay">
+                <h1 class="page-banner-title" data-cfg="title"></h1>
+                <span class="page-banner-subtitle" data-cfg="subtitle"></span>
+            </div>
+        </div>
+
+        <div class="flex gap-sm" style="margin-bottom: var(--spacing-lg);" id="mm-badges"></div>
+
+        <p class="lead" data-cfg="lead"></p>
+
+        <div class="divider"></div>
+
+        <div id="mm-root" class="mm-root">
+
+            <div class="card mm-var-card">
+                <div class="card-header"><h3 class="card-title">Carte / version</h3></div>
+                <div class="card-body">
+                    <div class="mm-variants" id="mm-variants"></div>
+                    <div class="mm-var-sub" id="mm-var-sub"></div>
+                </div>
+            </div>
+
+            <div class="card mm-filters">
+                <div class="card-body">
+                    <input type="search" id="mm-search" class="mm-search" placeholder="" aria-label="Rechercher une broche">
+                    <div class="mm-chips" id="mm-chips"></div>
+                    <div class="mm-count" id="mm-count"></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header"><h3 class="card-title">Schéma de la carte</h3></div>
+                <div class="card-body">
+                    <div class="mm-view" id="mm-view">
+                        <div class="mm-side mm-side-left">
+                            <div class="mm-side-title" data-cfg="sideLeft"></div>
+                            <div class="mm-rows" id="mm-left"></div>
+                        </div>
+                        <div class="mm-boardcol" aria-hidden="true" id="mm-boardsvg"></div>
+                        <div class="mm-side mm-side-right">
+                            <div class="mm-side-title" data-cfg="sideRight"></div>
+                            <div class="mm-rows" id="mm-right"></div>
+                        </div>
+                    </div>
+                    <div class="mm-aux" id="mm-aux"></div>
+                    <div class="mm-hint" data-cfg="hint"></div>
+                    <div class="mm-legend" id="mm-legend"></div>
+                </div>
+            </div>
+
+            <div class="card" id="mm-detail-card">
+                <div class="card-header"><h3 class="card-title">Détail de la broche</h3></div>
+                <div class="card-body" id="mm-detail">
+                    <p class="text-muted" style="margin:0;">Sélectionne une broche dans le schéma ou dans le tableau.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header"><h3 class="card-title">Toutes les broches</h3></div>
+                <div class="card-body">
+                    <div class="mm-table-wrap">
+                        <table class="mm-table">
+                            <thead>
+                                <tr>
+                                    <th>Carte</th><th>Rangée</th><th>Alias</th><th>Port</th>
+                                    <th>Fonctions</th><th>Pull interne</th><th>Niveau</th>
+                                </tr>
+                            </thead>
+                            <tbody id="mm-tbody"></tbody>
+                        </table>
+                    </div>
+                    <p class="mm-foot" data-cfg="foot"></p>
+                </div>
+            </div>
+        </div>
+
+        <p class="text-center">
+            <a data-retour class="btn btn-primary"></a>
+        </p>
+
+    <style>
+        .mm-banner { background: var(--bg-tertiary, #1a2424); }
+
+        .mm-root > .card,
+        .mm-root > .card-alert { margin-bottom: var(--spacing-lg, 24px); }
+        .mm-root .card-alert ul { margin: var(--spacing-sm, 8px) 0 0; padding-left: var(--spacing-lg, 24px); }
+
+        /* ----- Filtres ----- */
+        .mm-search {
+            width: 100%;
+            padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
+            background: var(--bg-tertiary, #1a2424);
+            border: 1px solid var(--color-primary, #2d5a5a);
+            border-radius: var(--border-radius-md, 8px);
+            color: var(--text-primary, #e8f0f0);
+            font-family: var(--font-family-mono, monospace);
+            font-size: var(--font-size-sm, 0.875rem);
+        }
+        .mm-chips { display: flex; flex-wrap: wrap; gap: var(--spacing-xs, 4px); margin-top: var(--spacing-md, 16px); }
+        .mm-chip-btn {
+            padding: 4px 12px;
+            border: 1px solid var(--color-primary, #2d5a5a);
+            border-radius: 999px;
+            background: transparent;
+            color: var(--text-secondary, #a8b5b5);
+            font-size: var(--font-size-xs, 0.75rem);
+            cursor: pointer;
+            transition: all var(--transition-fast, 150ms ease);
+        }
+        .mm-chip-btn:hover { color: var(--text-primary, #e8f0f0); border-color: var(--text-accent, #4ecdc4); }
+        .mm-chip-btn.active { background: var(--color-primary, #2d5a5a); color: #fff; border-color: var(--text-accent, #4ecdc4); }
+        .mm-count { margin-top: var(--spacing-sm, 8px); font-size: var(--font-size-xs, 0.75rem); color: var(--text-muted, #6a7a7a); }
+
+        /* ----- Éléments de rangée ----- */
+        .mm-lv {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 20px; height: 20px; flex-shrink: 0;
+            border-radius: 3px;
+            font: 700 12px var(--font-family-mono, monospace);
+            font-style: normal;
+        }
+        .mm-lv5 { background: #2ecc71; color: #05210f; }
+        .mm-lv3 { background: #e74c3c; color: #fff; }
+        .mm-lv0 { background: transparent; }
+        .mm-inl { vertical-align: middle; margin: 0 2px; }
+
+        .mm-pt {
+            display: inline-flex; align-items: center; justify-content: center;
+            min-width: 52px; height: 22px; padding: 0 6px; flex-shrink: 0;
+            border-radius: 3px;
+            font: 700 11px var(--font-family-mono, monospace);
+            color: #fff;
+            background: #2a6fb0;
+        }
+        .mm-side-left .mm-pt.io { background: #6b7d3a; }
+        .mm-pt.io { background: #2a6fb0; }
+        .mm-pt.pwr { background: #c0392b; }
+        .mm-pt.gnd { background: #222; border: 1px solid #555; }
+        .mm-pt.bat, .mm-pt.rst { background: #1f4fd8; }
+
+        .mm-cs { display: flex; align-items: center; gap: 4px; min-width: 0; flex-shrink: 1; }
+        .mm-view:not(.mm-stack) .mm-cs { overflow: hidden; }
+        .mm-c {
+            display: inline-flex; align-items: center;
+            height: 20px; padding: 0 6px;
+            border-radius: 4px; border: 1px solid transparent;
+            font: 600 10.5px var(--font-family-primary, sans-serif);
+            white-space: nowrap; color: #111;
+        }
+        .mm-c-al   { background: transparent; color: var(--text-secondary, #a8b5b5); border-color: var(--text-muted, #6a7a7a); font-style: italic; }
+        .mm-c-ser  { background: #f5d76e; }
+        .mm-c-i2c  { background: #f0a030; }
+        .mm-c-spi  { background: #8e5bd0; color: #fff; }
+        .mm-c-pwm  { background: #5b3a99; color: #fff; }
+        .mm-c-an   { background: #f4d6c0; }
+        .mm-c-usb  { background: #ff8c3a; }
+        .mm-c-dbg  { background: #a8e6a1; }
+        .mm-c-boot { background: #bfe3ff; }
+        .mm-c-btn  { background: #1f4fd8; color: #fff; }
+        .mm-c-misc { background: #cfd8dc; }
+        .mm-rm { border: 1px dashed rgba(0, 0, 0, 0.7); opacity: 0.85; }
+        .mm-c-spi.mm-rm, .mm-c-pwm.mm-rm { border-color: rgba(255, 255, 255, 0.8); }
+
+        .mm-pull {
+            display: inline-flex; align-items: center;
+            height: 18px; padding: 0 6px; flex-shrink: 0;
+            border: 1px solid var(--text-accent, #4ecdc4);
+            border-radius: 9px;
+            color: var(--text-accent, #4ecdc4);
+            font: 600 10px var(--font-family-mono, monospace);
+            font-style: normal;
+            white-space: nowrap;
+        }
+        .mm-line { flex: 1; min-width: 6px; height: 1px; background: var(--text-muted, #6a7a7a); opacity: 0.5; }
+                .mm-num {
+            min-width: 40px; height: 24px; padding: 0 6px; flex-shrink: 0;
+            display: inline-flex; align-items: center; justify-content: center;
+            border-radius: 4px;
+            background: var(--bg-primary, #0a0f0f);
+            border: 2px solid var(--text-accent, #4ecdc4);
+            color: var(--text-primary, #e8f0f0);
+            font: 700 14px var(--font-family-mono, monospace);
+            font-style: normal;
+        }
+        .mm-num.mm-num-x { border-color: var(--color-primary, #2d5a5a); color: var(--text-secondary, #a8b5b5); font-size: 11px; }
+        .mm-note { font-size: var(--font-size-xs, 0.75rem); color: var(--text-muted, #6a7a7a); }
+
+        /* ----- Schéma (mode large) ----- */
+        .mm-view {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 130px minmax(0, 1fr);
+            align-items: start;
+        }
+        .mm-side-title { display: none; }
+        .mm-side { padding-top: 44px; }
+        .mm-rows { display: flex; flex-direction: column; }
+        .mm-row {
+            display: flex; align-items: center; gap: 5px;
+            height: 30px; padding: 0 2px;
+            border: 1px solid transparent; border-radius: 4px;
+            cursor: pointer;
+            transition: opacity var(--transition-fast, 150ms ease), border-color var(--transition-fast, 150ms ease);
+        }
+        .mm-side-right .mm-row { flex-direction: row-reverse; }
+        .mm-row:hover { border-color: var(--text-accent, #4ecdc4); }
+        .mm-row:focus-visible { outline: 2px solid var(--text-accent, #4ecdc4); }
+        .mm-row.sel { border-color: var(--color-accent, #e67e22); box-shadow: 0 0 0 1px var(--color-accent, #e67e22); }
+        .mm-row.mm-dim { opacity: 0.18; }
+        .mm-boardcol { color: var(--text-muted, #6a7a7a); }
+        .mm-boardcol svg { display: block; }  /* largeur / hauteur fixées par le script selon le nombre de rangées */
+
+        .mm-aux { display: flex; justify-content: space-between; gap: var(--spacing-md, 16px); margin-top: var(--spacing-md, 16px); flex-wrap: wrap; }
+        .mm-auxitem { display: flex; align-items: center; gap: 8px; }
+        .mm-hint { margin-top: var(--spacing-md, 16px); font-size: var(--font-size-xs, 0.75rem); color: var(--text-muted, #6a7a7a); }
+        .mm-legend { display: flex; flex-wrap: wrap; gap: 6px var(--spacing-md, 16px); margin-top: var(--spacing-sm, 8px); font-size: var(--font-size-xs, 0.75rem); color: var(--text-secondary, #a8b5b5); }
+        .mm-legend span { display: inline-flex; align-items: center; gap: 6px; }
+
+        /* ----- Schéma (mode empilé : écrans étroits) ----- */
+        .mm-view.mm-stack { display: block; }
+        .mm-stack .mm-boardcol { display: none; }
+        .mm-stack .mm-side { padding-top: 0; margin-bottom: var(--spacing-lg, 24px); }
+        .mm-stack .mm-side-title { display: block; margin-bottom: var(--spacing-sm, 8px); font-weight: 600; color: var(--text-primary, #e8f0f0); }
+        .mm-stack .mm-row,
+        .mm-stack .mm-side-right .mm-row { flex-direction: row; flex-wrap: wrap; height: auto; min-height: 34px; padding: 4px 2px; border-bottom: 1px solid var(--bg-tertiary, #1a2424); }
+        .mm-stack .mm-line { display: none; }
+        .mm-stack .mm-num { order: -3; }
+        .mm-stack .mm-cs { flex-wrap: wrap; }
+
+        /* ----- Détail ----- */
+        .mm-d-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--spacing-md, 16px); margin-bottom: var(--spacing-md, 16px); }
+        .mm-d-title { font-family: var(--font-family-mono, monospace); font-size: var(--font-size-xl, 1.5rem); font-weight: 700; color: var(--text-primary, #e8f0f0); }
+        .mm-d-sub { color: var(--text-muted, #6a7a7a); font-family: var(--font-family-mono, monospace); }
+        .mm-d-grid { display: grid; grid-template-columns: 160px 1fr; gap: var(--spacing-sm, 8px) var(--spacing-md, 16px); }
+        .mm-d-grid dt { color: var(--text-muted, #6a7a7a); font-size: var(--font-size-sm, 0.875rem); }
+        .mm-d-grid dd { margin: 0; color: var(--text-secondary, #a8b5b5); }
+        .mm-tag {
+            display: inline-block; margin: 0 4px 4px 0; padding: 2px 8px;
+            border-radius: var(--border-radius-sm, 4px);
+            background: var(--bg-tertiary, #1a2424);
+            border: 1px solid var(--color-primary, #2d5a5a);
+            color: var(--text-accent, #4ecdc4);
+            font-family: var(--font-family-mono, monospace);
+            font-size: var(--font-size-xs, 0.75rem);
+        }
+        .mm-tag.remap { color: var(--text-secondary, #a8b5b5); border-style: dashed; }
+
+        /* ----- Tableau ----- */
+        .mm-table-wrap { overflow-x: auto; }
+        .mm-table { width: 100%; font-size: var(--font-size-sm, 0.875rem); }
+        .mm-table th, .mm-table td {
+            padding: 6px 10px;
+            border-bottom: 1px solid var(--bg-tertiary, #1a2424);
+            text-align: left; vertical-align: top;
+            color: var(--text-secondary, #a8b5b5);
+        }
+        .mm-table th { color: var(--text-primary, #e8f0f0); font-weight: 600; white-space: nowrap; }
+        .mm-table tbody tr { cursor: pointer; }
+        .mm-table tbody tr:hover { background: var(--bg-tertiary, #1a2424); }
+        .mm-table tbody tr.sel { background: var(--bg-tertiary, #1a2424); outline: 1px solid var(--color-accent, #e67e22); }
+        .mm-table td.mono { font-family: var(--font-family-mono, monospace); color: var(--text-primary, #e8f0f0); white-space: nowrap; }
+        .mm-table td.fn { font-family: var(--font-family-mono, monospace); font-size: var(--font-size-xs, 0.75rem); min-width: 200px; }
+        .mm-foot { margin: var(--spacing-md, 16px) 0 0; font-size: var(--font-size-xs, 0.75rem); color: var(--text-muted, #6a7a7a); }
+
+        @media (max-width: 700px) {
+            .mm-d-grid { grid-template-columns: 1fr; }
+            .mm-d-grid dt { margin-top: var(--spacing-sm, 8px); }
+        }
+    
+        .mm-var-card .card-body { padding-bottom: var(--spacing-md, 16px); }
+        .mm-variants { display: flex; flex-wrap: wrap; gap: var(--spacing-xs, 4px); }
+        .mm-var-sub { margin-top: var(--spacing-sm, 8px); font-size: var(--font-size-sm, 0.875rem); color: var(--text-secondary, #a8b5b5); }
+        .mm-pt.nc { background: #444; color: #aaa; }
+        .mm-tag.strap { border-color: #bfe3ff; color: #bfe3ff; }
+        .mm-ver { display: inline-block; margin-left: 6px; padding: 1px 7px; border-radius: 9px; font-size: 10px; font-weight: 700; vertical-align: middle; }
+        .mm-ver.ok { background: #2ecc71; color: #05210f; }
+        .mm-ver.chk { background: #f0a030; color: #2a1a00; }
+        .mm-tbl { width: 100%; border-collapse: collapse; font-size: var(--font-size-xs, 0.75rem); margin-top: 8px; }
+        .mm-tbl th, .mm-tbl td { border-bottom: 1px solid var(--bg-tertiary, #1a2424); padding: 3px 8px; text-align: left; font-family: var(--font-family-mono, monospace); }
+</style>
+
+    <script>
+(function () {
+    const root = document.getElementById('mm-root');
+    if (!root) return;
+
+    // ==================================================================
+    // DONNÉES (injectées par le générateur) : CONFIG commun + VARIANTS
+    // ==================================================================
+    const CONFIG = {"badges": [["primary", "Électronique"], ["secondary", "Microcontrôleur"], ["accent", "Modules"]], "silk": {"re": "^\\d+$", "strip": ""}, "cats": [["all", "Tout"], ["ADC", "ADC"], ["TOUCH", "Tactile"], ["DAC", "DAC"], ["UART", "UART"], ["SPI", "SPI"], ["USB", "USB"], ["JTAG", "JTAG"], ["STRAP", "Strapping"], ["RSV", "Réservées"], ["PWR", "Alim"]], "catRe": {"ADC": "^ADC", "TOUCH": "^TOUCH", "DAC": "^DAC", "UART": "^(U\\d(TXD|RXD|CTS|RTS)|TXD2|RXD2)", "SPI": "^(FSPI|HSPI|VSPI|SPI)", "USB": "^USB", "JTAG": "^(MT|JT)"}, "funcMap": [{"re": "^ADC.*$", "t": "Analog In", "c": "an", "once": true}, {"re": "^DAC_(\\d)$", "t": "DAC$1", "c": "an"}, {"re": "^TOUCH(\\d+)$", "t": "Touch$1", "c": "misc"}, {"re": "^U(\\d)TXD$", "t": "UART$1 TX", "c": "ser"}, {"re": "^U(\\d)RXD$", "t": "UART$1 RX", "c": "ser"}, {"re": "^U(\\d)(CTS|RTS)$", "t": "UART$1 $2", "c": "ser"}, {"re": "^(FSPI|HSPI|VSPI)(CLK|Q|D|HD|WP|CS\\d?)$", "t": "$1 $2", "c": "spi"}, {"re": "^SPI(HD|WP|CS\\d)$", "t": "SPI $1", "c": "spi"}, {"re": "^USB_D([+-])$", "t": "USB D$1", "c": "usb"}, {"re": "^(MTMS|MTDI|MTCK|MTDO)$", "t": "JTAG $1", "c": "dbg"}, {"re": "^ZCD(\\d)$", "t": "ZCD$1", "c": "misc"}, {"re": "^XTAL_32K_([PN])$", "t": "32k $1", "c": "misc"}, {"re": "^DAC.*$", "t": "DAC", "c": "an", "once": true}], "texts": {"pullBoth": "Pull-up ou pull-down au choix (≈ 45 kΩ, par logiciel)", "pullUp": "Pull-up interne seulement (activable par logiciel)", "pullDown": "Pull-down interne seulement (activable par logiciel)", "pullNone": "Aucune pull interne : résistance externe nécessaire", "float": "Entrée flottante", "rstTag": "", "rstTip": "Reset actif bas (rappel au 3,3 V par résistance externe sur la carte)", "rstLevel": "3,3 V uniquement (entrée de reset)", "ft": "5 V toléré", "v3": "3,3 V uniquement : aucune tolérance 5 V", "ftShort": "5 V toléré", "v3Short": "3,3 V uniquement", "aliasLabel": "Alias / fonction de la carte", "posSuffix": "e position depuis le haut (USB en haut)"}, "cards": [{"kind": "warning", "html": "<strong>Logique 3,3 V uniquement :</strong>\n   <ul>\n     <li>Aucune broche des puces Espressif n'est tolérante 5 V : pas de signal 5 V direct (adaptateur de niveau ou diviseur).</li>\n     <li>Les broches de <strong>strapping</strong> sont lues au reset pour choisir le mode de démarrage : ne pas les forcer (pull externe, périphérique branché) pendant le démarrage.</li>\n     <li>Les broches liées à la <strong>flash / PSRAM</strong> du module sont marquées « Réservée » : ne pas les utiliser.</li>\n     <li>Les entrées analogiques ADC lisent environ 0–3,1 V (selon atténuation) ; sur les puces à ADC2, celui-ci est peu fiable quand le Wi-Fi est actif.</li>\n   </ul>"}], "legend": ["<i class=\"mm-lv mm-lv3 mm-inl\">3</i> 3,3 V uniquement (aucune broche tolérante 5 V)", "<i class=\"mm-pull mm-inl\">PU/PD</i> pull-up / pull-down activable", "<i class=\"mm-pull mm-inl\">PU/PD ↑</i> pull-up actif au reset (↓ = pull-down)", "<i class=\"mm-c mm-c-boot mm-inl\">Strapping</i> lue au reset (mode de démarrage)", "<i class=\"mm-c mm-c-misc mm-inl\">Réservée</i> liée à la flash / PSRAM", "<i class=\"mm-c mm-c-spi mm-rm mm-inl\">SPI</i> pointillés = fonction alternative", "<i class=\"mm-num mm-inl\">15</i> repère imprimé sur la carte", "<i class=\"mm-c mm-c-al mm-inl\">A0</i> alias / nom Arduino de la carte"], "text": {"title": "Modules Wi-Fi / Bluetooth Espressif", "lead": "Brochage des <strong>puces nues sous forme de modules</strong> : <strong>ESP8266</strong> (ESP-01S, ESP-12F) et modules <strong>ESP32</strong> (WROOM-32E, S3-WROOM-1). Ici les numéros dans les cadres sont les <strong>numéros de pad</strong> du module (pas des cartes de développement),\n    avec en alias le nom du pad. Les modules ne portent ni régulateur ni USB : alimentation <strong>3,3 V stable</strong> exigée."}};
+    const VARIANTS = [{"label": "ESP-12F (ESP8266)", "sub": "<span class=\"mm-ver chk\">à vérifier</span> <strong>ESP-12F</strong> — module ESP8266 22 pads (antenne PCB en haut). Brochage des pads : <u>d'après mes connaissances</u>, vérifie sur la datasheet AI-Thinker.", "board": {"name": "ESP-12F", "color": "#0b1d4a", "stroke": "#050f2a", "textColor": "#9fc0ff", "chip": ["ESP8266", "EX"], "usb": false, "crystal": null, "buttons": [], "extraSvg": ""}, "pins": [{"t": "pwr", "l": "RST", "p": "3,3 V", "sh": "3,3 V", "f": [], "m": [], "ft": null, "n": "Reset actif bas (pull-up interne du module).", "gnd": false, "disp": "RST", "kind": "pwr", "al": "", "x": [], "rs": "", "s": "L", "r": 1}, {"t": "pwr", "l": "ADC", "p": "0–1 V", "sh": "0–1 V", "f": [], "m": [], "ft": null, "n": "Entrée analogique 10 bits (TOUT), 0–1,0 V : diviseur nécessaire au-delà.", "gnd": false, "disp": "ADC", "kind": "pwr", "al": "", "x": [], "rs": "", "s": "L", "r": 2}, {"t": "pwr", "l": "EN", "p": "3,3 V", "sh": "3,3 V", "f": [], "m": [], "ft": null, "n": "CH_PD / EN : à relier au 3,3 V pour que le module démarre.", "gnd": false, "disp": "EN", "kind": "pwr", "al": "", "x": [], "rs": "", "s": "L", "r": 3}, {"t": "gpio", "l": "IO16", "p": "GPIO16", "f": ["WAKE"], "m": [], "ft": false, "n": "Pas de pull-up interne, sert au réveil du deep-sleep (relier à RST). Pas d'interruption, PWM, I2C.", "rs": "", "al": "", "x": [], "pl": "down", "strap": false, "rsv": false, "s": "L", "r": 4}, {"t": "gpio", "l": "IO14", "p": "GPIO14", "f": ["HSPICLK", "MTMS"], "m": [], "ft": false, "n": "", "rs": "", "al": "", "x": [], "pl": "up", "strap": false, "rsv": false, "s": "L", "r": 5}, {"t": "gpio", "l": "IO12", "p": "GPIO12", "f": ["HSPIQ", "MTDI"], "m": [], "ft": false, "n": "", "rs": "", "al": "", "x": [], "pl": "up", "strap": false, "rsv": false, "s": "L", "r": 6}, {"t": "gpio", "l": "IO13", "p": "GPIO13", "f": ["HSPID", "U0CTS", "RXD2", "MTCK"], "m": [], "ft": false, "n": "", "rs": "", "al": "", "x": [], "pl": "up", "strap": false, "rsv": false, "s": "L", "r": 7}, {"t": "pwr", "l": "VCC", "p": "3,3 V", "sh": "3,3 V", "f": [], "m": [], "ft": null, "n": "Alimentation 3,3 V (≈ 300 mA en crête).", "gnd": false, "disp": "VCC", "kind": "pwr", "al": "", "x": [], "rs": "", "s": "L", "r": 8}, {"t": "gpio", "l": "TXD", "p": "GPIO1", "f": ["U0TXD", "SPICS1"], "m": [], "ft": false, "n": "UART0 TX (log de boot sur 74880 bauds).", "rs": "", "al": "", "x": [], "pl": "up", "strap": false, "rsv": false, "s": "R", "r": 1}, {"t": "gpio", "l": "RXD", "p": "GPIO3", "f": ["U0RXD"], "m": ["CLK_OUT"], "ft": false, "n": "UART0 RX.", "rs": "", "al": "", "x": [], "pl": "up", "strap": false, "rsv": false, "s": "R", "r": 2}, {"t": "gpio", "l": "IO5", "p": "GPIO5", "f": [], "m": [], "ft": false, "n": "", "rs": "", "al": "", "x": [], "pl": "up", "strap": false, "rsv": false, "s": "R", "r": 3}, {"t": "gpio", "l": "IO4", "p": "GPIO4", "f": [], "m": [], "ft": false, "n": "", "rs": "", "al": "", "x": [], "pl": "up", "strap": false, "rsv": false, "s": "R", "r": 4}, {"t": "gpio", "l": "IO0", "p": "GPIO0", "f": [], "m": ["FLASH_BOOT", "CLK_OUT"], "ft": false, "n": "Strapping : à 0 au reset = mode programmation (flash). À 1 = démarrage normal.", "rs": "", "al": "", "x": [["Strapping", "boot"]], "pl": "up", "strap": true, "rsv": false, "s": "R", "r": 5}, {"t": "gpio", "l": "IO2", "p": "GPIO2", "f": ["U1TXD"], "m": [], "ft": false, "n": "Strapping : doit être à 1 au démarrage. LED bleue sur beaucoup de modules (active à 0).", "rs": "", "al": "", "x": [["Strapping", "boot"]], "pl": "up", "strap": true, "rsv": false, "s": "R", "r": 6}, {"t": "gpio", "l": "IO15", "p": "GPIO15", "f": ["HSPICS", "U0RTS", "TXD2", "MTDO"], "m": [], "ft": false, "n": "Strapping : doit être à 0 au démarrage (pull-down externe sur le module).", "rs": "", "al": "", "x": [["Strapping", "boot"]], "pl": "up", "strap": true, "rsv": false, "s": "R", "r": 7}, {"t": "pwr", "l": "GND", "p": "0 V", "sh": "0 V", "f": [], "m": [], "ft": null, "n": "Masse.", "gnd": true, "disp": "GND", "kind": "gnd", "al": "", "x": [], "rs": "", "s": "R", "r": 8}], "text": {"subtitle": "ESP-12F · ESP8266", "sideLeft": "Rangée gauche · RST → VCC (pads 1–8)", "sideRight": "Rangée droite · TXD → GND (pads 22 → 15)", "hint": "Vue de dessus, <strong>antenne en haut</strong>. Le cadre est le nom du pad. Les 6 pads du bas (flash SPI : CS0, MISO, GPIO9, GPIO10, MOSI, SCLK) ne sont pas utilisables.", "foot": "Carte = repère imprimé (ou n° de pad) ; G = rangée gauche, D = rangée droite. Fonctions en pointillés (<strong>*</strong> dans le tableau) = fonctions alternatives / spécifiques (matrice GPIO, SDIO, LP, EMAC…). Noms SPI Espressif : <strong>D = MOSI, Q = MISO</strong>, HD/WP = IO2/IO3 en mode Quad. « PU / PD » = pull-up ou pull-down au choix par logiciel.", "searchPlaceholder": "Rechercher : 12, GPIO15, SPI…"}, "aux": [{"side": "L", "port": "GPIO9/10", "chip": "FLASH", "cls": "misc", "note": "pads du bas (CS0, MISO, GPIO9, GPIO10, MOSI, SCLK) : flash SPI du module"}], "cards": [{"kind": "info", "html": "<strong>Sources &amp; vérification <span class=\"mm-ver chk\">à vérifier</span> :</strong> Brochage ESP-12F : pads RST, ADC, EN, GPIO16, GPIO14, GPIO12, GPIO13, VCC à gauche ; GPIO15, GND d'un côté, TXD, RXD, GPIO5, GPIO4, GPIO0, GPIO2 à droite. Strapping ESP8266 : GPIO0 (flash/boot), GPIO2 (haut), GPIO15 (bas). Les GPIO de l'ESP8266 n'ont qu'une pull-up interne (sauf GPIO16, pull-down) et fonctionnent en <strong>3,3 V seulement</strong>."}], "silk": {"re": "^IO\\d+$", "strip": "^IO"}}, {"label": "ESP-01S (ESP8266)", "sub": "<span class=\"mm-ver chk\">à vérifier</span> <strong>ESP-01 / ESP-01S</strong> — module ESP8266 à 2 × 4 broches (pas 2,54 mm). <u>Rangées : à vérifier</u> (vue de dessus, antenne en haut, broches vers le bas).", "board": {"name": "ESP-01S", "color": "#0b1d4a", "stroke": "#050f2a", "textColor": "#9fc0ff", "chip": ["ESP8266"], "usb": false, "crystal": null, "buttons": [], "extraSvg": ""}, "pins": [{"t": "pwr", "l": "GND", "p": "0 V", "sh": "0 V", "f": [], "m": [], "ft": null, "n": "Masse.", "gnd": true, "disp": "GND", "kind": "gnd", "al": "", "x": [], "rs": "", "s": "L", "r": 1}, {"t": "gpio", "l": "IO2", "p": "GPIO2", "f": ["U1TXD"], "m": [], "ft": false, "n": "Strapping : doit être à 1 au démarrage. LED bleue sur beaucoup de modules (active à 0).", "rs": "", "al": "", "x": [["Strapping", "boot"]], "pl": "up", "strap": true, "rsv": false, "s": "L", "r": 2}, {"t": "gpio", "l": "IO0", "p": "GPIO0", "f": [], "m": ["FLASH_BOOT", "CLK_OUT"], "ft": false, "n": "Strapping : à 0 au reset = mode programmation (flash). À 1 = démarrage normal.", "rs": "", "al": "", "x": [["Strapping", "boot"]], "pl": "up", "strap": true, "rsv": false, "s": "L", "r": 3}, {"t": "gpio", "l": "RXD", "p": "GPIO3", "f": ["U0RXD"], "m": ["CLK_OUT"], "ft": false, "n": "UART0 RX.", "rs": "", "al": "", "x": [], "pl": "up", "strap": false, "rsv": false, "s": "L", "r": 4}, {"t": "gpio", "l": "TXD", "p": "GPIO1", "f": ["U0TXD", "SPICS1"], "m": [], "ft": false, "n": "UART0 TX (log de boot sur 74880 bauds).", "rs": "", "al": "", "x": [], "pl": "up", "strap": false, "rsv": false, "s": "R", "r": 1}, {"t": "pwr", "l": "CH_PD", "p": "3,3 V", "sh": "3,3 V", "f": [], "m": [], "ft": null, "n": "EN : à relier au 3,3 V pour démarrer.", "gnd": false, "disp": "CH_PD", "kind": "pwr", "al": "", "x": [], "rs": "", "s": "R", "r": 2}, {"t": "pwr", "l": "RST", "p": "3,3 V", "sh": "3,3 V", "f": [], "m": [], "ft": null, "n": "Reset actif bas.", "gnd": false, "disp": "RST", "kind": "pwr", "al": "", "x": [], "rs": "", "s": "R", "r": 3}, {"t": "pwr", "l": "VCC", "p": "3,3 V", "sh": "3,3 V", "f": [], "m": [], "ft": null, "n": "Alimentation 3,3 V uniquement (pas de 5 V !).", "gnd": false, "disp": "VCC", "kind": "pwr", "al": "", "x": [], "rs": "", "s": "R", "r": 4}], "text": {"subtitle": "ESP-01 / ESP-01S · ESP8266", "sideLeft": "Rangée gauche · GND, IO2, IO0, RXD", "sideRight": "Rangée droite · TXD, CH_PD, RST, VCC", "hint": "Vue de dessus, <strong>antenne en haut</strong> : seules 8 broches (4 par rangée). L'orientation gauche/droite varie selon les schémas : vérifie le marquage GND/VCC sur ton module.", "foot": "Carte = repère imprimé (ou n° de pad) ; G = rangée gauche, D = rangée droite. Fonctions en pointillés (<strong>*</strong> dans le tableau) = fonctions alternatives / spécifiques (matrice GPIO, SDIO, LP, EMAC…). Noms SPI Espressif : <strong>D = MOSI, Q = MISO</strong>, HD/WP = IO2/IO3 en mode Quad. « PU / PD » = pull-up ou pull-down au choix par logiciel.", "searchPlaceholder": "Rechercher : GPIO0, TXD…"}, "aux": [], "cards": [{"kind": "info", "html": "<strong>Sources &amp; vérification <span class=\"mm-ver chk\">à vérifier</span> :</strong> Brochage ESP-01/01S classique (GND, GPIO2, GPIO0, RXD ; TXD, CH_PD, RST, VCC). Pour programmer : GPIO0 à GND au reset ; l'alimentation doit supporter ≈ 300 mA. Seulement GPIO0, GPIO2, TX, RX sont sortis. 3,3 V uniquement."}], "silk": {"re": "^IO\\d+$", "strip": "^IO"}}, {"label": "ESP32-WROOM-32E", "sub": "<span class=\"mm-ver chk\">à vérifier</span> <strong>ESP32-WROOM-32E</strong> (et -32UE, WROVER-E) — module 38 pads + pad thermique. Numéros = <strong>numéro de pad</strong> du module. Fonctions : datasheet ESP32 ; <u>pads : de mémoire, recoupés avec le DevKitC officiel</u>.", "board": {"name": "WROOM-32E", "color": "#c8ccd0", "stroke": "#8a9096", "textColor": "#33383d", "chip": ["ESP32"], "usb": false, "crystal": null, "buttons": [], "extraSvg": ""}, "pins": [{"t": "pwr", "l": "1", "p": "0 V", "sh": "0 V", "f": [], "m": [], "ft": null, "n": "Masse.", "gnd": true, "disp": "GND", "kind": "gnd", "al": "GND", "x": [], "rs": "", "s": "L", "r": 1}, {"t": "pwr", "l": "2", "p": "3,3 V", "sh": "3,3 V", "f": [], "m": [], "ft": null, "n": "Alimentation 3,3 V.", "gnd": false, "disp": "3V3", "kind": "pwr", "al": "3V3", "x": [], "rs": "", "s": "L", "r": 2}, {"t": "rst", "l": "3", "p": "CHIP_PU", "f": [], "m": [], "ft": false, "n": "EN : active le module (haut) ; reset (bas).", "disp": "RESET", "al": "EN", "x": [], "rs": "", "s": "L", "r": 3}, {"t": "gpio", "l": "4", "p": "GPIO36", "f": ["ADC1_CH0", "RTC_GPIO0"], "m": [], "ft": false, "n": "Entrée seule (SENSOR_VP) : pas de sortie, pas de pull interne.", "rs": "", "al": "SENSOR_VP", "x": [], "pl": "none", "strap": false, "rsv": false, "s": "L", "r": 4}, {"t": "gpio", "l": "5", "p": "GPIO39", "f": ["ADC1_CH3", "RTC_GPIO3"], "m": [], "ft": false, "n": "Entrée seule (SENSOR_VN) : pas de sortie, pas de pull interne.", "rs": "", "al": "SENSOR_VN", "x": [], "pl": "none", "strap": false, "rsv": false, "s": "L", "r": 5}, {"t": "gpio", "l": "6", "p": "GPIO34", "f": ["ADC1_CH6", "RTC_GPIO4"], "m": [], "ft": false, "n": "Entrée seule : pas de sortie, pas de pull interne.", "rs": "", "al": "IO34", "x": [], "pl": "none", "strap": false, "rsv": false, "s": "L", "r": 6}, {"t": "gpio", "l": "7", "p": "GPIO35", "f": ["ADC1_CH7", "RTC_GPIO5"], "m": [], "ft": false, "n": "Entrée seule : pas de sortie, pas de pull interne.", "rs": "", "al": "IO35", "x": [], "pl": "none", "strap": false, "rsv": false, "s": "L", "r": 7}, {"t": "gpio", "l": "8", "p": "GPIO32", "f": ["ADC1_CH4", "TOUCH9", "XTAL_32K_P", "RTC_GPIO9"], "m": [], "ft": false, "n": "Quartz 32 kHz possible (XTAL_32K_P).", "rs": "", "al": "IO32", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "L", "r": 8}, {"t": "gpio", "l": "9", "p": "GPIO33", "f": ["ADC1_CH5", "TOUCH8", "XTAL_32K_N", "RTC_GPIO8"], "m": [], "ft": false, "n": "Quartz 32 kHz possible (XTAL_32K_N).", "rs": "", "al": "IO33", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "L", "r": 9}, {"t": "gpio", "l": "10", "p": "GPIO25", "f": ["DAC_1", "ADC2_CH8", "RTC_GPIO6"], "m": ["EMAC_RXD0"], "ft": false, "n": "Sortie DAC 8 bits.", "rs": "", "al": "IO25", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "L", "r": 10}, {"t": "gpio", "l": "11", "p": "GPIO26", "f": ["DAC_2", "ADC2_CH9", "RTC_GPIO7"], "m": ["EMAC_RXD1"], "ft": false, "n": "Sortie DAC 8 bits.", "rs": "", "al": "IO26", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "L", "r": 11}, {"t": "gpio", "l": "12", "p": "GPIO27", "f": ["ADC2_CH7", "TOUCH7", "RTC_GPIO17"], "m": ["EMAC_RX_DV"], "ft": false, "n": "", "rs": "", "al": "IO27", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "L", "r": 12}, {"t": "gpio", "l": "13", "p": "GPIO14", "f": ["ADC2_CH6", "TOUCH6", "MTMS", "HSPICLK", "RTC_GPIO16"], "m": ["HS2_CLK", "SD_CLK", "EMAC_TXD2"], "ft": false, "n": "JTAG (MTMS) libre en GPIO tant que le debug JTAG n'est pas utilisé.", "rs": "", "al": "IO14", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "L", "r": 13}, {"t": "gpio", "l": "14", "p": "GPIO12", "f": ["ADC2_CH5", "TOUCH5", "MTDI", "HSPIQ", "RTC_GPIO15"], "m": ["HS2_DATA2", "SD_DATA2", "EMAC_TXD3"], "ft": false, "n": "Strapping MTDI : à 1 au reset, la flash est alimentée en 1,8 V → démarrage impossible avec une flash 3,3 V. Ne pas la tirer à 1. Libre en GPIO ensuite.", "rs": "Pull-down (strapping)", "al": "IO12", "x": [["Strapping", "boot"]], "pl": "both", "strap": true, "rsv": false, "s": "L", "r": 14}, {"t": "pwr", "l": "15", "p": "0 V", "sh": "0 V", "f": [], "m": [], "ft": null, "n": "Masse.", "gnd": true, "disp": "GND", "kind": "gnd", "al": "GND", "x": [], "rs": "", "s": "L", "r": 15}, {"t": "gpio", "l": "16", "p": "GPIO13", "f": ["ADC2_CH4", "TOUCH4", "MTCK", "HSPID", "RTC_GPIO14"], "m": ["HS2_DATA3", "SD_DATA3", "EMAC_RX_ER"], "ft": false, "n": "JTAG (MTCK) libre en GPIO tant que le debug JTAG n'est pas utilisé.", "rs": "", "al": "IO13", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "L", "r": 16}, {"t": "gpio", "l": "17", "p": "GPIO9", "f": ["U1RXD"], "m": ["FLASH_D2", "HS1_DATA2", "SD_DATA2"], "ft": false, "n": "Reliée à la flash SPI du module : ne pas utiliser.", "rs": "", "al": "SD2", "x": [["Réservée", "misc"]], "pl": "both", "strap": false, "rsv": true, "s": "L", "r": 17}, {"t": "gpio", "l": "18", "p": "GPIO10", "f": ["U1TXD"], "m": ["FLASH_D3", "HS1_DATA3", "SD_DATA3"], "ft": false, "n": "Reliée à la flash SPI du module : ne pas utiliser.", "rs": "", "al": "SD3", "x": [["Réservée", "misc"]], "pl": "both", "strap": false, "rsv": true, "s": "L", "r": 18}, {"t": "gpio", "l": "19", "p": "GPIO11", "f": ["U1RTS"], "m": ["FLASH_CMD"], "ft": false, "n": "Reliée à la flash SPI du module : ne pas utiliser.", "rs": "", "al": "CMD", "x": [["Réservée", "misc"]], "pl": "both", "strap": false, "rsv": true, "s": "L", "r": 19}, {"t": "gpio", "l": "20", "p": "GPIO6", "f": [], "m": ["FLASH_CLK"], "ft": false, "n": "Reliée à la flash SPI du module : ne pas utiliser.", "rs": "", "al": "CLK", "x": [["Réservée", "misc"]], "pl": "both", "strap": false, "rsv": true, "s": "L", "r": 20}, {"t": "gpio", "l": "21", "p": "GPIO7", "f": ["U2RTS"], "m": ["FLASH_D0", "HS1_DATA0"], "ft": false, "n": "Reliée à la flash SPI du module : ne pas utiliser.", "rs": "", "al": "SD0", "x": [["Réservée", "misc"]], "pl": "both", "strap": false, "rsv": true, "s": "L", "r": 21}, {"t": "gpio", "l": "22", "p": "GPIO8", "f": ["U2CTS"], "m": ["FLASH_D1", "HS1_DATA1"], "ft": false, "n": "Reliée à la flash SPI du module : ne pas utiliser.", "rs": "", "al": "SD1", "x": [["Réservée", "misc"]], "pl": "both", "strap": false, "rsv": true, "s": "L", "r": 22}, {"t": "gpio", "l": "23", "p": "GPIO15", "f": ["ADC2_CH3", "TOUCH3", "MTDO", "HSPICS0", "RTC_GPIO13"], "m": ["HS2_CMD", "SD_CMD", "EMAC_RXD3"], "ft": false, "n": "Strapping MTDO : à 0 au reset, coupe les logs de boot sur UART0.", "rs": "Pull-up (strapping)", "al": "IO15", "x": [["Strapping", "boot"]], "pl": "both", "strap": true, "rsv": false, "s": "L", "r": 23}, {"t": "gpio", "l": "24", "p": "GPIO2", "f": ["ADC2_CH2", "TOUCH2", "HSPIWP", "RTC_GPIO12"], "m": ["HS2_DATA0", "SD_DATA0"], "ft": false, "n": "Strapping : doit être flottante ou à 0 pour le téléchargement série. LED bleue sur beaucoup de clones.", "rs": "Pull-down (strapping)", "al": "IO2", "x": [["Strapping", "boot"]], "pl": "both", "strap": true, "rsv": false, "s": "L", "r": 24}, {"t": "pwr", "l": "38", "p": "0 V", "sh": "0 V", "f": [], "m": [], "ft": null, "n": "Masse.", "gnd": true, "disp": "GND", "kind": "gnd", "al": "GND", "x": [], "rs": "", "s": "R", "r": 1}, {"t": "gpio", "l": "37", "p": "GPIO23", "f": ["VSPID"], "m": ["HS1_STROBE"], "ft": false, "n": "", "rs": "", "al": "IO23", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "R", "r": 2}, {"t": "gpio", "l": "36", "p": "GPIO22", "f": ["VSPIWP", "U0RTS"], "m": ["EMAC_TXD1"], "ft": false, "n": "I2C SCL par défaut dans le core Arduino ESP32.", "rs": "", "al": "IO22", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "R", "r": 3}, {"t": "gpio", "l": "35", "p": "GPIO1", "f": ["U0TXD"], "m": ["CLK_OUT3", "EMAC_RXD2"], "ft": false, "n": "UART0 TX, reliée au pont USB-série (log de boot, programmation).", "rs": "", "al": "TXD0", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "R", "r": 4}, {"t": "gpio", "l": "34", "p": "GPIO3", "f": ["U0RXD"], "m": ["CLK_OUT2"], "ft": false, "n": "UART0 RX, reliée au pont USB-série.", "rs": "", "al": "RXD0", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "R", "r": 5}, {"t": "gpio", "l": "33", "p": "GPIO21", "f": ["VSPIHD"], "m": ["EMAC_TX_EN"], "ft": false, "n": "I2C SDA par défaut dans le core Arduino ESP32.", "rs": "", "al": "IO21", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "R", "r": 6}, {"t": "pwr", "l": "32", "p": "NC", "sh": "NC", "f": [], "m": [], "ft": null, "n": "Non connectée.", "gnd": false, "disp": "NC", "kind": "nc", "al": "NC", "x": [], "rs": "", "s": "R", "r": 7}, {"t": "gpio", "l": "31", "p": "GPIO19", "f": ["VSPIQ", "U0CTS"], "m": ["EMAC_TXD0"], "ft": false, "n": "", "rs": "", "al": "IO19", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "R", "r": 8}, {"t": "gpio", "l": "30", "p": "GPIO18", "f": ["VSPICLK"], "m": ["HS1_DATA7"], "ft": false, "n": "", "rs": "", "al": "IO18", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "R", "r": 9}, {"t": "gpio", "l": "29", "p": "GPIO5", "f": ["VSPICS0"], "m": ["HS1_DATA6", "EMAC_RX_CLK"], "ft": false, "n": "Strapping : timing SDIO ; pull-up par défaut.", "rs": "Pull-up (strapping)", "al": "IO5", "x": [["Strapping", "boot"]], "pl": "both", "strap": true, "rsv": false, "s": "R", "r": 10}, {"t": "gpio", "l": "28", "p": "GPIO17", "f": ["U2TXD"], "m": ["HS1_DATA5", "EMAC_CLK_180"], "ft": false, "n": "Réservée (PSRAM) sur les modules WROVER ; libre sur WROOM. UART2 TX par défaut.", "rs": "", "al": "IO17", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "R", "r": 11}, {"t": "gpio", "l": "27", "p": "GPIO16", "f": ["U2RXD"], "m": ["HS1_DATA4", "EMAC_CLK_OUT"], "ft": false, "n": "Réservée (PSRAM) sur les modules WROVER ; libre sur WROOM. UART2 RX par défaut.", "rs": "", "al": "IO16", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "R", "r": 12}, {"t": "gpio", "l": "26", "p": "GPIO4", "f": ["ADC2_CH0", "TOUCH0", "HSPIHD", "RTC_GPIO10"], "m": ["HS2_DATA1", "SD_DATA1", "EMAC_TX_ER"], "ft": false, "n": "", "rs": "", "al": "IO4", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "R", "r": 13}, {"t": "gpio", "l": "25", "p": "GPIO0", "f": ["ADC2_CH1", "TOUCH1", "RTC_GPIO11"], "m": ["CLK_OUT1", "EMAC_TX_CLK"], "ft": false, "n": "Strapping : à 0 au reset = mode téléchargement série (bouton BOOT). Sert d'horloge XCLK sur l'ESP32-CAM.", "rs": "Pull-up (strapping)", "al": "IO0", "x": [["Strapping", "boot"]], "pl": "both", "strap": true, "rsv": false, "s": "R", "r": 14}], "text": {"subtitle": "ESP32-WROOM-32E · module", "sideLeft": "Rangée gauche · pads 1 → 24 (côté gauche puis bas)", "sideRight": "Rangée droite · pads 38 → 25 (de haut en bas)", "hint": "Vue de dessus, <strong>antenne en haut</strong>. Le cadre est le <strong>numéro de pad</strong> ; l'alias grisé est le nom du pad. Les pads 16 → 24 sont ceux du bord inférieur, listés dans la rangée gauche.", "foot": "Carte = repère imprimé (ou n° de pad) ; G = rangée gauche, D = rangée droite. Fonctions en pointillés (<strong>*</strong> dans le tableau) = fonctions alternatives / spécifiques (matrice GPIO, SDIO, LP, EMAC…). Noms SPI Espressif : <strong>D = MOSI, Q = MISO</strong>, HD/WP = IO2/IO3 en mode Quad. « PU / PD » = pull-up ou pull-down au choix par logiciel.", "searchPlaceholder": "Rechercher : 14, SD2, GPIO12…"}, "aux": [], "cards": [{"kind": "info", "html": "<strong>Sources &amp; vérification <span class=\"mm-ver chk\">à vérifier</span> :</strong> Brochage de pads du module <em>ESP32-WROOM-32E</em> ; l'ordre des signaux concorde avec les tableaux J2/J3 du DevKitC V4 officiel. Sur WROVER : pas de pads IO16/IO17 (PSRAM). Pad 39 = masse thermique (EPAD)."}], "silk": {"re": "^\\d+$", "strip": ""}}, {"label": "ESP32-S3-WROOM-1", "sub": "<span class=\"mm-ver chk\">à vérifier</span> <strong>ESP32-S3-WROOM-1</strong> (et -1U) — module 41 pads. Numéros = pad. <u>Pads de mémoire, recoupés avec le DevKitC-1 officiel</u>.", "board": {"name": "S3-WROOM-1", "color": "#c8ccd0", "stroke": "#8a9096", "textColor": "#33383d", "chip": ["ESP32-S3"], "usb": false, "crystal": null, "buttons": [], "extraSvg": ""}, "pins": [{"t": "pwr", "l": "1", "p": "0 V", "sh": "0 V", "f": [], "m": [], "ft": null, "n": "Masse.", "gnd": true, "disp": "GND", "kind": "gnd", "al": "GND", "x": [], "rs": "", "s": "L", "r": 1}, {"t": "pwr", "l": "2", "p": "3,3 V", "sh": "3,3 V", "f": [], "m": [], "ft": null, "n": "Alimentation 3,3 V.", "gnd": false, "disp": "3V3", "kind": "pwr", "al": "3V3", "x": [], "rs": "", "s": "L", "r": 2}, {"t": "rst", "l": "3", "p": "CHIP_PU", "f": [], "m": [], "ft": false, "n": "EN : active le module (haut) ; reset (bas).", "disp": "RESET", "al": "EN", "x": [], "rs": "", "s": "L", "r": 3}, {"t": "gpio", "l": "4", "p": "GPIO4", "f": ["TOUCH4", "ADC1_CH3", "RTC_GPIO4"], "m": [], "ft": false, "n": "", "rs": "", "al": "IO4", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "L", "r": 4}, {"t": "gpio", "l": "5", "p": "GPIO5", "f": ["TOUCH5", "ADC1_CH4", "RTC_GPIO5"], "m": [], "ft": false, "n": "", "rs": "", "al": "IO5", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "L", "r": 5}, {"t": "gpio", "l": "6", "p": "GPIO6", "f": ["TOUCH6", "ADC1_CH5", "RTC_GPIO6"], "m": [], "ft": false, "n": "", "rs": "", "al": "IO6", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "L", "r": 6}, {"t": "gpio", "l": "7", "p": "GPIO7", "f": ["TOUCH7", "ADC1_CH6", "RTC_GPIO7"], "m": [], "ft": false, "n": "", "rs": "", "al": "IO7", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "L", "r": 7}, {"t": "gpio", "l": "8", "p": "GPIO15", "f": ["U0RTS", "ADC2_CH4", "XTAL_32K_P", "RTC_GPIO15"], "m": [], "ft": false, "n": "", "rs": "", "al": "IO15", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "L", "r": 8}, {"t": "gpio", "l": "9", "p": "GPIO16", "f": ["U0CTS", "ADC2_CH5", "XTAL_32K_N", "RTC_GPIO16"], "m": [], "ft": false, "n": "", "rs": "", "al": "IO16", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "L", "r": 9}, {"t": "gpio", "l": "10", "p": "GPIO17", "f": ["U1TXD", "ADC2_CH6", "RTC_GPIO17"], "m": [], "ft": false, "n": "", "rs": "", "al": "IO17", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "L", "r": 10}, {"t": "gpio", "l": "11", "p": "GPIO18", "f": ["U1RXD", "ADC2_CH7", "RTC_GPIO18"], "m": ["CLK_OUT3"], "ft": false, "n": "", "rs": "", "al": "IO18", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "L", "r": 11}, {"t": "gpio", "l": "12", "p": "GPIO8", "f": ["TOUCH8", "ADC1_CH7", "RTC_GPIO8"], "m": ["SUBSPICS1"], "ft": false, "n": "", "rs": "", "al": "IO8", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "L", "r": 12}, {"t": "gpio", "l": "13", "p": "GPIO19", "f": ["U1RTS", "ADC2_CH8", "USB_D-", "RTC_GPIO19"], "m": ["CLK_OUT2"], "ft": false, "n": "USB natif D− (USB-Serial/JTAG intégré). À éviter en GPIO si l'USB sert.", "rs": "", "al": "IO19", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "L", "r": 13}, {"t": "gpio", "l": "14", "p": "GPIO20", "f": ["U1CTS", "ADC2_CH9", "USB_D+", "RTC_GPIO20"], "m": ["CLK_OUT1"], "ft": false, "n": "USB natif D+ (USB-Serial/JTAG intégré). À éviter en GPIO si l'USB sert.", "rs": "", "al": "IO20", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "L", "r": 14}, {"t": "gpio", "l": "15", "p": "GPIO3", "f": ["TOUCH3", "ADC1_CH2", "RTC_GPIO3"], "m": [], "ft": false, "n": "Strapping : choix de la source du JTAG.", "rs": "Flottante (strapping)", "al": "IO3", "x": [["Strapping", "boot"]], "pl": "both", "strap": true, "rsv": false, "s": "L", "r": 15}, {"t": "gpio", "l": "16", "p": "GPIO46", "f": [], "m": [], "ft": false, "n": "Strapping : mode de démarrage / log ROM ; pull-down par défaut.", "rs": "Pull-down (strapping)", "al": "IO46", "x": [["Strapping", "boot"]], "pl": "both", "strap": true, "rsv": false, "s": "L", "r": 16}, {"t": "gpio", "l": "17", "p": "GPIO9", "f": ["TOUCH9", "ADC1_CH8", "FSPIHD", "RTC_GPIO9"], "m": ["SUBSPIHD"], "ft": false, "n": "", "rs": "", "al": "IO9", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "L", "r": 17}, {"t": "gpio", "l": "18", "p": "GPIO10", "f": ["TOUCH10", "ADC1_CH9", "FSPICS0", "RTC_GPIO10"], "m": ["FSPIIO4", "SUBSPICS0"], "ft": false, "n": "", "rs": "", "al": "IO10", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "L", "r": 18}, {"t": "gpio", "l": "19", "p": "GPIO11", "f": ["TOUCH11", "ADC2_CH0", "FSPID", "RTC_GPIO11"], "m": ["FSPIIO5", "SUBSPID"], "ft": false, "n": "", "rs": "", "al": "IO11", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "L", "r": 19}, {"t": "gpio", "l": "20", "p": "GPIO12", "f": ["TOUCH12", "ADC2_CH1", "FSPICLK", "RTC_GPIO12"], "m": ["FSPIIO6", "SUBSPICLK"], "ft": false, "n": "", "rs": "", "al": "IO12", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "L", "r": 20}, {"t": "gpio", "l": "21", "p": "GPIO13", "f": ["TOUCH13", "ADC2_CH2", "FSPIQ", "RTC_GPIO13"], "m": ["FSPIIO7", "SUBSPIQ"], "ft": false, "n": "", "rs": "", "al": "IO13", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "L", "r": 21}, {"t": "gpio", "l": "22", "p": "GPIO14", "f": ["TOUCH14", "ADC2_CH3", "FSPIWP", "RTC_GPIO14"], "m": ["FSPIDQS", "SUBSPIWP"], "ft": false, "n": "", "rs": "", "al": "IO14", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "L", "r": 22}, {"t": "gpio", "l": "23", "p": "GPIO21", "f": ["RTC_GPIO21"], "m": [], "ft": false, "n": "", "rs": "", "al": "IO21", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "L", "r": 23}, {"t": "gpio", "l": "24", "p": "GPIO47", "f": [], "m": ["SPICLK_P", "SUBSPICLK_P_DIFF"], "ft": false, "n": "", "rs": "", "al": "IO47", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "L", "r": 24}, {"t": "gpio", "l": "25", "p": "GPIO48", "f": [], "m": ["SPICLK_N", "SUBSPICLK_N_DIFF"], "ft": false, "n": "", "rs": "", "al": "IO48", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "L", "r": 25}, {"t": "gpio", "l": "26", "p": "GPIO45", "f": [], "m": [], "ft": false, "n": "Strapping : tension VDD_SPI (0 = 3,3 V par défaut). Ne pas forcer à 1 avec une flash 3,3 V.", "rs": "Pull-down (strapping)", "al": "IO45", "x": [["Strapping", "boot"]], "pl": "both", "strap": true, "rsv": false, "s": "L", "r": 26}, {"t": "pwr", "l": "40", "p": "0 V", "sh": "0 V", "f": [], "m": [], "ft": null, "n": "Masse.", "gnd": true, "disp": "GND", "kind": "gnd", "al": "GND", "x": [], "rs": "", "s": "R", "r": 1}, {"t": "gpio", "l": "39", "p": "GPIO1", "f": ["TOUCH1", "ADC1_CH0", "RTC_GPIO1"], "m": [], "ft": false, "n": "", "rs": "", "al": "IO1", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "R", "r": 2}, {"t": "gpio", "l": "38", "p": "GPIO2", "f": ["TOUCH2", "ADC1_CH1", "RTC_GPIO2"], "m": [], "ft": false, "n": "", "rs": "", "al": "IO2", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "R", "r": 3}, {"t": "gpio", "l": "37", "p": "GPIO43", "f": ["U0TXD"], "m": ["CLK_OUT1"], "ft": false, "n": "UART0 TX (pont USB-série de la carte).", "rs": "", "al": "TXD0", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "R", "r": 4}, {"t": "gpio", "l": "36", "p": "GPIO44", "f": ["U0RXD"], "m": ["CLK_OUT2"], "ft": false, "n": "UART0 RX (pont USB-série de la carte).", "rs": "", "al": "RXD0", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "R", "r": 5}, {"t": "gpio", "l": "35", "p": "GPIO42", "f": ["MTMS"], "m": [], "ft": false, "n": "JTAG (MTMS), libre en GPIO si le JTAG n'est pas utilisé.", "rs": "", "al": "IO42", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "R", "r": 6}, {"t": "gpio", "l": "34", "p": "GPIO41", "f": ["MTDI"], "m": ["CLK_OUT1"], "ft": false, "n": "JTAG (MTDI), libre en GPIO si le JTAG n'est pas utilisé.", "rs": "", "al": "IO41", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "R", "r": 7}, {"t": "gpio", "l": "33", "p": "GPIO40", "f": ["MTDO"], "m": ["CLK_OUT2"], "ft": false, "n": "JTAG (MTDO), libre en GPIO si le JTAG n'est pas utilisé.", "rs": "", "al": "IO40", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "R", "r": 8}, {"t": "gpio", "l": "32", "p": "GPIO39", "f": ["MTCK"], "m": ["CLK_OUT3", "SUBSPICS1"], "ft": false, "n": "JTAG (MTCK), libre en GPIO si le JTAG n'est pas utilisé.", "rs": "", "al": "IO39", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "R", "r": 9}, {"t": "gpio", "l": "31", "p": "GPIO38", "f": ["FSPIWP"], "m": ["SUBSPIWP"], "ft": false, "n": "", "rs": "", "al": "IO38", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "R", "r": 10}, {"t": "gpio", "l": "30", "p": "GPIO37", "f": ["FSPIQ"], "m": ["SPIDQS", "SUBSPIQ"], "ft": false, "n": "Utilisée en interne par la flash/PSRAM octale (modules R8, WROOM-2). Libre seulement sur les modules sans PSRAM octale.", "rs": "", "al": "IO37", "x": [["Réservée", "misc"]], "pl": "both", "strap": false, "rsv": true, "s": "R", "r": 11}, {"t": "gpio", "l": "29", "p": "GPIO36", "f": ["FSPICLK"], "m": ["SPIIO7", "SUBSPICLK"], "ft": false, "n": "Utilisée en interne par la flash/PSRAM octale (modules R8, WROOM-2). Libre seulement sur les modules sans PSRAM octale.", "rs": "", "al": "IO36", "x": [["Réservée", "misc"]], "pl": "both", "strap": false, "rsv": true, "s": "R", "r": 12}, {"t": "gpio", "l": "28", "p": "GPIO35", "f": ["FSPID"], "m": ["SPIIO6", "SUBSPID"], "ft": false, "n": "Utilisée en interne par la flash/PSRAM octale (modules R8, WROOM-2). Libre seulement sur les modules sans PSRAM octale.", "rs": "", "al": "IO35", "x": [["Réservée", "misc"]], "pl": "both", "strap": false, "rsv": true, "s": "R", "r": 13}, {"t": "gpio", "l": "27", "p": "GPIO0", "f": ["RTC_GPIO0"], "m": [], "ft": false, "n": "Strapping : à 0 au reset = mode téléchargement série (bouton BOOT).", "rs": "Pull-up (strapping)", "al": "IO0", "x": [["Strapping", "boot"]], "pl": "both", "strap": true, "rsv": false, "s": "R", "r": 14}], "text": {"subtitle": "ESP32-S3-WROOM-1 · module", "sideLeft": "Rangée gauche · pads 1 → 26 (côté gauche puis bas)", "sideRight": "Rangée droite · pads 40 → 27 (de haut en bas)", "hint": "Vue de dessus, <strong>antenne en haut</strong>. Le cadre est le <strong>numéro de pad</strong> ; l'alias grisé est le nom du pad. Pad 41 = masse thermique (EPAD).", "foot": "Carte = repère imprimé (ou n° de pad) ; G = rangée gauche, D = rangée droite. Fonctions en pointillés (<strong>*</strong> dans le tableau) = fonctions alternatives / spécifiques (matrice GPIO, SDIO, LP, EMAC…). Noms SPI Espressif : <strong>D = MOSI, Q = MISO</strong>, HD/WP = IO2/IO3 en mode Quad. « PU / PD » = pull-up ou pull-down au choix par logiciel.", "searchPlaceholder": "Rechercher : 4, IO48, GPIO19…"}, "aux": [], "cards": [{"kind": "info", "html": "<strong>Sources &amp; vérification <span class=\"mm-ver chk\">à vérifier</span> :</strong> Brochage de pads du module <em>ESP32-S3-WROOM-1</em> : les signaux et leur ordre concordent avec les tableaux J1/J3 du DevKitC-1 officiel. Modules N8R8 / WROOM-2 : GPIO35/36/37 réservées à la flash/PSRAM octale. GPIO26–32 (flash) non sorties."}], "silk": {"re": "^\\d+$", "strip": ""}}];
+
+    // ==================================================================
+    // MOTEUR — identique pour toutes les pages (gabarit + sélecteur de variante)
+    // ==================================================================
+    const T = CONFIG.texts;
+    const $ = id => document.getElementById(id);
+    const page = root.closest('.page-content') || document;
+    const FLOAT = T.float;
+    const state = { q: '', cat: 'all', sel: -1, v: 0 };
+    let pins = [], ROWS = 0, cur = null, silkRe = null, silkStrip = null;
+    const dyn = [];
+
+    const CAT_RE = {};
+    Object.keys(CONFIG.catRe).forEach(k => { CAT_RE[k] = new RegExp(CONFIG.catRe[k]); });
+    const FUNC_MAP = CONFIG.funcMap.map(m => ({ re: new RegExp(m.re), t: m.t, c: m.c, once: !!m.once }));
+    const allFuncs = p => p.f.concat(p.m);
+    const isNum = p => silkRe.test(p.l);
+    const numText = p => (isNum(p) && silkStrip) ? p.l.replace(silkStrip, '') : p.l;
+    const plOf = p => p.pl || 'both';
+    const PULL_TXT = { both: T.pullBoth, up: T.pullUp, down: T.pullDown, none: T.pullNone };
+    const PULL_TAG = { both: 'PU/PD', up: 'PU', down: 'PD', none: '' };
+    const PULL_SHORT = { both: 'PU / PD', up: 'PU', down: 'PD', none: 'aucune' };
+
+    // ----- Éléments statiques de la page -----
+    $('mm-badges').innerHTML = CONFIG.badges.map(b => '<span class="badge badge-' + b[0] + '">' + b[1] + '</span>').join('\n');
+    $('mm-legend').innerHTML = CONFIG.legend.map(h => '<span>' + h + '</span>').join('');
+    page.querySelectorAll('[data-cfg="title"]').forEach(el => { el.innerHTML = CONFIG.text.title; });
+    page.querySelectorAll('[data-cfg="lead"]').forEach(el => { el.innerHTML = CONFIG.text.lead; });
+
+    // ----- Puces de fonctions -----
+    function chipsFor(p) {
+        const out = [];
+        if (p.al) out.push({ t: p.al, c: 'al' });
+        p.x.forEach(x => out.push({ t: x[0], c: x[1] }));
+        const add = (arr, rm) => {
+            arr.forEach(f => {
+                const m = FUNC_MAP.find(e => e.re.test(f));
+                if (!m) return;
+                const t = f.replace(m.re, m.t);
+                if (m.once && out.some(o => o.t === t && o.c === m.c)) return;
+                out.push({ t, c: m.c, rm });
+            });
+        };
+        add(p.f, false);
+        add(p.m, true);
+        return out;
+    }
+    function pullTag(p) {
+        if (p.t === 'pwr') return '';
+        if (p.t === 'rst') return T.rstTag ? '<i class="mm-pull" title="' + T.rstTip + '">' + T.rstTag + '</i>' : '';
+        const base = PULL_TAG[plOf(p)];
+        if (!base) return '';
+        const arrow = /^Pull-up/.test(p.rs) ? ' ↑' : (/^Pull-down/.test(p.rs) ? ' ↓' : '');
+        const tip = PULL_TXT[plOf(p)] + (p.rs !== FLOAT ? ' · État au reset : ' + p.rs : '');
+        return '<i class="mm-pull" title="' + tip + '">' + base + arrow + '</i>';
+    }
+    function dotHTML(p) {
+        const col = p.t === 'pwr' ? (p.gnd ? '#6a7a7a' : '#e74c3c') : (p.ft ? '#2ecc71' : '#e74c3c');
+        return '<i style="display:inline-block;width:10px;height:10px;border-radius:50%;background:' + col + ';vertical-align:middle;margin-right:4px"></i>';
+    }
+    function rowHTML(p) {
+        const MAXC = 4;
+        const chips = chipsFor(p);
+        const shown = chips.slice(0, MAXC);
+        const hidden = chips.slice(MAXC);
+        let cs = shown.map(c => '<span class="mm-c mm-c-' + c.c + (c.rm ? ' mm-rm' : '') + '"' +
+            (c.rm ? ' title="Fonction alternative"' : '') + '>' + c.t + '</span>').join('');
+        if (hidden.length) cs += '<span class="mm-c mm-c-misc" title="' + hidden.map(c => c.t).join(', ') + '">+' + hidden.length + '</span>';
+        const lv = p.t === 'pwr' ? '<span class="mm-lv mm-lv0"></span>'
+            : '<span class="mm-lv ' + (p.ft ? 'mm-lv5' : 'mm-lv3') + '" title="' + (p.ft ? T.ftShort : T.v3Short) + '">' + (p.ft ? '5' : '3') + '</span>';
+        const ptCls = p.t === 'pwr' ? p.kind : (p.t === 'rst' ? 'rst' : 'io');
+        return lv +
+            '<span class="mm-pt ' + ptCls + '">' + p.mb + '</span>' +
+            '<span class="mm-cs">' + cs + pullTag(p) + '</span>' +
+            '<span class="mm-line"></span>' +
+            '<span class="mm-num' + (isNum(p) ? '' : ' mm-num-x') + '" title="Repère : ' + p.l + '">' + numText(p) + '</span>';
+    }
+    function levelText(p) {
+        if (p.t === 'pwr') return p.kind === 'nc' ? 'Non connectée' : (p.gnd ? 'Masse (0 V)' : 'Alimentation : ' + p.sh);
+        if (p.t === 'rst') return T.rstLevel;
+        return p.ft ? T.ft : T.v3;
+    }
+    function pullText(p) {
+        if (p.t === 'pwr') return 'Sans objet';
+        if (p.t === 'rst') return T.rstTip;
+        return PULL_TXT[plOf(p)];
+    }
+    function levelBadge(p) {
+        if (p.t === 'pwr') return '<span class="badge badge-secondary">' + p.sh + '</span>';
+        if (p.t === 'rst') return '<span class="badge badge-warning">3,3 V</span>';
+        return p.ft ? '<span class="badge badge-success">5 V ✔</span>' : '<span class="badge badge-warning">3,3 V</span>';
+    }
+    function pullShort(p) {
+        if (p.t === 'pwr') return '—';
+        if (p.t === 'rst') return T.rstTag || '—';
+        return PULL_SHORT[plOf(p)] + (plOf(p) !== 'none' && p.rs !== FLOAT ? ' (reset : ' + p.rs.replace(/ \(.*\)/, '').toLowerCase() + ')' : '');
+    }
+
+    // ----- Carte (SVG central) -----
+    function drawBoard() {
+        const B = cur.board;
+        const Y0 = 44, H = 30;
+        const SH = Y0 + H * ROWS + 8;
+        const PH = H * ROWS + 12;
+        const compact = ROWS < 10;
+        const chipY = compact ? Math.max(Y0, 34 + Math.round((PH - 34) / 2) - 6) : 130;
+        const nameY = compact ? 34 + PH - 8 : 262;
+        const tx = B.textColor;
+        let s = '<svg viewBox="0 0 130 ' + SH + '" width="130" height="' + SH + '" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="' + B.name + '">';
+        s += '<rect x="28" y="34" width="74" height="' + PH + '" rx="6" fill="' + B.color + '" stroke="' + B.stroke + '" stroke-width="2"/>';
+        if (B.usb) {
+            s += '<rect x="46" y="4" width="38" height="36" rx="3" fill="#c9cfd2" stroke="#7b8488" stroke-width="2"/>';
+            s += '<rect x="53" y="12" width="24" height="10" rx="1" fill="#5a6266"/>';
+        }
+        if (B.chip && B.chip.length) {
+            s += '<rect x="48" y="' + chipY + '" width="34" height="34" rx="2" fill="#15181a" stroke="#4ecdc4" stroke-width="1"/>';
+            B.chip.forEach((line, i) => {
+                s += '<text x="65" y="' + (chipY + 15 + 9 * i) + '" text-anchor="middle" font-size="6" fill="#4ecdc4" font-family="monospace">' + line + '</text>';
+            });
+        }
+        if (B.crystal && !compact) {
+            s += '<rect x="56" y="200" width="18" height="8" rx="4" fill="#d9d9d9" stroke="#7b8488"/>';
+            s += '<text x="65" y="222" text-anchor="middle" font-size="6" fill="' + tx + '" font-family="monospace">' + B.crystal + '</text>';
+        }
+        s += '<text x="65" y="' + nameY + '" text-anchor="middle" font-size="' + (B.name.length > 14 ? 7 : 9) + '" fill="' + tx + '" font-family="sans-serif" font-weight="700">' + B.name + '</text>';
+        const by = SH - 92;
+        (B.buttons || []).forEach(b => {
+            const y = (b.y != null) ? b.y : by;
+            s += '<circle cx="' + b.x + '" cy="' + y + '" r="6" fill="#222" stroke="#999"/><text x="' + b.x + '" y="' + (y + 18) + '" text-anchor="middle" font-size="6" fill="' + tx + '" font-family="monospace">' + b.label + '</text>';
+        });
+        s += (B.extraSvg || '').replace(/__SH__/g, SH);
+        for (let i = 0; i < ROWS; i++) {
+            const y = Y0 + H * i + H / 2;
+            s += '<line x1="0" y1="' + y + '" x2="34" y2="' + y + '" stroke="currentColor" stroke-opacity="0.5"/>';
+            s += '<line x1="96" y1="' + y + '" x2="130" y2="' + y + '" stroke="currentColor" stroke-opacity="0.5"/>';
+            s += '<circle cx="35" cy="' + y + '" r="3.2" fill="#d4af37"/><circle cx="95" cy="' + y + '" r="3.2" fill="#d4af37"/>';
+        }
+        s += '</svg>';
+        $('mm-boardsvg').innerHTML = s;
+    }
+
+    // ----- Rangées / tableau / détail -----
+    const leftEl = $('mm-left'), rightEl = $('mm-right'), tbody = $('mm-tbody'), detail = $('mm-detail'), view = $('mm-view');
+
+    function buildRows() {
+        leftEl.innerHTML = ''; rightEl.innerHTML = ''; tbody.innerHTML = '';
+        const nextRank = { L: 1, R: 1 };
+        pins.forEach((p, i) => {
+            for (; nextRank[p.s] < p.r; nextRank[p.s]++) {
+                const gap = document.createElement('div');
+                gap.style.height = '30px';
+                (p.s === 'L' ? leftEl : rightEl).appendChild(gap);
+            }
+            nextRank[p.s] = p.r + 1;
+            const row = document.createElement('div');
+            row.className = 'mm-row';
+            row.dataset.i = i;
+            row.tabIndex = 0;
+            row.setAttribute('role', 'button');
+            row.setAttribute('aria-label', 'Broche ' + numText(p) + ' ' + p.mb);
+            row.innerHTML = rowHTML(p);
+            row.addEventListener('click', () => select(i));
+            row.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(i); } });
+            (p.s === 'L' ? leftEl : rightEl).appendChild(row);
+
+            const tr = document.createElement('tr');
+            tr.dataset.i = i;
+            const fn = p.f.concat(p.m.map(f => f + '*')).join(', ') || '—';
+            tr.innerHTML =
+                '<td class="mono">' + numText(p) + '</td>' +
+                '<td>' + (p.s === 'L' ? 'G' : 'D') + '</td>' +
+                '<td class="mono">' + (p.al || '—') + '</td>' +
+                '<td class="mono">' + (p.t === 'pwr' ? '—' : p.mb) + '</td>' +
+                '<td class="fn">' + fn + '</td>' +
+                '<td>' + pullShort(p) + '</td>' +
+                '<td>' + levelBadge(p) + '</td>';
+            tr.addEventListener('click', () => select(i));
+            tbody.appendChild(tr);
+        });
+    }
+
+    function select(i) {
+        state.sel = i;
+        const p = pins[i];
+        const tags = p.f.map(f => '<span class="mm-tag">' + f + '</span>').join('') +
+            p.m.map(f => '<span class="mm-tag remap">' + f + ' (alt.)</span>').join('');
+        let html =
+            '<div class="mm-d-head"><span class="mm-d-title">' + (isNum(p) ? 'Broche ' : '') + numText(p) + '</span>' +
+            '<span class="mm-d-sub">' + (p.t === 'pwr' ? 'Alimentation' : p.mb + ' (' + p.p + ')') + '</span></div>' +
+            '<dl class="mm-d-grid">' +
+            '<dt>Sur la carte</dt><dd>' + numText(p) + ' — rangée ' + (p.s === 'L' ? 'gauche' : 'droite') + ', ' + p.r + T.posSuffix + '</dd>';
+        if (p.al) html += '<dt>' + T.aliasLabel + '</dt><dd>' + p.al + '</dd>';
+        if (tags) html += '<dt>Fonctions</dt><dd>' + tags + '</dd>';
+        if (p.strap) html += '<dt>Strapping</dt><dd>Broche lue au reset pour choisir le mode de démarrage : ne pas la forcer.</dd>';
+        if (p.rsv) html += '<dt>Réservée</dt><dd>Utilisée en interne par la mémoire flash/PSRAM du module : à éviter.</dd>';
+        html += '<dt>Pull-up / pull-down</dt><dd>' + pullText(p) + '</dd>';
+        if (p.t === 'gpio') html += '<dt>État au reset</dt><dd>' + p.rs + '</dd>';
+        html += '<dt>Niveau logique</dt><dd>' + dotHTML(p) + levelText(p) + '</dd>';
+        if (p.n) html += '<dt>Remarque</dt><dd>' + p.n + '</dd>';
+        html += '</dl>';
+        detail.innerHTML = html;
+        refresh();
+        const card = $('mm-detail-card');
+        if (card && view.classList.contains('mm-stack') && card.scrollIntoView) card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // ----- Filtres -----
+    function matches(p) {
+        if (state.cat !== 'all') {
+            if (state.cat === 'PWR') { if (p.t !== 'pwr') return false; }
+            else if (state.cat === 'STRAP') { if (!p.strap) return false; }
+            else if (state.cat === 'RSV') { if (!p.rsv) return false; }
+            else if (!allFuncs(p).some(f => CAT_RE[state.cat].test(f))) return false;
+        }
+        if (state.q) {
+            if (/^\d+$/.test(state.q)) return numText(p).toLowerCase() === state.q;
+            const hay = (p.l + ' ' + p.p + ' ' + p.mb + ' ' + p.al + ' ' + allFuncs(p).join(' ') + ' ' + p.n).toLowerCase();
+            if (hay.indexOf(state.q) === -1) return false;
+        }
+        return true;
+    }
+    const chipsEl = $('mm-chips');
+    CONFIG.cats.forEach(([key, label]) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'mm-chip-btn' + (key === 'all' ? ' active' : '');
+        b.textContent = label;
+        b.addEventListener('click', () => {
+            state.cat = key;
+            chipsEl.querySelectorAll('.mm-chip-btn').forEach(c => c.classList.toggle('active', c === b));
+            refresh();
+        });
+        chipsEl.appendChild(b);
+    });
+    $('mm-search').addEventListener('input', e => { state.q = e.target.value.trim().toLowerCase(); refresh(); });
+
+    function refresh() {
+        let shown = 0;
+        root.querySelectorAll('.mm-row').forEach(el => {
+            const i = +el.dataset.i;
+            const ok = matches(pins[i]);
+            el.classList.toggle('mm-dim', !ok);
+            el.classList.toggle('sel', i === state.sel);
+            if (ok) shown++;
+        });
+        tbody.querySelectorAll('tr').forEach(tr => {
+            const i = +tr.dataset.i;
+            tr.style.display = matches(pins[i]) ? '' : 'none';
+            tr.classList.toggle('sel', i === state.sel);
+        });
+        $('mm-count').textContent = shown + ' / ' + pins.length + ' broches correspondent';
+    }
+
+    // ----- Sélecteur de variante -----
+    const varEl = $('mm-variants');
+    VARIANTS.forEach((v, i) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'mm-chip-btn mm-var-btn' + (i === 0 ? ' active' : '');
+        b.textContent = v.label;
+        b.addEventListener('click', () => load(i));
+        varEl.appendChild(b);
+    });
+
+    function load(i) {
+        state.v = i;
+        state.sel = -1;
+        cur = VARIANTS[i];
+        varEl.querySelectorAll('.mm-var-btn').forEach((c, k) => c.classList.toggle('active', k === i));
+        const sk = cur.silk || CONFIG.silk;
+        silkRe = new RegExp(sk.re);
+        silkStrip = sk.strip ? new RegExp(sk.strip) : null;
+        pins = cur.pins.map(p => Object.assign({}, p));
+        pins.sort((a, b) => (a.s === b.s ? a.r - b.r : (a.s === 'L' ? -1 : 1)));
+        pins.forEach(p => { p.mb = p.t === 'gpio' ? p.p : (p.t === 'rst' ? (p.disp || 'RESET') : p.disp); });
+        ROWS = Math.max.apply(null, pins.map(p => p.r));
+
+        const tx = Object.assign({}, CONFIG.text, cur.text || {});
+        page.querySelectorAll('[data-cfg]').forEach(el => {
+            const k = el.dataset.cfg;
+            if (k === 'title' || k === 'lead') return;
+            if (tx[k] != null) el.innerHTML = tx[k];
+        });
+        $('mm-search').placeholder = tx.searchPlaceholder || '';
+        $('mm-var-sub').innerHTML = cur.sub || '';
+
+        $('mm-aux').innerHTML = (cur.aux || []).map(a => {
+            const pt = '<span class="mm-pt io">' + a.port + '</span>';
+            const ch = '<span class="mm-c mm-c-' + a.cls + '">' + a.chip + '</span>';
+            const nt = '<span class="mm-note">' + a.note + '</span>';
+            return '<div class="mm-auxitem">' + (a.side === 'R' ? nt + ch + pt : pt + ch + nt) + '</div>';
+        }).join('');
+
+        dyn.splice(0).forEach(el => el.remove());
+        CONFIG.cards.concat(cur.cards || []).forEach(c => {
+            const d = document.createElement('div');
+            d.className = 'card-alert ' + c.kind;
+            d.innerHTML = '<div class="card-body">' + c.html + '</div>';
+            root.appendChild(d);
+            dyn.push(d);
+        });
+
+        drawBoard();
+        buildRows();
+        detail.innerHTML = '<p class="text-muted" style="margin:0;">Sélectionne une broche dans le schéma ou dans le tableau.</p>';
+        layout();
+        refresh();
+    }
+
+    function layout() {
+        const w = root.getBoundingClientRect().width;
+        if (!w) return;
+        view.classList.toggle('mm-stack', w < 940);
+    }
+    if (window.ResizeObserver) new ResizeObserver(layout).observe(root);
+    window.addEventListener('resize', layout);
+    document.addEventListener('contentLoaded', layout);
+
+    load(0);
+})();
+
+    </script>
+    </div>
+</body>
+</html>

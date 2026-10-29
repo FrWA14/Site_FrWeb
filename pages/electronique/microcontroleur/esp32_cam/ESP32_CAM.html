@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>ESP32 — Cartes caméra - Brochage - FrWA Conception</title>
+    <meta name="description" content="Brochage interactif des cartes caméra ESP32 : AI-Thinker ESP32-CAM et XIAO ESP32-S3 Sense, avec les GPIO internes caméra, micro et microSD.">
+    <meta name="tags" content="Électronique, Microcontrôleur, ESP32-CAM">
+</head>
+<body>
+    <div class="page-content">
+        <div class="page-banner mm-banner">
+            <div class="page-banner-overlay">
+                <h1 class="page-banner-title" data-cfg="title"></h1>
+                <span class="page-banner-subtitle" data-cfg="subtitle"></span>
+            </div>
+        </div>
+
+        <div class="flex gap-sm" style="margin-bottom: var(--spacing-lg);" id="mm-badges"></div>
+
+        <p class="lead" data-cfg="lead"></p>
+
+        <div class="divider"></div>
+
+        <div id="mm-root" class="mm-root">
+
+            <div class="card mm-var-card">
+                <div class="card-header"><h3 class="card-title">Carte / version</h3></div>
+                <div class="card-body">
+                    <div class="mm-variants" id="mm-variants"></div>
+                    <div class="mm-var-sub" id="mm-var-sub"></div>
+                </div>
+            </div>
+
+            <div class="card mm-filters">
+                <div class="card-body">
+                    <input type="search" id="mm-search" class="mm-search" placeholder="" aria-label="Rechercher une broche">
+                    <div class="mm-chips" id="mm-chips"></div>
+                    <div class="mm-count" id="mm-count"></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header"><h3 class="card-title">Schéma de la carte</h3></div>
+                <div class="card-body">
+                    <div class="mm-view" id="mm-view">
+                        <div class="mm-side mm-side-left">
+                            <div class="mm-side-title" data-cfg="sideLeft"></div>
+                            <div class="mm-rows" id="mm-left"></div>
+                        </div>
+                        <div class="mm-boardcol" aria-hidden="true" id="mm-boardsvg"></div>
+                        <div class="mm-side mm-side-right">
+                            <div class="mm-side-title" data-cfg="sideRight"></div>
+                            <div class="mm-rows" id="mm-right"></div>
+                        </div>
+                    </div>
+                    <div class="mm-aux" id="mm-aux"></div>
+                    <div class="mm-hint" data-cfg="hint"></div>
+                    <div class="mm-legend" id="mm-legend"></div>
+                </div>
+            </div>
+
+            <div class="card" id="mm-detail-card">
+                <div class="card-header"><h3 class="card-title">Détail de la broche</h3></div>
+                <div class="card-body" id="mm-detail">
+                    <p class="text-muted" style="margin:0;">Sélectionne une broche dans le schéma ou dans le tableau.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header"><h3 class="card-title">Toutes les broches</h3></div>
+                <div class="card-body">
+                    <div class="mm-table-wrap">
+                        <table class="mm-table">
+                            <thead>
+                                <tr>
+                                    <th>Carte</th><th>Rangée</th><th>Alias</th><th>Port</th>
+                                    <th>Fonctions</th><th>Pull interne</th><th>Niveau</th>
+                                </tr>
+                            </thead>
+                            <tbody id="mm-tbody"></tbody>
+                        </table>
+                    </div>
+                    <p class="mm-foot" data-cfg="foot"></p>
+                </div>
+            </div>
+        </div>
+
+        <p class="text-center">
+            <a data-retour class="btn btn-primary"></a>
+        </p>
+
+    <style>
+        .mm-banner { background: var(--bg-tertiary, #1a2424); }
+
+        .mm-root > .card,
+        .mm-root > .card-alert { margin-bottom: var(--spacing-lg, 24px); }
+        .mm-root .card-alert ul { margin: var(--spacing-sm, 8px) 0 0; padding-left: var(--spacing-lg, 24px); }
+
+        /* ----- Filtres ----- */
+        .mm-search {
+            width: 100%;
+            padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
+            background: var(--bg-tertiary, #1a2424);
+            border: 1px solid var(--color-primary, #2d5a5a);
+            border-radius: var(--border-radius-md, 8px);
+            color: var(--text-primary, #e8f0f0);
+            font-family: var(--font-family-mono, monospace);
+            font-size: var(--font-size-sm, 0.875rem);
+        }
+        .mm-chips { display: flex; flex-wrap: wrap; gap: var(--spacing-xs, 4px); margin-top: var(--spacing-md, 16px); }
+        .mm-chip-btn {
+            padding: 4px 12px;
+            border: 1px solid var(--color-primary, #2d5a5a);
+            border-radius: 999px;
+            background: transparent;
+            color: var(--text-secondary, #a8b5b5);
+            font-size: var(--font-size-xs, 0.75rem);
+            cursor: pointer;
+            transition: all var(--transition-fast, 150ms ease);
+        }
+        .mm-chip-btn:hover { color: var(--text-primary, #e8f0f0); border-color: var(--text-accent, #4ecdc4); }
+        .mm-chip-btn.active { background: var(--color-primary, #2d5a5a); color: #fff; border-color: var(--text-accent, #4ecdc4); }
+        .mm-count { margin-top: var(--spacing-sm, 8px); font-size: var(--font-size-xs, 0.75rem); color: var(--text-muted, #6a7a7a); }
+
+        /* ----- Éléments de rangée ----- */
+        .mm-lv {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 20px; height: 20px; flex-shrink: 0;
+            border-radius: 3px;
+            font: 700 12px var(--font-family-mono, monospace);
+            font-style: normal;
+        }
+        .mm-lv5 { background: #2ecc71; color: #05210f; }
+        .mm-lv3 { background: #e74c3c; color: #fff; }
+        .mm-lv0 { background: transparent; }
+        .mm-inl { vertical-align: middle; margin: 0 2px; }
+
+        .mm-pt {
+            display: inline-flex; align-items: center; justify-content: center;
+            min-width: 52px; height: 22px; padding: 0 6px; flex-shrink: 0;
+            border-radius: 3px;
+            font: 700 11px var(--font-family-mono, monospace);
+            color: #fff;
+            background: #2a6fb0;
+        }
+        .mm-side-left .mm-pt.io { background: #6b7d3a; }
+        .mm-pt.io { background: #2a6fb0; }
+        .mm-pt.pwr { background: #c0392b; }
+        .mm-pt.gnd { background: #222; border: 1px solid #555; }
+        .mm-pt.bat, .mm-pt.rst { background: #1f4fd8; }
+
+        .mm-cs { display: flex; align-items: center; gap: 4px; min-width: 0; flex-shrink: 1; }
+        .mm-view:not(.mm-stack) .mm-cs { overflow: hidden; }
+        .mm-c {
+            display: inline-flex; align-items: center;
+            height: 20px; padding: 0 6px;
+            border-radius: 4px; border: 1px solid transparent;
+            font: 600 10.5px var(--font-family-primary, sans-serif);
+            white-space: nowrap; color: #111;
+        }
+        .mm-c-al   { background: transparent; color: var(--text-secondary, #a8b5b5); border-color: var(--text-muted, #6a7a7a); font-style: italic; }
+        .mm-c-ser  { background: #f5d76e; }
+        .mm-c-i2c  { background: #f0a030; }
+        .mm-c-spi  { background: #8e5bd0; color: #fff; }
+        .mm-c-pwm  { background: #5b3a99; color: #fff; }
+        .mm-c-an   { background: #f4d6c0; }
+        .mm-c-usb  { background: #ff8c3a; }
+        .mm-c-dbg  { background: #a8e6a1; }
+        .mm-c-boot { background: #bfe3ff; }
+        .mm-c-btn  { background: #1f4fd8; color: #fff; }
+        .mm-c-misc { background: #cfd8dc; }
+        .mm-rm { border: 1px dashed rgba(0, 0, 0, 0.7); opacity: 0.85; }
+        .mm-c-spi.mm-rm, .mm-c-pwm.mm-rm { border-color: rgba(255, 255, 255, 0.8); }
+
+        .mm-pull {
+            display: inline-flex; align-items: center;
+            height: 18px; padding: 0 6px; flex-shrink: 0;
+            border: 1px solid var(--text-accent, #4ecdc4);
+            border-radius: 9px;
+            color: var(--text-accent, #4ecdc4);
+            font: 600 10px var(--font-family-mono, monospace);
+            font-style: normal;
+            white-space: nowrap;
+        }
+        .mm-line { flex: 1; min-width: 6px; height: 1px; background: var(--text-muted, #6a7a7a); opacity: 0.5; }
+                .mm-num {
+            min-width: 40px; height: 24px; padding: 0 6px; flex-shrink: 0;
+            display: inline-flex; align-items: center; justify-content: center;
+            border-radius: 4px;
+            background: var(--bg-primary, #0a0f0f);
+            border: 2px solid var(--text-accent, #4ecdc4);
+            color: var(--text-primary, #e8f0f0);
+            font: 700 14px var(--font-family-mono, monospace);
+            font-style: normal;
+        }
+        .mm-num.mm-num-x { border-color: var(--color-primary, #2d5a5a); color: var(--text-secondary, #a8b5b5); font-size: 11px; }
+        .mm-note { font-size: var(--font-size-xs, 0.75rem); color: var(--text-muted, #6a7a7a); }
+
+        /* ----- Schéma (mode large) ----- */
+        .mm-view {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 130px minmax(0, 1fr);
+            align-items: start;
+        }
+        .mm-side-title { display: none; }
+        .mm-side { padding-top: 44px; }
+        .mm-rows { display: flex; flex-direction: column; }
+        .mm-row {
+            display: flex; align-items: center; gap: 5px;
+            height: 30px; padding: 0 2px;
+            border: 1px solid transparent; border-radius: 4px;
+            cursor: pointer;
+            transition: opacity var(--transition-fast, 150ms ease), border-color var(--transition-fast, 150ms ease);
+        }
+        .mm-side-right .mm-row { flex-direction: row-reverse; }
+        .mm-row:hover { border-color: var(--text-accent, #4ecdc4); }
+        .mm-row:focus-visible { outline: 2px solid var(--text-accent, #4ecdc4); }
+        .mm-row.sel { border-color: var(--color-accent, #e67e22); box-shadow: 0 0 0 1px var(--color-accent, #e67e22); }
+        .mm-row.mm-dim { opacity: 0.18; }
+        .mm-boardcol { color: var(--text-muted, #6a7a7a); }
+        .mm-boardcol svg { display: block; }  /* largeur / hauteur fixées par le script selon le nombre de rangées */
+
+        .mm-aux { display: flex; justify-content: space-between; gap: var(--spacing-md, 16px); margin-top: var(--spacing-md, 16px); flex-wrap: wrap; }
+        .mm-auxitem { display: flex; align-items: center; gap: 8px; }
+        .mm-hint { margin-top: var(--spacing-md, 16px); font-size: var(--font-size-xs, 0.75rem); color: var(--text-muted, #6a7a7a); }
+        .mm-legend { display: flex; flex-wrap: wrap; gap: 6px var(--spacing-md, 16px); margin-top: var(--spacing-sm, 8px); font-size: var(--font-size-xs, 0.75rem); color: var(--text-secondary, #a8b5b5); }
+        .mm-legend span { display: inline-flex; align-items: center; gap: 6px; }
+
+        /* ----- Schéma (mode empilé : écrans étroits) ----- */
+        .mm-view.mm-stack { display: block; }
+        .mm-stack .mm-boardcol { display: none; }
+        .mm-stack .mm-side { padding-top: 0; margin-bottom: var(--spacing-lg, 24px); }
+        .mm-stack .mm-side-title { display: block; margin-bottom: var(--spacing-sm, 8px); font-weight: 600; color: var(--text-primary, #e8f0f0); }
+        .mm-stack .mm-row,
+        .mm-stack .mm-side-right .mm-row { flex-direction: row; flex-wrap: wrap; height: auto; min-height: 34px; padding: 4px 2px; border-bottom: 1px solid var(--bg-tertiary, #1a2424); }
+        .mm-stack .mm-line { display: none; }
+        .mm-stack .mm-num { order: -3; }
+        .mm-stack .mm-cs { flex-wrap: wrap; }
+
+        /* ----- Détail ----- */
+        .mm-d-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--spacing-md, 16px); margin-bottom: var(--spacing-md, 16px); }
+        .mm-d-title { font-family: var(--font-family-mono, monospace); font-size: var(--font-size-xl, 1.5rem); font-weight: 700; color: var(--text-primary, #e8f0f0); }
+        .mm-d-sub { color: var(--text-muted, #6a7a7a); font-family: var(--font-family-mono, monospace); }
+        .mm-d-grid { display: grid; grid-template-columns: 160px 1fr; gap: var(--spacing-sm, 8px) var(--spacing-md, 16px); }
+        .mm-d-grid dt { color: var(--text-muted, #6a7a7a); font-size: var(--font-size-sm, 0.875rem); }
+        .mm-d-grid dd { margin: 0; color: var(--text-secondary, #a8b5b5); }
+        .mm-tag {
+            display: inline-block; margin: 0 4px 4px 0; padding: 2px 8px;
+            border-radius: var(--border-radius-sm, 4px);
+            background: var(--bg-tertiary, #1a2424);
+            border: 1px solid var(--color-primary, #2d5a5a);
+            color: var(--text-accent, #4ecdc4);
+            font-family: var(--font-family-mono, monospace);
+            font-size: var(--font-size-xs, 0.75rem);
+        }
+        .mm-tag.remap { color: var(--text-secondary, #a8b5b5); border-style: dashed; }
+
+        /* ----- Tableau ----- */
+        .mm-table-wrap { overflow-x: auto; }
+        .mm-table { width: 100%; font-size: var(--font-size-sm, 0.875rem); }
+        .mm-table th, .mm-table td {
+            padding: 6px 10px;
+            border-bottom: 1px solid var(--bg-tertiary, #1a2424);
+            text-align: left; vertical-align: top;
+            color: var(--text-secondary, #a8b5b5);
+        }
+        .mm-table th { color: var(--text-primary, #e8f0f0); font-weight: 600; white-space: nowrap; }
+        .mm-table tbody tr { cursor: pointer; }
+        .mm-table tbody tr:hover { background: var(--bg-tertiary, #1a2424); }
+        .mm-table tbody tr.sel { background: var(--bg-tertiary, #1a2424); outline: 1px solid var(--color-accent, #e67e22); }
+        .mm-table td.mono { font-family: var(--font-family-mono, monospace); color: var(--text-primary, #e8f0f0); white-space: nowrap; }
+        .mm-table td.fn { font-family: var(--font-family-mono, monospace); font-size: var(--font-size-xs, 0.75rem); min-width: 200px; }
+        .mm-foot { margin: var(--spacing-md, 16px) 0 0; font-size: var(--font-size-xs, 0.75rem); color: var(--text-muted, #6a7a7a); }
+
+        @media (max-width: 700px) {
+            .mm-d-grid { grid-template-columns: 1fr; }
+            .mm-d-grid dt { margin-top: var(--spacing-sm, 8px); }
+        }
+    
+        .mm-var-card .card-body { padding-bottom: var(--spacing-md, 16px); }
+        .mm-variants { display: flex; flex-wrap: wrap; gap: var(--spacing-xs, 4px); }
+        .mm-var-sub { margin-top: var(--spacing-sm, 8px); font-size: var(--font-size-sm, 0.875rem); color: var(--text-secondary, #a8b5b5); }
+        .mm-pt.nc { background: #444; color: #aaa; }
+        .mm-tag.strap { border-color: #bfe3ff; color: #bfe3ff; }
+        .mm-ver { display: inline-block; margin-left: 6px; padding: 1px 7px; border-radius: 9px; font-size: 10px; font-weight: 700; vertical-align: middle; }
+        .mm-ver.ok { background: #2ecc71; color: #05210f; }
+        .mm-ver.chk { background: #f0a030; color: #2a1a00; }
+        .mm-tbl { width: 100%; border-collapse: collapse; font-size: var(--font-size-xs, 0.75rem); margin-top: 8px; }
+        .mm-tbl th, .mm-tbl td { border-bottom: 1px solid var(--bg-tertiary, #1a2424); padding: 3px 8px; text-align: left; font-family: var(--font-family-mono, monospace); }
+</style>
+
+    <script>
+(function () {
+    const root = document.getElementById('mm-root');
+    if (!root) return;
+
+    // ==================================================================
+    // DONNÉES (injectées par le générateur) : CONFIG commun + VARIANTS
+    // ==================================================================
+    const CONFIG = {"badges": [["primary", "Électronique"], ["secondary", "Microcontrôleur"], ["accent", "ESP32-CAM"]], "silk": {"re": "^\\d+$", "strip": ""}, "cats": [["all", "Tout"], ["ADC", "ADC"], ["TOUCH", "Tactile"], ["DAC", "DAC"], ["UART", "UART"], ["SPI", "SPI"], ["USB", "USB"], ["JTAG", "JTAG"], ["STRAP", "Strapping"], ["RSV", "Réservées"], ["PWR", "Alim"]], "catRe": {"ADC": "^ADC", "TOUCH": "^TOUCH", "DAC": "^DAC", "UART": "^(U\\d(TXD|RXD|CTS|RTS)|TXD2|RXD2)", "SPI": "^(FSPI|HSPI|VSPI|SPI)", "USB": "^USB", "JTAG": "^(MT|JT)"}, "funcMap": [{"re": "^ADC.*$", "t": "Analog In", "c": "an", "once": true}, {"re": "^DAC_(\\d)$", "t": "DAC$1", "c": "an"}, {"re": "^TOUCH(\\d+)$", "t": "Touch$1", "c": "misc"}, {"re": "^U(\\d)TXD$", "t": "UART$1 TX", "c": "ser"}, {"re": "^U(\\d)RXD$", "t": "UART$1 RX", "c": "ser"}, {"re": "^U(\\d)(CTS|RTS)$", "t": "UART$1 $2", "c": "ser"}, {"re": "^(FSPI|HSPI|VSPI)(CLK|Q|D|HD|WP|CS\\d?)$", "t": "$1 $2", "c": "spi"}, {"re": "^SPI(HD|WP|CS\\d)$", "t": "SPI $1", "c": "spi"}, {"re": "^USB_D([+-])$", "t": "USB D$1", "c": "usb"}, {"re": "^(MTMS|MTDI|MTCK|MTDO)$", "t": "JTAG $1", "c": "dbg"}, {"re": "^ZCD(\\d)$", "t": "ZCD$1", "c": "misc"}, {"re": "^XTAL_32K_([PN])$", "t": "32k $1", "c": "misc"}, {"re": "^DAC.*$", "t": "DAC", "c": "an", "once": true}], "texts": {"pullBoth": "Pull-up ou pull-down au choix (≈ 45 kΩ, par logiciel)", "pullUp": "Pull-up interne seulement (activable par logiciel)", "pullDown": "Pull-down interne seulement (activable par logiciel)", "pullNone": "Aucune pull interne : résistance externe nécessaire", "float": "Entrée flottante", "rstTag": "", "rstTip": "Reset actif bas (rappel au 3,3 V par résistance externe sur la carte)", "rstLevel": "3,3 V uniquement (entrée de reset)", "ft": "5 V toléré", "v3": "3,3 V uniquement : aucune tolérance 5 V", "ftShort": "5 V toléré", "v3Short": "3,3 V uniquement", "aliasLabel": "Alias / fonction de la carte", "posSuffix": "e position depuis le haut (USB en haut)"}, "cards": [{"kind": "warning", "html": "<strong>Logique 3,3 V uniquement :</strong>\n   <ul>\n     <li>Aucune broche des puces Espressif n'est tolérante 5 V : pas de signal 5 V direct (adaptateur de niveau ou diviseur).</li>\n     <li>Les broches de <strong>strapping</strong> sont lues au reset pour choisir le mode de démarrage : ne pas les forcer (pull externe, périphérique branché) pendant le démarrage.</li>\n     <li>Les broches liées à la <strong>flash / PSRAM</strong> du module sont marquées « Réservée » : ne pas les utiliser.</li>\n     <li>Les entrées analogiques ADC lisent environ 0–3,1 V (selon atténuation) ; sur les puces à ADC2, celui-ci est peu fiable quand le Wi-Fi est actif.</li>\n   </ul>"}], "legend": ["<i class=\"mm-lv mm-lv3 mm-inl\">3</i> 3,3 V uniquement (aucune broche tolérante 5 V)", "<i class=\"mm-pull mm-inl\">PU/PD</i> pull-up / pull-down activable", "<i class=\"mm-pull mm-inl\">PU/PD ↑</i> pull-up actif au reset (↓ = pull-down)", "<i class=\"mm-c mm-c-boot mm-inl\">Strapping</i> lue au reset (mode de démarrage)", "<i class=\"mm-c mm-c-misc mm-inl\">Réservée</i> liée à la flash / PSRAM", "<i class=\"mm-c mm-c-spi mm-rm mm-inl\">SPI</i> pointillés = fonction alternative", "<i class=\"mm-num mm-inl\">15</i> repère imprimé sur la carte", "<i class=\"mm-c mm-c-al mm-inl\">A0</i> alias / nom Arduino de la carte"], "text": {"title": "ESP32 — Cartes caméra", "lead": "Cartes <strong>ESP32 avec caméra</strong> : choisis la carte avec le sélecteur. Les broches utilisées par la <strong>caméra</strong>, la <strong>carte SD</strong> ou le <strong>micro</strong> ne sont pas toutes sur les rangées : elles sont listées dans les encadrés sous le schéma.\n    Cette page contient l'<strong>AI-Thinker ESP32-CAM</strong> et la <strong>XIAO ESP32-S3 Sense</strong> ; d'autres cartes (ESP-EYE, M5 Timer Cam, ESP32-S3-EYE…) peuvent s'ajouter avec leur fiche de brochage. Tout est en <strong>3,3 V</strong>."}};
+    const VARIANTS = [{"label": "AI-Thinker ESP32-CAM", "sub": "<span class=\"mm-ver ok\">vérifié doc</span> <strong>AI-Thinker ESP32-CAM</strong> — ESP32 + OV2640 + lecteur microSD, 2 × 8 broches, <u>sans USB</u> (programmation par adaptateur série / carte MB).", "board": {"name": "ESP32-CAM", "color": "#1c1c1c", "stroke": "#000000", "textColor": "#c9d1d9", "chip": ["ESP32", "-S"], "usb": false, "crystal": null, "buttons": [], "extraSvg": ""}, "pins": [{"t": "pwr", "l": "5V", "p": "5 V", "sh": "5 V", "f": [], "m": [], "ft": null, "n": "Alimentation 5 V recommandée (4,75–5,25 V, ≥ 2 A crête avec le Wi-Fi + caméra).", "gnd": false, "disp": "5V", "kind": "pwr", "al": "", "x": [], "rs": "", "s": "L", "r": 1}, {"t": "pwr", "l": "GND", "p": "0 V", "sh": "0 V", "f": [], "m": [], "ft": null, "n": "Masse.", "gnd": true, "disp": "GND", "kind": "gnd", "al": "", "x": [], "rs": "", "s": "L", "r": 2}, {"t": "gpio", "l": "12", "p": "GPIO12", "f": ["ADC2_CH5", "TOUCH5", "MTDI", "HSPIQ", "RTC_GPIO15"], "m": ["HS2_DATA2", "SD_DATA2", "EMAC_TXD3"], "ft": false, "n": "Strapping MTDI : à 1 au reset, la flash est alimentée en 1,8 V → démarrage impossible avec une flash 3,3 V. Ne pas la tirer à 1. Libre en GPIO ensuite.", "rs": "Pull-down (strapping)", "al": "", "x": [["Strapping", "boot"]], "pl": "both", "strap": true, "rsv": false, "s": "L", "r": 3}, {"t": "gpio", "l": "13", "p": "GPIO13", "f": ["ADC2_CH4", "TOUCH4", "MTCK", "HSPID", "RTC_GPIO14"], "m": ["HS2_DATA3", "SD_DATA3", "EMAC_RX_ER"], "ft": false, "n": "JTAG (MTCK) libre en GPIO tant que le debug JTAG n'est pas utilisé.", "rs": "", "al": "", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "L", "r": 4}, {"t": "gpio", "l": "15", "p": "GPIO15", "f": ["ADC2_CH3", "TOUCH3", "MTDO", "HSPICS0", "RTC_GPIO13"], "m": ["HS2_CMD", "SD_CMD", "EMAC_RXD3"], "ft": false, "n": "Strapping MTDO : à 0 au reset, coupe les logs de boot sur UART0.", "rs": "Pull-up (strapping)", "al": "", "x": [["Strapping", "boot"]], "pl": "both", "strap": true, "rsv": false, "s": "L", "r": 5}, {"t": "gpio", "l": "14", "p": "GPIO14", "f": ["ADC2_CH6", "TOUCH6", "MTMS", "HSPICLK", "RTC_GPIO16"], "m": ["HS2_CLK", "SD_CLK", "EMAC_TXD2"], "ft": false, "n": "JTAG (MTMS) libre en GPIO tant que le debug JTAG n'est pas utilisé.", "rs": "", "al": "", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "L", "r": 6}, {"t": "gpio", "l": "2", "p": "GPIO2", "f": ["ADC2_CH2", "TOUCH2", "HSPIWP", "RTC_GPIO12"], "m": ["HS2_DATA0", "SD_DATA0"], "ft": false, "n": "Strapping : doit être flottante ou à 0 pour le téléchargement série. LED bleue sur beaucoup de clones.", "rs": "Pull-down (strapping)", "al": "", "x": [["Strapping", "boot"]], "pl": "both", "strap": true, "rsv": false, "s": "L", "r": 7}, {"t": "gpio", "l": "4", "p": "GPIO4", "f": ["ADC2_CH0", "TOUCH0", "HSPIHD", "RTC_GPIO10"], "m": ["HS2_DATA1", "SD_DATA1", "EMAC_TX_ER"], "ft": false, "n": "Aussi LED flash blanche de la carte (GPIO4 = SD DATA1).", "rs": "", "al": "", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "L", "r": 8}, {"t": "pwr", "l": "3V3", "p": "3,3 V", "sh": "3,3 V", "f": [], "m": [], "ft": null, "n": "Alimentation 3,3 V (alternative au 5V).", "gnd": false, "disp": "3V3", "kind": "pwr", "al": "", "x": [], "rs": "", "s": "R", "r": 1}, {"t": "gpio", "l": "16", "p": "GPIO16", "f": ["U2RXD"], "m": ["HS1_DATA4", "EMAC_CLK_OUT"], "ft": false, "n": "Réservée (PSRAM) sur les modules WROVER ; libre sur WROOM. UART2 RX par défaut. Reliée au PSRAM du module : ne pas utiliser.", "rs": "", "al": "", "x": [["Réservée", "misc"]], "pl": "both", "strap": false, "rsv": true, "s": "R", "r": 2}, {"t": "gpio", "l": "0", "p": "GPIO0", "f": ["ADC2_CH1", "TOUCH1", "RTC_GPIO11"], "m": ["CLK_OUT1", "EMAC_TX_CLK"], "ft": false, "n": "Strapping : à 0 au reset = mode téléchargement série (bouton BOOT). Sert d'horloge XCLK sur l'ESP32-CAM. Pour programmer : relier à GND au reset. Sert aussi d'horloge XCLK de la caméra.", "rs": "Pull-up (strapping)", "al": "", "x": [["Strapping", "boot"]], "pl": "both", "strap": true, "rsv": false, "s": "R", "r": 3}, {"t": "pwr", "l": "GND", "p": "0 V", "sh": "0 V", "f": [], "m": [], "ft": null, "n": "Masse.", "gnd": true, "disp": "GND", "kind": "gnd", "al": "", "x": [], "rs": "", "s": "R", "r": 4}, {"t": "pwr", "l": "VCC", "p": "3,3 / 5 V", "sh": "3,3 / 5 V", "f": [], "m": [], "ft": null, "n": "Sortie 3,3 V ou 5 V selon le pont de soudure de la carte : ne pas alimenter par ce pin sans avoir vérifié.", "gnd": false, "disp": "VCC", "kind": "pwr", "al": "", "x": [], "rs": "", "s": "R", "r": 5}, {"t": "gpio", "l": "U0R", "p": "GPIO3", "f": ["U0RXD"], "m": ["CLK_OUT2"], "ft": false, "n": "UART0 RX, reliée au pont USB-série. UART0 RX (programmation / moniteur).", "rs": "", "al": "", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "R", "r": 6}, {"t": "gpio", "l": "U0T", "p": "GPIO1", "f": ["U0TXD"], "m": ["CLK_OUT3", "EMAC_RXD2"], "ft": false, "n": "UART0 TX, reliée au pont USB-série (log de boot, programmation). UART0 TX (programmation / moniteur).", "rs": "", "al": "", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "R", "r": 7}, {"t": "pwr", "l": "GND", "p": "0 V", "sh": "0 V", "f": [], "m": [], "ft": null, "n": "Masse.", "gnd": true, "disp": "GND", "kind": "gnd", "al": "", "x": [], "rs": "", "s": "R", "r": 8}], "text": {"subtitle": "AI-Thinker ESP32-CAM", "sideLeft": "Rangée gauche · 5V, GND, 12, 13, 15, 14, 2, 4", "sideRight": "Rangée droite · 3V3, 16, 0, GND, VCC, U0R, U0T, GND", "hint": "Vue de dessus, broches vers le bas du schéma. <strong>Pas de connecteur USB</strong> : repère les rangées par leur sérigraphie (5V / 3V3 d'un côté). Le cadre est le repère imprimé.", "foot": "Carte = repère imprimé (ou n° de pad) ; G = rangée gauche, D = rangée droite. Fonctions en pointillés (<strong>*</strong> dans le tableau) = fonctions alternatives / spécifiques (matrice GPIO, SDIO, LP, EMAC…). Noms SPI Espressif : <strong>D = MOSI, Q = MISO</strong>, HD/WP = IO2/IO3 en mode Quad. « PU / PD » = pull-up ou pull-down au choix par logiciel.", "searchPlaceholder": "Rechercher : 4, GPIO14, SD…"}, "aux": [{"side": "L", "port": "GPIO4", "chip": "FLASH", "cls": "btn", "note": "LED flash blanche (partagée avec SD DATA1)"}, {"side": "R", "port": "GPIO33", "chip": "LED", "cls": "btn", "note": "LED rouge, active à 0"}], "cards": [{"kind": "info", "html": "<strong>Sources &amp; vérification <span class=\"mm-ver ok\">vérifié doc</span> :</strong> Brochage des 16 broches et GPIO caméra/SD d'après Random Nerd Tutorials <em>ESP32-CAM AI-Thinker Pinout</em> (GPIO caméra du modèle AI-Thinker, sans RESET caméra). Brochage de la rangée recoupé avec le tableau ESP32 officiel pour les fonctions. Les GPIO 2, 4, 12, 13, 14, 15 de la rangée sont partagés avec la carte SD (mode 1 bit : GPIO12/13 libérées)."}, {"kind": "info", "html": "<strong>GPIO internes (non sortis sur la rangée) :</strong><table class=\"mm-tbl\"><tr><th>Caméra OV2640</th><th>GPIO</th><th>Carte SD (1 bit / 4 bits)</th><th>GPIO</th></tr>\n <tr><td>Y2 · Y3</td><td>5 · 18</td><td>CLK</td><td>14</td></tr><tr><td>Y4 · Y5</td><td>19 · 21</td><td>CMD</td><td>15</td></tr>\n <tr><td>Y6 · Y7</td><td>36 · 39</td><td>DATA0</td><td>2</td></tr><tr><td>Y8 · Y9</td><td>34 · 35</td><td>DATA1 · flash LED</td><td>4</td></tr>\n <tr><td>XCLK · PCLK</td><td>0 · 22</td><td>DATA2</td><td>12</td></tr><tr><td>VSYNC · HREF</td><td>25 · 23</td><td>DATA3</td><td>13</td></tr>\n <tr><td>SIOD (SDA) · SIOC (SCL)</td><td>26 · 27</td><td>LED rouge (active à 0)</td><td>33</td></tr><tr><td>PWDN · RESET</td><td>32 · non utilisé</td><td></td><td></td></tr></table>"}], "silk": {"re": "^\\d+$", "strip": ""}}, {"label": "XIAO ESP32-S3 Sense", "sub": "<span class=\"mm-ver ok\">vérifié doc</span> <strong>Seeed XIAO ESP32-S3 Sense</strong> — XIAO S3 + carte d'extension (caméra OV2640/OV5640, micro PDM, microSD). Rangées identiques à la XIAO S3.", "board": {"name": "XIAO S3 Sense", "color": "#101419", "stroke": "#000000", "textColor": "#c9d1d9", "chip": ["ESP32-S3"], "usb": true, "crystal": null, "buttons": [], "extraSvg": ""}, "pins": [{"t": "gpio", "l": "D0", "p": "GPIO1", "f": ["TOUCH1", "ADC1_CH0", "RTC_GPIO1"], "m": [], "ft": false, "n": "", "rs": "", "al": "A0", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "L", "r": 1}, {"t": "gpio", "l": "D1", "p": "GPIO2", "f": ["TOUCH2", "ADC1_CH1", "RTC_GPIO2"], "m": [], "ft": false, "n": "", "rs": "", "al": "A1", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "L", "r": 2}, {"t": "gpio", "l": "D2", "p": "GPIO3", "f": ["TOUCH3", "ADC1_CH2", "RTC_GPIO3"], "m": [], "ft": false, "n": "Strapping : choix de la source du JTAG.", "rs": "Flottante (strapping)", "al": "A2", "x": [["Strapping", "boot"]], "pl": "both", "strap": true, "rsv": false, "s": "L", "r": 3}, {"t": "gpio", "l": "D3", "p": "GPIO4", "f": ["TOUCH4", "ADC1_CH3", "RTC_GPIO4"], "m": [], "ft": false, "n": "", "rs": "", "al": "A3", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "L", "r": 4}, {"t": "gpio", "l": "D4", "p": "GPIO5", "f": ["TOUCH5", "ADC1_CH4", "RTC_GPIO5"], "m": [], "ft": false, "n": "", "rs": "", "al": "A4 · SDA", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "L", "r": 5}, {"t": "gpio", "l": "D5", "p": "GPIO6", "f": ["TOUCH6", "ADC1_CH5", "RTC_GPIO6"], "m": [], "ft": false, "n": "", "rs": "", "al": "A5 · SCL", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "L", "r": 6}, {"t": "gpio", "l": "D6", "p": "GPIO43", "f": ["U0TXD"], "m": ["CLK_OUT1"], "ft": false, "n": "UART0 TX (pont USB-série de la carte). UART0 TX (Serial1 par défaut sur D6/D7).", "rs": "", "al": "TX", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "L", "r": 7}, {"t": "pwr", "l": "5V", "p": "5 V", "sh": "5 V", "f": [], "m": [], "ft": null, "n": "Sortie 5 V du port USB (ou entrée 5 V). Ne pas alimenter par USB et par ce pin en même temps.", "gnd": false, "disp": "5V", "kind": "pwr", "al": "", "x": [], "rs": "", "s": "R", "r": 1}, {"t": "pwr", "l": "GND", "p": "0 V", "sh": "0 V", "f": [], "m": [], "ft": null, "n": "Masse.", "gnd": true, "disp": "GND", "kind": "gnd", "al": "", "x": [], "rs": "", "s": "R", "r": 2}, {"t": "pwr", "l": "3V3", "p": "3,3 V", "sh": "3,3 V", "f": [], "m": [], "ft": null, "n": "Sortie du régulateur 3,3 V.", "gnd": false, "disp": "3V3", "kind": "pwr", "al": "", "x": [], "rs": "", "s": "R", "r": 3}, {"t": "gpio", "l": "D10", "p": "GPIO9", "f": ["TOUCH9", "ADC1_CH8", "FSPIHD", "RTC_GPIO9"], "m": ["SUBSPIHD"], "ft": false, "n": "SPI MOSI. <strong>Partagée avec la carte SD</strong> de la Sense.", "rs": "", "al": "A10 · MOSI", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "R", "r": 4}, {"t": "gpio", "l": "D9", "p": "GPIO8", "f": ["TOUCH8", "ADC1_CH7", "RTC_GPIO8"], "m": ["SUBSPICS1"], "ft": false, "n": "SPI MISO. <strong>Partagée avec la carte SD</strong> de la Sense.", "rs": "", "al": "A9 · MISO", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "R", "r": 5}, {"t": "gpio", "l": "D8", "p": "GPIO7", "f": ["TOUCH7", "ADC1_CH6", "RTC_GPIO7"], "m": [], "ft": false, "n": "SPI SCK. <strong>Partagée avec la carte SD de la Sense</strong> (libérer en coupant le pad J3).", "rs": "", "al": "A8 · SCK", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "R", "r": 6}, {"t": "gpio", "l": "D7", "p": "GPIO44", "f": ["U0RXD"], "m": ["CLK_OUT2"], "ft": false, "n": "UART0 RX (pont USB-série de la carte). UART0 RX.", "rs": "", "al": "RX", "x": [], "pl": "both", "strap": false, "rsv": false, "s": "R", "r": 7}], "text": {"subtitle": "Seeed Studio XIAO ESP32-S3 Sense", "sideLeft": "Rangée gauche · D0 → D6", "sideRight": "Rangée droite · 5V, GND, 3V3, D10 → D7", "hint": "Vue de dessus, <strong>USB-C en haut</strong>. Le <strong>cadre</strong> donne le repère <strong>Dx</strong> imprimé ; l'alias grisé (A0…) est le nom analogique.", "foot": "Carte = repère imprimé (ou n° de pad) ; G = rangée gauche, D = rangée droite. Fonctions en pointillés (<strong>*</strong> dans le tableau) = fonctions alternatives / spécifiques (matrice GPIO, SDIO, LP, EMAC…). Noms SPI Espressif : <strong>D = MOSI, Q = MISO</strong>, HD/WP = IO2/IO3 en mode Quad. « PU / PD » = pull-up ou pull-down au choix par logiciel.", "searchPlaceholder": "Rechercher : D4, GPIO5, I2C…"}, "aux": [{"side": "L", "port": "GPIO21", "chip": "SD CS", "cls": "usb", "note": "CS carte SD · aussi LED utilisateur"}, {"side": "R", "port": "GPIO41/42", "chip": "MIC", "cls": "an", "note": "micro PDM (D11/D12 de l'extension)"}], "cards": [{"kind": "info", "html": "<strong>Sources &amp; vérification <span class=\"mm-ver ok\">vérifié doc</span> :</strong> Wiki Seeed Studio <em>Pin Multiplexing with XIAO ESP32-S3 (Sense)</em>. Attention : GPIO39–42 sont partagées entre JTAG, caméra, micro et les pads de l'extension ; la carte SD occupe SPI (D8–D10) tant que le pad J3 n'est pas coupé."}, {"kind": "info", "html": "<strong>GPIO de l'extension Sense (non sortis sur D0–D10) :</strong><table class=\"mm-tbl\"><tr><th>Caméra OV2640</th><th>GPIO</th><th>Autres</th><th>GPIO</th></tr>\n <tr><td>XMCLK</td><td>10</td><td>Micro PDM DATA</td><td>41</td></tr><tr><td>DVP_Y8 · Y7</td><td>11 · 12</td><td>Micro PDM CLK</td><td>42</td></tr>\n <tr><td>PCLK · Y6</td><td>13 · 14</td><td>SD CS (aussi LED user)</td><td>21</td></tr><tr><td>Y2 · Y5</td><td>15 · 16</td><td>SD SCK · MISO · MOSI</td><td>7 · 8 · 9</td></tr>\n <tr><td>Y3 · Y4</td><td>17 · 18</td><td>SCCB SCL · SDA</td><td>39 · 40</td></tr><tr><td>VSYNC</td><td>38</td><td>HREF · Y9</td><td>47 · 48</td></tr></table>"}], "silk": {"re": "^D\\d+$", "strip": "^D"}}];
+
+    // ==================================================================
+    // MOTEUR — identique pour toutes les pages (gabarit + sélecteur de variante)
+    // ==================================================================
+    const T = CONFIG.texts;
+    const $ = id => document.getElementById(id);
+    const page = root.closest('.page-content') || document;
+    const FLOAT = T.float;
+    const state = { q: '', cat: 'all', sel: -1, v: 0 };
+    let pins = [], ROWS = 0, cur = null, silkRe = null, silkStrip = null;
+    const dyn = [];
+
+    const CAT_RE = {};
+    Object.keys(CONFIG.catRe).forEach(k => { CAT_RE[k] = new RegExp(CONFIG.catRe[k]); });
+    const FUNC_MAP = CONFIG.funcMap.map(m => ({ re: new RegExp(m.re), t: m.t, c: m.c, once: !!m.once }));
+    const allFuncs = p => p.f.concat(p.m);
+    const isNum = p => silkRe.test(p.l);
+    const numText = p => (isNum(p) && silkStrip) ? p.l.replace(silkStrip, '') : p.l;
+    const plOf = p => p.pl || 'both';
+    const PULL_TXT = { both: T.pullBoth, up: T.pullUp, down: T.pullDown, none: T.pullNone };
+    const PULL_TAG = { both: 'PU/PD', up: 'PU', down: 'PD', none: '' };
+    const PULL_SHORT = { both: 'PU / PD', up: 'PU', down: 'PD', none: 'aucune' };
+
+    // ----- Éléments statiques de la page -----
+    $('mm-badges').innerHTML = CONFIG.badges.map(b => '<span class="badge badge-' + b[0] + '">' + b[1] + '</span>').join('\n');
+    $('mm-legend').innerHTML = CONFIG.legend.map(h => '<span>' + h + '</span>').join('');
+    page.querySelectorAll('[data-cfg="title"]').forEach(el => { el.innerHTML = CONFIG.text.title; });
+    page.querySelectorAll('[data-cfg="lead"]').forEach(el => { el.innerHTML = CONFIG.text.lead; });
+
+    // ----- Puces de fonctions -----
+    function chipsFor(p) {
+        const out = [];
+        if (p.al) out.push({ t: p.al, c: 'al' });
+        p.x.forEach(x => out.push({ t: x[0], c: x[1] }));
+        const add = (arr, rm) => {
+            arr.forEach(f => {
+                const m = FUNC_MAP.find(e => e.re.test(f));
+                if (!m) return;
+                const t = f.replace(m.re, m.t);
+                if (m.once && out.some(o => o.t === t && o.c === m.c)) return;
+                out.push({ t, c: m.c, rm });
+            });
+        };
+        add(p.f, false);
+        add(p.m, true);
+        return out;
+    }
+    function pullTag(p) {
+        if (p.t === 'pwr') return '';
+        if (p.t === 'rst') return T.rstTag ? '<i class="mm-pull" title="' + T.rstTip + '">' + T.rstTag + '</i>' : '';
+        const base = PULL_TAG[plOf(p)];
+        if (!base) return '';
+        const arrow = /^Pull-up/.test(p.rs) ? ' ↑' : (/^Pull-down/.test(p.rs) ? ' ↓' : '');
+        const tip = PULL_TXT[plOf(p)] + (p.rs !== FLOAT ? ' · État au reset : ' + p.rs : '');
+        return '<i class="mm-pull" title="' + tip + '">' + base + arrow + '</i>';
+    }
+    function dotHTML(p) {
+        const col = p.t === 'pwr' ? (p.gnd ? '#6a7a7a' : '#e74c3c') : (p.ft ? '#2ecc71' : '#e74c3c');
+        return '<i style="display:inline-block;width:10px;height:10px;border-radius:50%;background:' + col + ';vertical-align:middle;margin-right:4px"></i>';
+    }
+    function rowHTML(p) {
+        const MAXC = 4;
+        const chips = chipsFor(p);
+        const shown = chips.slice(0, MAXC);
+        const hidden = chips.slice(MAXC);
+        let cs = shown.map(c => '<span class="mm-c mm-c-' + c.c + (c.rm ? ' mm-rm' : '') + '"' +
+            (c.rm ? ' title="Fonction alternative"' : '') + '>' + c.t + '</span>').join('');
+        if (hidden.length) cs += '<span class="mm-c mm-c-misc" title="' + hidden.map(c => c.t).join(', ') + '">+' + hidden.length + '</span>';
+        const lv = p.t === 'pwr' ? '<span class="mm-lv mm-lv0"></span>'
+            : '<span class="mm-lv ' + (p.ft ? 'mm-lv5' : 'mm-lv3') + '" title="' + (p.ft ? T.ftShort : T.v3Short) + '">' + (p.ft ? '5' : '3') + '</span>';
+        const ptCls = p.t === 'pwr' ? p.kind : (p.t === 'rst' ? 'rst' : 'io');
+        return lv +
+            '<span class="mm-pt ' + ptCls + '">' + p.mb + '</span>' +
+            '<span class="mm-cs">' + cs + pullTag(p) + '</span>' +
+            '<span class="mm-line"></span>' +
+            '<span class="mm-num' + (isNum(p) ? '' : ' mm-num-x') + '" title="Repère : ' + p.l + '">' + numText(p) + '</span>';
+    }
+    function levelText(p) {
+        if (p.t === 'pwr') return p.kind === 'nc' ? 'Non connectée' : (p.gnd ? 'Masse (0 V)' : 'Alimentation : ' + p.sh);
+        if (p.t === 'rst') return T.rstLevel;
+        return p.ft ? T.ft : T.v3;
+    }
+    function pullText(p) {
+        if (p.t === 'pwr') return 'Sans objet';
+        if (p.t === 'rst') return T.rstTip;
+        return PULL_TXT[plOf(p)];
+    }
+    function levelBadge(p) {
+        if (p.t === 'pwr') return '<span class="badge badge-secondary">' + p.sh + '</span>';
+        if (p.t === 'rst') return '<span class="badge badge-warning">3,3 V</span>';
+        return p.ft ? '<span class="badge badge-success">5 V ✔</span>' : '<span class="badge badge-warning">3,3 V</span>';
+    }
+    function pullShort(p) {
+        if (p.t === 'pwr') return '—';
+        if (p.t === 'rst') return T.rstTag || '—';
+        return PULL_SHORT[plOf(p)] + (plOf(p) !== 'none' && p.rs !== FLOAT ? ' (reset : ' + p.rs.replace(/ \(.*\)/, '').toLowerCase() + ')' : '');
+    }
+
+    // ----- Carte (SVG central) -----
+    function drawBoard() {
+        const B = cur.board;
+        const Y0 = 44, H = 30;
+        const SH = Y0 + H * ROWS + 8;
+        const PH = H * ROWS + 12;
+        const compact = ROWS < 10;
+        const chipY = compact ? Math.max(Y0, 34 + Math.round((PH - 34) / 2) - 6) : 130;
+        const nameY = compact ? 34 + PH - 8 : 262;
+        const tx = B.textColor;
+        let s = '<svg viewBox="0 0 130 ' + SH + '" width="130" height="' + SH + '" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="' + B.name + '">';
+        s += '<rect x="28" y="34" width="74" height="' + PH + '" rx="6" fill="' + B.color + '" stroke="' + B.stroke + '" stroke-width="2"/>';
+        if (B.usb) {
+            s += '<rect x="46" y="4" width="38" height="36" rx="3" fill="#c9cfd2" stroke="#7b8488" stroke-width="2"/>';
+            s += '<rect x="53" y="12" width="24" height="10" rx="1" fill="#5a6266"/>';
+        }
+        if (B.chip && B.chip.length) {
+            s += '<rect x="48" y="' + chipY + '" width="34" height="34" rx="2" fill="#15181a" stroke="#4ecdc4" stroke-width="1"/>';
+            B.chip.forEach((line, i) => {
+                s += '<text x="65" y="' + (chipY + 15 + 9 * i) + '" text-anchor="middle" font-size="6" fill="#4ecdc4" font-family="monospace">' + line + '</text>';
+            });
+        }
+        if (B.crystal && !compact) {
+            s += '<rect x="56" y="200" width="18" height="8" rx="4" fill="#d9d9d9" stroke="#7b8488"/>';
+            s += '<text x="65" y="222" text-anchor="middle" font-size="6" fill="' + tx + '" font-family="monospace">' + B.crystal + '</text>';
+        }
+        s += '<text x="65" y="' + nameY + '" text-anchor="middle" font-size="' + (B.name.length > 14 ? 7 : 9) + '" fill="' + tx + '" font-family="sans-serif" font-weight="700">' + B.name + '</text>';
+        const by = SH - 92;
+        (B.buttons || []).forEach(b => {
+            const y = (b.y != null) ? b.y : by;
+            s += '<circle cx="' + b.x + '" cy="' + y + '" r="6" fill="#222" stroke="#999"/><text x="' + b.x + '" y="' + (y + 18) + '" text-anchor="middle" font-size="6" fill="' + tx + '" font-family="monospace">' + b.label + '</text>';
+        });
+        s += (B.extraSvg || '').replace(/__SH__/g, SH);
+        for (let i = 0; i < ROWS; i++) {
+            const y = Y0 + H * i + H / 2;
+            s += '<line x1="0" y1="' + y + '" x2="34" y2="' + y + '" stroke="currentColor" stroke-opacity="0.5"/>';
+            s += '<line x1="96" y1="' + y + '" x2="130" y2="' + y + '" stroke="currentColor" stroke-opacity="0.5"/>';
+            s += '<circle cx="35" cy="' + y + '" r="3.2" fill="#d4af37"/><circle cx="95" cy="' + y + '" r="3.2" fill="#d4af37"/>';
+        }
+        s += '</svg>';
+        $('mm-boardsvg').innerHTML = s;
+    }
+
+    // ----- Rangées / tableau / détail -----
+    const leftEl = $('mm-left'), rightEl = $('mm-right'), tbody = $('mm-tbody'), detail = $('mm-detail'), view = $('mm-view');
+
+    function buildRows() {
+        leftEl.innerHTML = ''; rightEl.innerHTML = ''; tbody.innerHTML = '';
+        const nextRank = { L: 1, R: 1 };
+        pins.forEach((p, i) => {
+            for (; nextRank[p.s] < p.r; nextRank[p.s]++) {
+                const gap = document.createElement('div');
+                gap.style.height = '30px';
+                (p.s === 'L' ? leftEl : rightEl).appendChild(gap);
+            }
+            nextRank[p.s] = p.r + 1;
+            const row = document.createElement('div');
+            row.className = 'mm-row';
+            row.dataset.i = i;
+            row.tabIndex = 0;
+            row.setAttribute('role', 'button');
+            row.setAttribute('aria-label', 'Broche ' + numText(p) + ' ' + p.mb);
+            row.innerHTML = rowHTML(p);
+            row.addEventListener('click', () => select(i));
+            row.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(i); } });
+            (p.s === 'L' ? leftEl : rightEl).appendChild(row);
+
+            const tr = document.createElement('tr');
+            tr.dataset.i = i;
+            const fn = p.f.concat(p.m.map(f => f + '*')).join(', ') || '—';
+            tr.innerHTML =
+                '<td class="mono">' + numText(p) + '</td>' +
+                '<td>' + (p.s === 'L' ? 'G' : 'D') + '</td>' +
+                '<td class="mono">' + (p.al || '—') + '</td>' +
+                '<td class="mono">' + (p.t === 'pwr' ? '—' : p.mb) + '</td>' +
+                '<td class="fn">' + fn + '</td>' +
+                '<td>' + pullShort(p) + '</td>' +
+                '<td>' + levelBadge(p) + '</td>';
+            tr.addEventListener('click', () => select(i));
+            tbody.appendChild(tr);
+        });
+    }
+
+    function select(i) {
+        state.sel = i;
+        const p = pins[i];
+        const tags = p.f.map(f => '<span class="mm-tag">' + f + '</span>').join('') +
+            p.m.map(f => '<span class="mm-tag remap">' + f + ' (alt.)</span>').join('');
+        let html =
+            '<div class="mm-d-head"><span class="mm-d-title">' + (isNum(p) ? 'Broche ' : '') + numText(p) + '</span>' +
+            '<span class="mm-d-sub">' + (p.t === 'pwr' ? 'Alimentation' : p.mb + ' (' + p.p + ')') + '</span></div>' +
+            '<dl class="mm-d-grid">' +
+            '<dt>Sur la carte</dt><dd>' + numText(p) + ' — rangée ' + (p.s === 'L' ? 'gauche' : 'droite') + ', ' + p.r + T.posSuffix + '</dd>';
+        if (p.al) html += '<dt>' + T.aliasLabel + '</dt><dd>' + p.al + '</dd>';
+        if (tags) html += '<dt>Fonctions</dt><dd>' + tags + '</dd>';
+        if (p.strap) html += '<dt>Strapping</dt><dd>Broche lue au reset pour choisir le mode de démarrage : ne pas la forcer.</dd>';
+        if (p.rsv) html += '<dt>Réservée</dt><dd>Utilisée en interne par la mémoire flash/PSRAM du module : à éviter.</dd>';
+        html += '<dt>Pull-up / pull-down</dt><dd>' + pullText(p) + '</dd>';
+        if (p.t === 'gpio') html += '<dt>État au reset</dt><dd>' + p.rs + '</dd>';
+        html += '<dt>Niveau logique</dt><dd>' + dotHTML(p) + levelText(p) + '</dd>';
+        if (p.n) html += '<dt>Remarque</dt><dd>' + p.n + '</dd>';
+        html += '</dl>';
+        detail.innerHTML = html;
+        refresh();
+        const card = $('mm-detail-card');
+        if (card && view.classList.contains('mm-stack') && card.scrollIntoView) card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // ----- Filtres -----
+    function matches(p) {
+        if (state.cat !== 'all') {
+            if (state.cat === 'PWR') { if (p.t !== 'pwr') return false; }
+            else if (state.cat === 'STRAP') { if (!p.strap) return false; }
+            else if (state.cat === 'RSV') { if (!p.rsv) return false; }
+            else if (!allFuncs(p).some(f => CAT_RE[state.cat].test(f))) return false;
+        }
+        if (state.q) {
+            if (/^\d+$/.test(state.q)) return numText(p).toLowerCase() === state.q;
+            const hay = (p.l + ' ' + p.p + ' ' + p.mb + ' ' + p.al + ' ' + allFuncs(p).join(' ') + ' ' + p.n).toLowerCase();
+            if (hay.indexOf(state.q) === -1) return false;
+        }
+        return true;
+    }
+    const chipsEl = $('mm-chips');
+    CONFIG.cats.forEach(([key, label]) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'mm-chip-btn' + (key === 'all' ? ' active' : '');
+        b.textContent = label;
+        b.addEventListener('click', () => {
+            state.cat = key;
+            chipsEl.querySelectorAll('.mm-chip-btn').forEach(c => c.classList.toggle('active', c === b));
+            refresh();
+        });
+        chipsEl.appendChild(b);
+    });
+    $('mm-search').addEventListener('input', e => { state.q = e.target.value.trim().toLowerCase(); refresh(); });
+
+    function refresh() {
+        let shown = 0;
+        root.querySelectorAll('.mm-row').forEach(el => {
+            const i = +el.dataset.i;
+            const ok = matches(pins[i]);
+            el.classList.toggle('mm-dim', !ok);
+            el.classList.toggle('sel', i === state.sel);
+            if (ok) shown++;
+        });
+        tbody.querySelectorAll('tr').forEach(tr => {
+            const i = +tr.dataset.i;
+            tr.style.display = matches(pins[i]) ? '' : 'none';
+            tr.classList.toggle('sel', i === state.sel);
+        });
+        $('mm-count').textContent = shown + ' / ' + pins.length + ' broches correspondent';
+    }
+
+    // ----- Sélecteur de variante -----
+    const varEl = $('mm-variants');
+    VARIANTS.forEach((v, i) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'mm-chip-btn mm-var-btn' + (i === 0 ? ' active' : '');
+        b.textContent = v.label;
+        b.addEventListener('click', () => load(i));
+        varEl.appendChild(b);
+    });
+
+    function load(i) {
+        state.v = i;
+        state.sel = -1;
+        cur = VARIANTS[i];
+        varEl.querySelectorAll('.mm-var-btn').forEach((c, k) => c.classList.toggle('active', k === i));
+        const sk = cur.silk || CONFIG.silk;
+        silkRe = new RegExp(sk.re);
+        silkStrip = sk.strip ? new RegExp(sk.strip) : null;
+        pins = cur.pins.map(p => Object.assign({}, p));
+        pins.sort((a, b) => (a.s === b.s ? a.r - b.r : (a.s === 'L' ? -1 : 1)));
+        pins.forEach(p => { p.mb = p.t === 'gpio' ? p.p : (p.t === 'rst' ? (p.disp || 'RESET') : p.disp); });
+        ROWS = Math.max.apply(null, pins.map(p => p.r));
+
+        const tx = Object.assign({}, CONFIG.text, cur.text || {});
+        page.querySelectorAll('[data-cfg]').forEach(el => {
+            const k = el.dataset.cfg;
+            if (k === 'title' || k === 'lead') return;
+            if (tx[k] != null) el.innerHTML = tx[k];
+        });
+        $('mm-search').placeholder = tx.searchPlaceholder || '';
+        $('mm-var-sub').innerHTML = cur.sub || '';
+
+        $('mm-aux').innerHTML = (cur.aux || []).map(a => {
+            const pt = '<span class="mm-pt io">' + a.port + '</span>';
+            const ch = '<span class="mm-c mm-c-' + a.cls + '">' + a.chip + '</span>';
+            const nt = '<span class="mm-note">' + a.note + '</span>';
+            return '<div class="mm-auxitem">' + (a.side === 'R' ? nt + ch + pt : pt + ch + nt) + '</div>';
+        }).join('');
+
+        dyn.splice(0).forEach(el => el.remove());
+        CONFIG.cards.concat(cur.cards || []).forEach(c => {
+            const d = document.createElement('div');
+            d.className = 'card-alert ' + c.kind;
+            d.innerHTML = '<div class="card-body">' + c.html + '</div>';
+            root.appendChild(d);
+            dyn.push(d);
+        });
+
+        drawBoard();
+        buildRows();
+        detail.innerHTML = '<p class="text-muted" style="margin:0;">Sélectionne une broche dans le schéma ou dans le tableau.</p>';
+        layout();
+        refresh();
+    }
+
+    function layout() {
+        const w = root.getBoundingClientRect().width;
+        if (!w) return;
+        view.classList.toggle('mm-stack', w < 940);
+    }
+    if (window.ResizeObserver) new ResizeObserver(layout).observe(root);
+    window.addEventListener('resize', layout);
+    document.addEventListener('contentLoaded', layout);
+
+    load(0);
+})();
+
+    </script>
+    </div>
+</body>
+</html>

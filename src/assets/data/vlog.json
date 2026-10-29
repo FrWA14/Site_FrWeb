@@ -1,5 +1,10 @@
 [
   {
+    "date": "2026-10-29T06:59:58Z",
+    "title": "Mise à jour du site",
+    "message": "Ajout des pinout de microcontrôleur : nouvelle sous-section Électronique → Microcontrôleur avec les brochages interactifs des cartes Arduino, Maple Mini (STM32), ESP32 (WROOM / WROVER, S2 / S3, C3 / C6, H2 / P4, caméra) et des modules Wi-Fi / Bluetooth Espressif."
+  },
+  {
     "date": "2026-10-23T16:05:50Z",
     "title": "Mise à jour du site",
     "message": "Pages Électronique : choix E12 / E24 des résistances sur les simulations NE555, LM311 et LM3914, avec comparaison des valeurs idéales (calcul) et réelles (composants normés)."
