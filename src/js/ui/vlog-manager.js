@@ -33,6 +33,15 @@ const VlogManager = {
     },
 
     /**
+     * Ligne « Crédit : lien » facultative ({ "credit": "https://..." })
+     */
+    buildCredit(url) {
+        if (typeof url !== 'string' || !/^https?:\/\//.test(url)) return '';
+        const u = this.escapeHtml(url);
+        return `<p>Crédit : <a href="${u}" target="_blank" rel="noopener">${u}</a></p>`;
+    },
+
+    /**
      * Génère le HTML d'un item de mise à jour
      */
     buildItem(entry) {
@@ -47,6 +56,7 @@ const VlogManager = {
                 <div class="update-content">
                     <h4>${this.escapeHtml(entry.title || 'Mise à jour')}</h4>
                     ${entry.message ? `<p>${this.escapeHtml(entry.message)}</p>` : ''}
+                    ${this.buildCredit(entry.credit)}
                 </div>
             </div>`;
     },

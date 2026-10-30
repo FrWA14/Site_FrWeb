@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>CD4060 - FrWA Conception</title>
+    <meta name="description" content="Le CD4060 réunit un oscillateur et un compteur binaire à 14 étages.">
+    <meta name="tags" content="Électronique, CD4000, Compteurs">
+    <meta name="vignette" content="assets/images/cd4060.svg">
+</head>
+<body>
+    <!-- Page générée par _sources/serie_cd4000/generer.py -->
+    <div class="page-content">
+        <h1>CD4060 — Compteur binaire 14 étages avec oscillateur intégré</h1>
+
+        <div class="flex gap-sm" style="margin-bottom: var(--spacing-lg);">
+            <span class="badge badge-primary">Électronique</span>
+            <span class="badge badge-secondary">Série CD4000</span>
+            <span class="badge badge-accent">Compteurs</span>
+        </div>
+
+        <p class="lead">Le CD4060 réunit un oscillateur et un compteur binaire à 14 étages. Avec un quartz horloger de 32,768 kHz, la sortie Q14 donne exactement 2 Hz : c'est la base de nombreuses horloges et temporisateurs. Il fonctionne aussi avec un simple réseau RC.</p>
+
+        <div class="chip-head">
+            <div class="chip-pinout chip-live" data-chip-live="{&quot;pins&quot;: [&quot;Q12&quot;, &quot;Q13&quot;, &quot;Q14&quot;, &quot;Q6&quot;, &quot;Q5&quot;, &quot;Q7&quot;, &quot;Q4&quot;, &quot;VSS&quot;, &quot;φO&quot;, &quot;~φO&quot;, &quot;φI&quot;, &quot;RST&quot;, &quot;Q9&quot;, &quot;Q8&quot;, &quot;Q10&quot;, &quot;VDD&quot;], &quot;model&quot;: &quot;ripple&quot;, &quot;opts&quot;: {&quot;clk&quot;: &quot;φI&quot;, &quot;osc&quot;: true}}">
+<svg role="img" aria-label="Brochage et schéma interne du CD4060" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 306" width="384" height="306" font-family="DejaVu Sans Mono, Consolas, monospace">
+<rect width="384" height="306" rx="12" fill="#1e2a2a"/>
+<text x="192.0" y="32" text-anchor="middle" font-size="20" font-weight="bold" fill="#4ecdc4">CD4060</text>
+<g class="pin" data-pin="1">
+<rect class="pin-hl" x="42.3" y="67.0" width="31.7" height="18" rx="3" fill="none"/>
+<rect class="lead p1" x="76" y="70.0" width="16" height="12" rx="2" fill="#e67e22"/>
+<text class="pin-v" x="84" y="79.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="70" y="81.0" text-anchor="end" font-size="13" fill="#e8f0f0">Q12</text>
+</g>
+<g class="pin" data-pin="16">
+<rect class="pin-hl" x="310" y="67.0" width="31.7" height="18" rx="3" fill="none"/>
+<rect class="lead" x="292" y="70.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="300" y="79.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="314" y="81.0" font-size="13" fill="#e67e22">VDD</text>
+</g>
+<g class="pin" data-pin="2">
+<rect class="pin-hl" x="42.3" y="93.0" width="31.7" height="18" rx="3" fill="none"/>
+<rect class="lead" x="76" y="96.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="84" y="105.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="70" y="107.0" text-anchor="end" font-size="13" fill="#e8f0f0">Q13</text>
+</g>
+<g class="pin" data-pin="15">
+<rect class="pin-hl" x="310" y="93.0" width="31.7" height="18" rx="3" fill="none"/>
+<rect class="lead" x="292" y="96.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="300" y="105.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="314" y="107.0" font-size="13" fill="#e8f0f0">Q10</text>
+</g>
+<g class="pin" data-pin="3">
+<rect class="pin-hl" x="42.3" y="119.0" width="31.7" height="18" rx="3" fill="none"/>
+<rect class="lead" x="76" y="122.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="84" y="131.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="70" y="133.0" text-anchor="end" font-size="13" fill="#e8f0f0">Q14</text>
+</g>
+<g class="pin" data-pin="14">
+<rect class="pin-hl" x="310" y="119.0" width="23.8" height="18" rx="3" fill="none"/>
+<rect class="lead" x="292" y="122.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="300" y="131.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="314" y="133.0" font-size="13" fill="#e8f0f0">Q8</text>
+</g>
+<g class="pin" data-pin="4">
+<rect class="pin-hl" x="50.2" y="145.0" width="23.8" height="18" rx="3" fill="none"/>
+<rect class="lead" x="76" y="148.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="84" y="157.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="70" y="159.0" text-anchor="end" font-size="13" fill="#e8f0f0">Q6</text>
+</g>
+<g class="pin" data-pin="13">
+<rect class="pin-hl" x="310" y="145.0" width="23.8" height="18" rx="3" fill="none"/>
+<rect class="lead" x="292" y="148.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="300" y="157.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="314" y="159.0" font-size="13" fill="#e8f0f0">Q9</text>
+</g>
+<g class="pin" data-pin="5">
+<rect class="pin-hl" x="50.2" y="171.0" width="23.8" height="18" rx="3" fill="none"/>
+<rect class="lead" x="76" y="174.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="84" y="183.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="70" y="185.0" text-anchor="end" font-size="13" fill="#e8f0f0">Q5</text>
+</g>
+<g class="pin" data-pin="12">
+<rect class="pin-hl" x="310" y="171.0" width="31.7" height="18" rx="3" fill="none"/>
+<rect class="lead" x="292" y="174.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="300" y="183.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="314" y="185.0" font-size="13" fill="#e8f0f0">RST</text>
+</g>
+<g class="pin" data-pin="6">
+<rect class="pin-hl" x="50.2" y="197.0" width="23.8" height="18" rx="3" fill="none"/>
+<rect class="lead" x="76" y="200.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="84" y="209.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="70" y="211.0" text-anchor="end" font-size="13" fill="#e8f0f0">Q7</text>
+</g>
+<g class="pin" data-pin="11">
+<rect class="pin-hl" x="310" y="197.0" width="23.8" height="18" rx="3" fill="none"/>
+<rect class="lead" x="292" y="200.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="300" y="209.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="314" y="211.0" font-size="13" fill="#e8f0f0">φI</text>
+</g>
+<g class="pin" data-pin="7">
+<rect class="pin-hl" x="50.2" y="223.0" width="23.8" height="18" rx="3" fill="none"/>
+<rect class="lead" x="76" y="226.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="84" y="235.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="70" y="237.0" text-anchor="end" font-size="13" fill="#e8f0f0">Q4</text>
+</g>
+<g class="pin" data-pin="10">
+<rect class="pin-hl" x="310" y="223.0" width="23.8" height="18" rx="3" fill="none"/>
+<rect class="lead" x="292" y="226.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="300" y="235.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="314" y="237.0" font-size="13" fill="#e8f0f0"><tspan text-decoration="overline">φO</tspan></text>
+</g>
+<g class="pin" data-pin="8">
+<rect class="pin-hl" x="42.3" y="249.0" width="31.7" height="18" rx="3" fill="none"/>
+<rect class="lead" x="76" y="252.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="84" y="261.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="70" y="263.0" text-anchor="end" font-size="13" fill="#4ecdc4">VSS</text>
+</g>
+<g class="pin" data-pin="9">
+<rect class="pin-hl" x="310" y="249.0" width="23.8" height="18" rx="3" fill="none"/>
+<rect class="lead" x="292" y="252.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="300" y="261.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="314" y="263.0" font-size="13" fill="#e8f0f0">φO</text>
+</g>
+<rect x="92" y="56" width="200" height="222" rx="6" fill="#121a1a" stroke="#3d7a7a" stroke-width="2"/>
+<path d="M180.0 56 a12 12 0 0 0 24 0" fill="#1e2a2a" stroke="#3d7a7a" stroke-width="2"/>
+<rect x="126" y="64.0" width="132" height="206.0" rx="5" fill="#173332" stroke="#c8d5d5" stroke-width="1.4"/>
+<polyline points="92.0,76.0 126.0,76.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="92.0,102.0 126.0,102.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="92.0,128.0 126.0,128.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="92.0,154.0 126.0,154.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="92.0,180.0 126.0,180.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="92.0,206.0 126.0,206.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="92.0,232.0 126.0,232.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="292.0,258.0 258.0,258.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="292.0,232.0 258.0,232.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="292.0,206.0 258.0,206.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="292.0,180.0 258.0,180.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="292.0,154.0 258.0,154.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="292.0,128.0 258.0,128.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="292.0,102.0 258.0,102.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<text x="192.0" y="155.0" text-anchor="middle" font-size="12" font-weight="bold" fill="#4ecdc4">OSCILLATEUR</text>
+<text x="192.0" y="171.0" text-anchor="middle" font-size="12" font-weight="bold" fill="#4ecdc4">+ COMPTEUR</text>
+<text x="192.0" y="187.0" text-anchor="middle" font-size="12" font-weight="bold" fill="#4ecdc4">14 ÉTAGES</text>
+<text x="96" y="72.0" font-size="9" fill="#6a7a7a">1</text>
+<text x="288" y="72.0" text-anchor="end" font-size="9" fill="#6a7a7a">16</text>
+<text x="96" y="98.0" font-size="9" fill="#6a7a7a">2</text>
+<text x="288" y="98.0" text-anchor="end" font-size="9" fill="#6a7a7a">15</text>
+<text x="96" y="124.0" font-size="9" fill="#6a7a7a">3</text>
+<text x="288" y="124.0" text-anchor="end" font-size="9" fill="#6a7a7a">14</text>
+<text x="96" y="150.0" font-size="9" fill="#6a7a7a">4</text>
+<text x="288" y="150.0" text-anchor="end" font-size="9" fill="#6a7a7a">13</text>
+<text x="96" y="176.0" font-size="9" fill="#6a7a7a">5</text>
+<text x="288" y="176.0" text-anchor="end" font-size="9" fill="#6a7a7a">12</text>
+<text x="96" y="202.0" font-size="9" fill="#6a7a7a">6</text>
+<text x="288" y="202.0" text-anchor="end" font-size="9" fill="#6a7a7a">11</text>
+<text x="96" y="228.0" font-size="9" fill="#6a7a7a">7</text>
+<text x="288" y="228.0" text-anchor="end" font-size="9" fill="#6a7a7a">10</text>
+<text x="96" y="254.0" font-size="9" fill="#6a7a7a">8</text>
+<text x="288" y="254.0" text-anchor="end" font-size="9" fill="#6a7a7a">9</text>
+<text x="192.0" y="296" text-anchor="middle" font-size="10" fill="#6a7a7a">DIP-16 · vue de dessus</text>
+</svg>
+            </div>
+            <div>
+                <h2>Caractéristiques</h2>
+                <div class="data-table-wrap">
+                    <table class="data-table">
+                    <tbody>
+                        <tr><td>Fonction</td><td>Compteur binaire 14 étages avec oscillateur intégré</td></tr>
+                        <tr><td>Boîtier</td><td>DIP-16 (existe aussi en SOIC-16)</td></tr>
+                        <tr><td>Alimentation</td><td>3 V à 18 V (20 V maximum absolu)</td></tr>
+                        <tr><td>Niveaux d'entrée</td><td>0 sous 30 % de VDD, 1 au-dessus de 70 % de VDD</td></tr>
+                        <tr><td>Courant de sortie</td><td>≈ 1 mA à 5 V, ≈ 7 mA à 15 V (typ.)</td></tr>
+                        <tr><td>Fréquence d'horloge max</td><td>≈ 2 à 5 MHz à 5 V, plus de 10 MHz à 15 V (typ.)</td></tr>
+                        <tr><td>Consommation au repos</td><td>quelques µA au plus</td></tr>
+                        <tr><td>Oscillateur</td><td>quartz ou RC, jusqu'à quelques MHz à 10 V</td></tr>
+                        <tr><td>Température</td><td>−55 °C à +125 °C (CD4000B)</td></tr>
+                        <tr><td>Équivalents</td><td>HEF4060B, MC14060B, 74HC4060 (même brochage, 2 à 6 V)</td></tr>
+                    </tbody>
+                    </table>
+                </div>
+                <p class="text-muted" style="font-size: var(--font-size-sm);">
+                    Valeurs typiques à 25 °C, qui varient selon le fabricant : vérifiez toujours la fiche
+                    technique (datasheet) avant de câbler.
+                </p>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <h2>Brochage</h2>
+        <div class="data-table-wrap">
+            <table class="data-table">
+                <thead><tr><th>Broche</th><th>Nom</th><th>Fonction</th></tr></thead>
+                <tbody>
+                        <tr><td>1</td><td>Q12</td><td>Sortie de l&#x27;étage 12 (f ÷ 2¹²)</td></tr>
+                        <tr><td>2</td><td>Q13</td><td>Sortie de l&#x27;étage 13 (f ÷ 2¹³)</td></tr>
+                        <tr><td>3</td><td>Q14</td><td>Sortie de l&#x27;étage 14 (f ÷ 2¹⁴)</td></tr>
+                        <tr><td>4</td><td>Q6</td><td>Sortie de l&#x27;étage 6 (f ÷ 2⁶)</td></tr>
+                        <tr><td>5</td><td>Q5</td><td>Sortie de l&#x27;étage 5 (f ÷ 2⁵)</td></tr>
+                        <tr><td>6</td><td>Q7</td><td>Sortie de l&#x27;étage 7 (f ÷ 2⁷)</td></tr>
+                        <tr><td>7</td><td>Q4</td><td>Sortie de l&#x27;étage 4 (f ÷ 2⁴)</td></tr>
+                        <tr><td>8</td><td>VSS</td><td>Masse (0 V)</td></tr>
+                        <tr><td>9</td><td>φO</td><td>Sortie de l&#x27;oscillateur (vers C en mode RC)</td></tr>
+                        <tr><td>10</td><td><span class="over">φO</span></td><td>Sortie inversée de l&#x27;oscillateur (vers le quartz ou R)</td></tr>
+                        <tr><td>11</td><td>φI</td><td>Entrée de l&#x27;oscillateur / horloge externe (front descendant)</td></tr>
+                        <tr><td>12</td><td>RST</td><td>Remise à zéro, arrête l&#x27;oscillateur (active haut)</td></tr>
+                        <tr><td>13</td><td>Q9</td><td>Sortie de l&#x27;étage 9 (f ÷ 2⁹)</td></tr>
+                        <tr><td>14</td><td>Q8</td><td>Sortie de l&#x27;étage 8 (f ÷ 2⁸)</td></tr>
+                        <tr><td>15</td><td>Q10</td><td>Sortie de l&#x27;étage 10 (f ÷ 2¹⁰)</td></tr>
+                        <tr><td>16</td><td>VDD</td><td>Alimentation positive (+3 à +18 V)</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h2>Fonctionnement</h2>
+            <p>L'oscillateur utilise les broches 9, 10 et 11 : quartz entre φI (11) et φ̄O (10) avec une résistance de 10 MΩ en parallèle et deux petits condensateurs à la masse, ou bien R et C pour un oscillateur RC (f ≈ 1 / 2,3·R·C). Chaque étage divise ensuite la fréquence par 2 : Qn = f ÷ 2ⁿ. Les sorties Q1 à Q3 et Q11 ne sont pas accessibles. RST à 1 arrête l'oscillateur et remet le compteur à zéro.</p>
+
+        <div class="divider"></div>
+
+<h2>Simulation : quartz 32,768 kHz et choix de la sortie</h2>
+        <p>Le quartz fait osciller le circuit à 32 768 Hz. Choisissez la broche de sortie : la fréquence est divisée par 2 à chaque étage, jusqu'à 2 Hz sur Q14. L'oscilloscope affiche la sortie choisie (en jaune) et les étages voisins.</p>
+
+        <div data-lsim="osc4060" data-lsim-opts="{&quot;chip&quot;: &quot;CD4060&quot;, &quot;vdd&quot;: 16, &quot;vss&quot;: 8, &quot;pinmap&quot;: {&quot;VDD&quot;: 16, &quot;Q10&quot;: 15, &quot;Q8&quot;: 14, &quot;Q9&quot;: 13, &quot;RST&quot;: 12, &quot;φI&quot;: 11, &quot;~φO&quot;: 10, &quot;φO&quot;: 9, &quot;VSS&quot;: 8, &quot;Q4&quot;: 7, &quot;Q7&quot;: 6, &quot;Q5&quot;: 5, &quot;Q6&quot;: 4, &quot;Q14&quot;: 3, &quot;Q13&quot;: 2, &quot;Q12&quot;: 1}}"></div>
+
+        <div class="divider"></div>
+
+        <p class="text-center">
+            <a data-retour class="btn btn-primary"></a>
+        </p>
+    </div>
+</body>
+</html>

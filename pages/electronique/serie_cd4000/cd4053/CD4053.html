@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>CD4053 - FrWA Conception</title>
+    <meta name="description" content="Le CD4053 contient trois inverseurs analogiques (commutateurs à deux positions) commandés séparément par A, B et C.">
+    <meta name="tags" content="Électronique, CD4000, Analogique">
+    <meta name="vignette" content="assets/images/cd4053.svg">
+</head>
+<body>
+    <!-- Page générée par _sources/serie_cd4000/generer.py -->
+    <div class="page-content">
+        <h1>CD4053 — 3 multiplexeurs / démultiplexeurs analogiques 2 voies</h1>
+
+        <div class="flex gap-sm" style="margin-bottom: var(--spacing-lg);">
+            <span class="badge badge-primary">Électronique</span>
+            <span class="badge badge-secondary">Série CD4000</span>
+            <span class="badge badge-accent">Analogique</span>
+        </div>
+
+        <p class="lead">Le CD4053 contient trois inverseurs analogiques (commutateurs à deux positions) commandés séparément par A, B et C. C'est l'équivalent électronique de trois inverseurs mécaniques, pratique pour basculer un signal entre deux sources.</p>
+
+        <div class="chip-head">
+            <div class="chip-pinout chip-live" data-chip-live="{&quot;pins&quot;: [&quot;BY&quot;, &quot;BX&quot;, &quot;CY&quot;, &quot;CCOM&quot;, &quot;CX&quot;, &quot;INH&quot;, &quot;VEE&quot;, &quot;VSS&quot;, &quot;C&quot;, &quot;B&quot;, &quot;A&quot;, &quot;AX&quot;, &quot;AY&quot;, &quot;ACOM&quot;, &quot;BCOM&quot;, &quot;VDD&quot;], &quot;model&quot;: &quot;amux&quot;, &quot;opts&quot;: {&quot;sel&quot;: [&quot;A&quot;, &quot;B&quot;, &quot;C&quot;], &quot;perGroup&quot;: true, &quot;groups&quot;: [{&quot;com&quot;: &quot;ACOM&quot;, &quot;ch&quot;: [&quot;AX&quot;, &quot;AY&quot;]}, {&quot;com&quot;: &quot;BCOM&quot;, &quot;ch&quot;: [&quot;BX&quot;, &quot;BY&quot;]}, {&quot;com&quot;: &quot;CCOM&quot;, &quot;ch&quot;: [&quot;CX&quot;, &quot;CY&quot;]}]}}">
+<svg role="img" aria-label="Brochage et schéma interne du CD4053" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 306" width="384" height="306" font-family="DejaVu Sans Mono, Consolas, monospace">
+<rect width="384" height="306" rx="12" fill="#1e2a2a"/>
+<text x="192.0" y="32" text-anchor="middle" font-size="20" font-weight="bold" fill="#4ecdc4">CD4053</text>
+<g class="pin" data-pin="1">
+<rect class="pin-hl" x="50.2" y="67.0" width="23.8" height="18" rx="3" fill="none"/>
+<rect class="lead p1" x="76" y="70.0" width="16" height="12" rx="2" fill="#e67e22"/>
+<text class="pin-v" x="84" y="79.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="70" y="81.0" text-anchor="end" font-size="13" fill="#e8f0f0">BY</text>
+</g>
+<g class="pin" data-pin="16">
+<rect class="pin-hl" x="310" y="67.0" width="31.7" height="18" rx="3" fill="none"/>
+<rect class="lead" x="292" y="70.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="300" y="79.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="314" y="81.0" font-size="13" fill="#e67e22">VDD</text>
+</g>
+<g class="pin" data-pin="2">
+<rect class="pin-hl" x="50.2" y="93.0" width="23.8" height="18" rx="3" fill="none"/>
+<rect class="lead" x="76" y="96.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="84" y="105.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="70" y="107.0" text-anchor="end" font-size="13" fill="#e8f0f0">BX</text>
+</g>
+<g class="pin" data-pin="15">
+<rect class="pin-hl" x="310" y="93.0" width="39.6" height="18" rx="3" fill="none"/>
+<rect class="lead" x="292" y="96.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="300" y="105.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="314" y="107.0" font-size="13" fill="#e8f0f0">BCOM</text>
+</g>
+<g class="pin" data-pin="3">
+<rect class="pin-hl" x="50.2" y="119.0" width="23.8" height="18" rx="3" fill="none"/>
+<rect class="lead" x="76" y="122.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="84" y="131.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="70" y="133.0" text-anchor="end" font-size="13" fill="#e8f0f0">CY</text>
+</g>
+<g class="pin" data-pin="14">
+<rect class="pin-hl" x="310" y="119.0" width="39.6" height="18" rx="3" fill="none"/>
+<rect class="lead" x="292" y="122.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="300" y="131.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="314" y="133.0" font-size="13" fill="#e8f0f0">ACOM</text>
+</g>
+<g class="pin" data-pin="4">
+<rect class="pin-hl" x="34.4" y="145.0" width="39.6" height="18" rx="3" fill="none"/>
+<rect class="lead" x="76" y="148.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="84" y="157.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="70" y="159.0" text-anchor="end" font-size="13" fill="#e8f0f0">CCOM</text>
+</g>
+<g class="pin" data-pin="13">
+<rect class="pin-hl" x="310" y="145.0" width="23.8" height="18" rx="3" fill="none"/>
+<rect class="lead" x="292" y="148.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="300" y="157.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="314" y="159.0" font-size="13" fill="#e8f0f0">AY</text>
+</g>
+<g class="pin" data-pin="5">
+<rect class="pin-hl" x="50.2" y="171.0" width="23.8" height="18" rx="3" fill="none"/>
+<rect class="lead" x="76" y="174.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="84" y="183.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="70" y="185.0" text-anchor="end" font-size="13" fill="#e8f0f0">CX</text>
+</g>
+<g class="pin" data-pin="12">
+<rect class="pin-hl" x="310" y="171.0" width="23.8" height="18" rx="3" fill="none"/>
+<rect class="lead" x="292" y="174.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="300" y="183.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="314" y="185.0" font-size="13" fill="#e8f0f0">AX</text>
+</g>
+<g class="pin" data-pin="6">
+<rect class="pin-hl" x="42.3" y="197.0" width="31.7" height="18" rx="3" fill="none"/>
+<rect class="lead" x="76" y="200.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="84" y="209.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="70" y="211.0" text-anchor="end" font-size="13" fill="#e8f0f0">INH</text>
+</g>
+<g class="pin" data-pin="11">
+<rect class="pin-hl" x="310" y="197.0" width="15.9" height="18" rx="3" fill="none"/>
+<rect class="lead" x="292" y="200.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="300" y="209.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="314" y="211.0" font-size="13" fill="#e8f0f0">A</text>
+</g>
+<g class="pin" data-pin="7">
+<rect class="pin-hl" x="42.3" y="223.0" width="31.7" height="18" rx="3" fill="none"/>
+<rect class="lead" x="76" y="226.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="84" y="235.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="70" y="237.0" text-anchor="end" font-size="13" fill="#4ecdc4">VEE</text>
+</g>
+<g class="pin" data-pin="10">
+<rect class="pin-hl" x="310" y="223.0" width="15.9" height="18" rx="3" fill="none"/>
+<rect class="lead" x="292" y="226.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="300" y="235.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="314" y="237.0" font-size="13" fill="#e8f0f0">B</text>
+</g>
+<g class="pin" data-pin="8">
+<rect class="pin-hl" x="42.3" y="249.0" width="31.7" height="18" rx="3" fill="none"/>
+<rect class="lead" x="76" y="252.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="84" y="261.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="70" y="263.0" text-anchor="end" font-size="13" fill="#4ecdc4">VSS</text>
+</g>
+<g class="pin" data-pin="9">
+<rect class="pin-hl" x="310" y="249.0" width="15.9" height="18" rx="3" fill="none"/>
+<rect class="lead" x="292" y="252.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="300" y="261.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="314" y="263.0" font-size="13" fill="#e8f0f0">C</text>
+</g>
+<rect x="92" y="56" width="200" height="222" rx="6" fill="#121a1a" stroke="#3d7a7a" stroke-width="2"/>
+<path d="M180.0 56 a12 12 0 0 0 24 0" fill="#1e2a2a" stroke="#3d7a7a" stroke-width="2"/>
+<rect x="126" y="64.0" width="132" height="206.0" rx="5" fill="#173332" stroke="#c8d5d5" stroke-width="1.4"/>
+<polyline points="92.0,76.0 126.0,76.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="92.0,102.0 126.0,102.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="92.0,128.0 126.0,128.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="92.0,154.0 126.0,154.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="92.0,180.0 126.0,180.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="92.0,206.0 126.0,206.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="292.0,258.0 258.0,258.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="292.0,232.0 258.0,232.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="292.0,206.0 258.0,206.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="292.0,180.0 258.0,180.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="292.0,154.0 258.0,154.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="292.0,128.0 258.0,128.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="292.0,102.0 258.0,102.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<text x="192.0" y="155.0" text-anchor="middle" font-size="12" font-weight="bold" fill="#4ecdc4">3 × INVERSEUR</text>
+<text x="192.0" y="171.0" text-anchor="middle" font-size="12" font-weight="bold" fill="#4ecdc4">ANALOGIQUE</text>
+<text x="192.0" y="187.0" text-anchor="middle" font-size="12" font-weight="bold" fill="#4ecdc4">2 → 1</text>
+<text x="96" y="72.0" font-size="9" fill="#6a7a7a">1</text>
+<text x="288" y="72.0" text-anchor="end" font-size="9" fill="#6a7a7a">16</text>
+<text x="96" y="98.0" font-size="9" fill="#6a7a7a">2</text>
+<text x="288" y="98.0" text-anchor="end" font-size="9" fill="#6a7a7a">15</text>
+<text x="96" y="124.0" font-size="9" fill="#6a7a7a">3</text>
+<text x="288" y="124.0" text-anchor="end" font-size="9" fill="#6a7a7a">14</text>
+<text x="96" y="150.0" font-size="9" fill="#6a7a7a">4</text>
+<text x="288" y="150.0" text-anchor="end" font-size="9" fill="#6a7a7a">13</text>
+<text x="96" y="176.0" font-size="9" fill="#6a7a7a">5</text>
+<text x="288" y="176.0" text-anchor="end" font-size="9" fill="#6a7a7a">12</text>
+<text x="96" y="202.0" font-size="9" fill="#6a7a7a">6</text>
+<text x="288" y="202.0" text-anchor="end" font-size="9" fill="#6a7a7a">11</text>
+<text x="96" y="228.0" font-size="9" fill="#6a7a7a">7</text>
+<text x="288" y="228.0" text-anchor="end" font-size="9" fill="#6a7a7a">10</text>
+<text x="96" y="254.0" font-size="9" fill="#6a7a7a">8</text>
+<text x="288" y="254.0" text-anchor="end" font-size="9" fill="#6a7a7a">9</text>
+<text x="192.0" y="296" text-anchor="middle" font-size="10" fill="#6a7a7a">DIP-16 · vue de dessus</text>
+</svg>
+            </div>
+            <div>
+                <h2>Caractéristiques</h2>
+                <div class="data-table-wrap">
+                    <table class="data-table">
+                    <tbody>
+                        <tr><td>Fonction</td><td>3 multiplexeurs / démultiplexeurs analogiques 2 voies</td></tr>
+                        <tr><td>Boîtier</td><td>DIP-16 (existe aussi en SOIC-16)</td></tr>
+                        <tr><td>Alimentation</td><td>3 V à 18 V (20 V maximum absolu)</td></tr>
+                        <tr><td>Signaux commutés</td><td>entre VEE (ou VSS) et VDD, dans les deux sens</td></tr>
+                        <tr><td>Consommation au repos</td><td>quelques µA au plus</td></tr>
+                        <tr><td>Résistance à l'état fermé (Ron)</td><td>≈ 470 Ω à 5 V, 125 Ω à 15 V (typ.)</td></tr>
+                        <tr><td>Température</td><td>−55 °C à +125 °C (CD4000B)</td></tr>
+                        <tr><td>Équivalents</td><td>HEF4053B, MC14053B, 74HC4053 (même brochage, 2 à 6 V)</td></tr>
+                    </tbody>
+                    </table>
+                </div>
+                <p class="text-muted" style="font-size: var(--font-size-sm);">
+                    Valeurs typiques à 25 °C, qui varient selon le fabricant : vérifiez toujours la fiche
+                    technique (datasheet) avant de câbler.
+                </p>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <h2>Brochage</h2>
+        <div class="data-table-wrap">
+            <table class="data-table">
+                <thead><tr><th>Broche</th><th>Nom</th><th>Fonction</th></tr></thead>
+                <tbody>
+                        <tr><td>1</td><td>BY</td><td>Voie BY du commutateur B</td></tr>
+                        <tr><td>2</td><td>BX</td><td>Voie BX du commutateur B</td></tr>
+                        <tr><td>3</td><td>CY</td><td>Voie CY du commutateur C</td></tr>
+                        <tr><td>4</td><td>CCOM</td><td>Borne commune du commutateur C</td></tr>
+                        <tr><td>5</td><td>CX</td><td>Voie CX du commutateur C</td></tr>
+                        <tr><td>6</td><td>INH</td><td>Inhibition (1 = toutes les voies ouvertes)</td></tr>
+                        <tr><td>7</td><td>VEE</td><td>Alimentation négative des signaux analogiques (à relier à VSS en alimentation simple)</td></tr>
+                        <tr><td>8</td><td>VSS</td><td>Masse (0 V)</td></tr>
+                        <tr><td>9</td><td>C</td><td>Commande du commutateur C (0 = CX, 1 = CY)</td></tr>
+                        <tr><td>10</td><td>B</td><td>Commande du commutateur B (0 = BX, 1 = BY)</td></tr>
+                        <tr><td>11</td><td>A</td><td>Commande du commutateur A (0 = AX, 1 = AY)</td></tr>
+                        <tr><td>12</td><td>AX</td><td>Voie AX du commutateur A</td></tr>
+                        <tr><td>13</td><td>AY</td><td>Voie AY du commutateur A</td></tr>
+                        <tr><td>14</td><td>ACOM</td><td>Borne commune du commutateur A</td></tr>
+                        <tr><td>15</td><td>BCOM</td><td>Borne commune du commutateur B</td></tr>
+                        <tr><td>16</td><td>VDD</td><td>Alimentation positive (+3 à +18 V)</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h2>Fonctionnement</h2>
+            <p>A à 0 relie AX à ACOM, A à 1 relie AY à ACOM ; de même pour B et C. INH à 1 ouvre tout. VEE à VSS en simple alimentation.</p>
+
+        <div class="divider"></div>
+
+<h2>Simulation : trois commutateurs à deux positions</h2>
+        <p>Chaque commande A, B, C bascule sa sortie commune entre deux signaux.</p>
+
+        <div data-lsim="amux" data-lsim-opts="{&quot;select&quot;: [[&quot;A&quot;, 11], [&quot;B&quot;, 10], [&quot;C&quot;, 9]], &quot;outputs&quot;: [{&quot;name&quot;: &quot;A COM&quot;, &quot;pin&quot;: 14, &quot;bit&quot;: 0, &quot;channels&quot;: [{&quot;name&quot;: &quot;AX&quot;, &quot;desc&quot;: &quot;sinus&quot;, &quot;sig&quot;: &quot;sine&quot;}, {&quot;name&quot;: &quot;AY&quot;, &quot;desc&quot;: &quot;carré&quot;, &quot;sig&quot;: &quot;square&quot;}]}, {&quot;name&quot;: &quot;B COM&quot;, &quot;pin&quot;: 15, &quot;bit&quot;: 1, &quot;channels&quot;: [{&quot;name&quot;: &quot;BX&quot;, &quot;desc&quot;: &quot;triangle&quot;, &quot;sig&quot;: &quot;tri&quot;}, {&quot;name&quot;: &quot;BY&quot;, &quot;desc&quot;: &quot;1 V&quot;, &quot;sig&quot;: 1}]}, {&quot;name&quot;: &quot;C COM&quot;, &quot;pin&quot;: 4, &quot;bit&quot;: 2, &quot;channels&quot;: [{&quot;name&quot;: &quot;CX&quot;, &quot;desc&quot;: &quot;scie&quot;, &quot;sig&quot;: &quot;saw&quot;}, {&quot;name&quot;: &quot;CY&quot;, &quot;desc&quot;: &quot;4 V&quot;, &quot;sig&quot;: 4}]}], &quot;chip&quot;: &quot;CD4053&quot;, &quot;vdd&quot;: 16, &quot;vss&quot;: 8, &quot;pinmap&quot;: {&quot;VDD&quot;: 16, &quot;BCOM&quot;: 15, &quot;ACOM&quot;: 14, &quot;AY&quot;: 13, &quot;AX&quot;: 12, &quot;A&quot;: 11, &quot;B&quot;: 10, &quot;C&quot;: 9, &quot;VSS&quot;: 8, &quot;VEE&quot;: 7, &quot;INH&quot;: 6, &quot;CX&quot;: 5, &quot;CCOM&quot;: 4, &quot;CY&quot;: 3, &quot;BX&quot;: 2, &quot;BY&quot;: 1}}"></div>
+
+        <div class="divider"></div>
+
+        <p class="text-center">
+            <a data-retour class="btn btn-primary"></a>
+        </p>
+    </div>
+</body>
+</html>

@@ -1,5 +1,11 @@
 [
   {
+    "date": "2026-10-30T15:00:00Z",
+    "title": "Mise à jour du site",
+    "message": "Ajout de la série 4000 : 47 fiches de circuits CMOS CD4000 avec brochage interactif, simulateur d'entrées / sorties, schéma de câblage et oscilloscope. Ajout d'une horloge numérique (quartz 32,768 kHz, CD4060, compteurs CD4518) à afficheurs 7 segments ou 10 sorties, réglée sur l'heure du PC ou par 3 boutons de mise à l'heure.",
+    "credit": "https://www.build-electronic-circuits.com/"
+  },
+  {
     "date": "2026-10-29T06:59:58Z",
     "title": "Mise à jour du site",
     "message": "Ajout des pinout de microcontrôleur : nouvelle sous-section Électronique → Microcontrôleur avec les brochages interactifs des cartes Arduino, Maple Mini (STM32), ESP32 (WROOM / WROVER, S2 / S3, C3 / C6, H2 / P4, caméra) et des modules Wi-Fi / Bluetooth Espressif."

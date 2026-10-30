@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>CD4510 - FrWA Conception</title>
+    <meta name="description" content="Le CD4510 est un compteur décimal (BCD, 0-9) synchrone qui compte ou décompte et peut être préchargé.">
+    <meta name="tags" content="Électronique, CD4000, Compteurs">
+    <meta name="vignette" content="assets/images/cd4510.svg">
+</head>
+<body>
+    <!-- Page générée par _sources/serie_cd4000/generer.py -->
+    <div class="page-content">
+        <h1>CD4510 — Compteur BCD haut / bas préréglable</h1>
+
+        <div class="flex gap-sm" style="margin-bottom: var(--spacing-lg);">
+            <span class="badge badge-primary">Électronique</span>
+            <span class="badge badge-secondary">Série CD4000</span>
+            <span class="badge badge-accent">Compteurs</span>
+        </div>
+
+        <p class="lead">Le CD4510 est un compteur décimal (BCD, 0-9) synchrone qui compte ou décompte et peut être préchargé. Il a le même brochage que le 4029, la broche 9 servant ici de remise à zéro. Associé à un 4511, il forme un chiffre d'afficheur réglable.</p>
+
+        <div class="chip-head">
+            <div class="chip-pinout chip-live" data-chip-live="{&quot;pins&quot;: [&quot;PE&quot;, &quot;Q4&quot;, &quot;P4&quot;, &quot;P1&quot;, &quot;~CI&quot;, &quot;Q1&quot;, &quot;~CO&quot;, &quot;VSS&quot;, &quot;RST&quot;, &quot;U/~D&quot;, &quot;Q2&quot;, &quot;P2&quot;, &quot;P3&quot;, &quot;Q3&quot;, &quot;CLK&quot;, &quot;VDD&quot;], &quot;model&quot;: &quot;updown&quot;, &quot;opts&quot;: {&quot;rst&quot;: true}}">
+<svg role="img" aria-label="Brochage et schéma interne du CD4510" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 306" width="384" height="306" font-family="DejaVu Sans Mono, Consolas, monospace">
+<rect width="384" height="306" rx="12" fill="#1e2a2a"/>
+<text x="192.0" y="32" text-anchor="middle" font-size="20" font-weight="bold" fill="#4ecdc4">CD4510</text>
+<g class="pin" data-pin="1">
+<rect class="pin-hl" x="50.2" y="67.0" width="23.8" height="18" rx="3" fill="none"/>
+<rect class="lead p1" x="76" y="70.0" width="16" height="12" rx="2" fill="#e67e22"/>
+<text class="pin-v" x="84" y="79.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="70" y="81.0" text-anchor="end" font-size="13" fill="#e8f0f0">PE</text>
+</g>
+<g class="pin" data-pin="16">
+<rect class="pin-hl" x="310" y="67.0" width="31.7" height="18" rx="3" fill="none"/>
+<rect class="lead" x="292" y="70.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="300" y="79.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="314" y="81.0" font-size="13" fill="#e67e22">VDD</text>
+</g>
+<g class="pin" data-pin="2">
+<rect class="pin-hl" x="50.2" y="93.0" width="23.8" height="18" rx="3" fill="none"/>
+<rect class="lead" x="76" y="96.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="84" y="105.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="70" y="107.0" text-anchor="end" font-size="13" fill="#e8f0f0">Q4</text>
+</g>
+<g class="pin" data-pin="15">
+<rect class="pin-hl" x="310" y="93.0" width="31.7" height="18" rx="3" fill="none"/>
+<rect class="lead" x="292" y="96.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="300" y="105.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="314" y="107.0" font-size="13" fill="#e8f0f0">CLK</text>
+</g>
+<g class="pin" data-pin="3">
+<rect class="pin-hl" x="50.2" y="119.0" width="23.8" height="18" rx="3" fill="none"/>
+<rect class="lead" x="76" y="122.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="84" y="131.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="70" y="133.0" text-anchor="end" font-size="13" fill="#e8f0f0">P4</text>
+</g>
+<g class="pin" data-pin="14">
+<rect class="pin-hl" x="310" y="119.0" width="23.8" height="18" rx="3" fill="none"/>
+<rect class="lead" x="292" y="122.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="300" y="131.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="314" y="133.0" font-size="13" fill="#e8f0f0">Q3</text>
+</g>
+<g class="pin" data-pin="4">
+<rect class="pin-hl" x="50.2" y="145.0" width="23.8" height="18" rx="3" fill="none"/>
+<rect class="lead" x="76" y="148.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="84" y="157.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="70" y="159.0" text-anchor="end" font-size="13" fill="#e8f0f0">P1</text>
+</g>
+<g class="pin" data-pin="13">
+<rect class="pin-hl" x="310" y="145.0" width="23.8" height="18" rx="3" fill="none"/>
+<rect class="lead" x="292" y="148.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="300" y="157.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="314" y="159.0" font-size="13" fill="#e8f0f0">P3</text>
+</g>
+<g class="pin" data-pin="5">
+<rect class="pin-hl" x="50.2" y="171.0" width="23.8" height="18" rx="3" fill="none"/>
+<rect class="lead" x="76" y="174.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="84" y="183.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="70" y="185.0" text-anchor="end" font-size="13" fill="#e8f0f0"><tspan text-decoration="overline">CI</tspan></text>
+</g>
+<g class="pin" data-pin="12">
+<rect class="pin-hl" x="310" y="171.0" width="23.8" height="18" rx="3" fill="none"/>
+<rect class="lead" x="292" y="174.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="300" y="183.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="314" y="185.0" font-size="13" fill="#e8f0f0">P2</text>
+</g>
+<g class="pin" data-pin="6">
+<rect class="pin-hl" x="50.2" y="197.0" width="23.8" height="18" rx="3" fill="none"/>
+<rect class="lead" x="76" y="200.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="84" y="209.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="70" y="211.0" text-anchor="end" font-size="13" fill="#e8f0f0">Q1</text>
+</g>
+<g class="pin" data-pin="11">
+<rect class="pin-hl" x="310" y="197.0" width="23.8" height="18" rx="3" fill="none"/>
+<rect class="lead" x="292" y="200.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="300" y="209.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="314" y="211.0" font-size="13" fill="#e8f0f0">Q2</text>
+</g>
+<g class="pin" data-pin="7">
+<rect class="pin-hl" x="50.2" y="223.0" width="23.8" height="18" rx="3" fill="none"/>
+<rect class="lead" x="76" y="226.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="84" y="235.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="70" y="237.0" text-anchor="end" font-size="13" fill="#e8f0f0"><tspan text-decoration="overline">CO</tspan></text>
+</g>
+<g class="pin" data-pin="10">
+<rect class="pin-hl" x="310" y="223.0" width="31.7" height="18" rx="3" fill="none"/>
+<rect class="lead" x="292" y="226.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="300" y="235.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="314" y="237.0" font-size="13" fill="#e8f0f0">U/<tspan text-decoration="overline">D</tspan></text>
+</g>
+<g class="pin" data-pin="8">
+<rect class="pin-hl" x="42.3" y="249.0" width="31.7" height="18" rx="3" fill="none"/>
+<rect class="lead" x="76" y="252.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="84" y="261.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="70" y="263.0" text-anchor="end" font-size="13" fill="#4ecdc4">VSS</text>
+</g>
+<g class="pin" data-pin="9">
+<rect class="pin-hl" x="310" y="249.0" width="31.7" height="18" rx="3" fill="none"/>
+<rect class="lead" x="292" y="252.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="300" y="261.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="314" y="263.0" font-size="13" fill="#e8f0f0">RST</text>
+</g>
+<rect x="92" y="56" width="200" height="222" rx="6" fill="#121a1a" stroke="#3d7a7a" stroke-width="2"/>
+<path d="M180.0 56 a12 12 0 0 0 24 0" fill="#1e2a2a" stroke="#3d7a7a" stroke-width="2"/>
+<rect x="126" y="64.0" width="132" height="206.0" rx="5" fill="#173332" stroke="#c8d5d5" stroke-width="1.4"/>
+<polyline points="92.0,76.0 126.0,76.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="92.0,102.0 126.0,102.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="92.0,128.0 126.0,128.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="92.0,154.0 126.0,154.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="92.0,180.0 126.0,180.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="92.0,206.0 126.0,206.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="92.0,232.0 126.0,232.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="292.0,258.0 258.0,258.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="292.0,232.0 258.0,232.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="292.0,206.0 258.0,206.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="292.0,180.0 258.0,180.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="292.0,154.0 258.0,154.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="292.0,128.0 258.0,128.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="292.0,102.0 258.0,102.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<text x="192.0" y="155.0" text-anchor="middle" font-size="12" font-weight="bold" fill="#4ecdc4">COMPTEUR</text>
+<text x="192.0" y="171.0" text-anchor="middle" font-size="12" font-weight="bold" fill="#4ecdc4">BCD</text>
+<text x="192.0" y="187.0" text-anchor="middle" font-size="12" font-weight="bold" fill="#4ecdc4">HAUT / BAS</text>
+<text x="96" y="72.0" font-size="9" fill="#6a7a7a">1</text>
+<text x="288" y="72.0" text-anchor="end" font-size="9" fill="#6a7a7a">16</text>
+<text x="96" y="98.0" font-size="9" fill="#6a7a7a">2</text>
+<text x="288" y="98.0" text-anchor="end" font-size="9" fill="#6a7a7a">15</text>
+<text x="96" y="124.0" font-size="9" fill="#6a7a7a">3</text>
+<text x="288" y="124.0" text-anchor="end" font-size="9" fill="#6a7a7a">14</text>
+<text x="96" y="150.0" font-size="9" fill="#6a7a7a">4</text>
+<text x="288" y="150.0" text-anchor="end" font-size="9" fill="#6a7a7a">13</text>
+<text x="96" y="176.0" font-size="9" fill="#6a7a7a">5</text>
+<text x="288" y="176.0" text-anchor="end" font-size="9" fill="#6a7a7a">12</text>
+<text x="96" y="202.0" font-size="9" fill="#6a7a7a">6</text>
+<text x="288" y="202.0" text-anchor="end" font-size="9" fill="#6a7a7a">11</text>
+<text x="96" y="228.0" font-size="9" fill="#6a7a7a">7</text>
+<text x="288" y="228.0" text-anchor="end" font-size="9" fill="#6a7a7a">10</text>
+<text x="96" y="254.0" font-size="9" fill="#6a7a7a">8</text>
+<text x="288" y="254.0" text-anchor="end" font-size="9" fill="#6a7a7a">9</text>
+<text x="192.0" y="296" text-anchor="middle" font-size="10" fill="#6a7a7a">DIP-16 · vue de dessus</text>
+</svg>
+            </div>
+            <div>
+                <h2>Caractéristiques</h2>
+                <div class="data-table-wrap">
+                    <table class="data-table">
+                    <tbody>
+                        <tr><td>Fonction</td><td>Compteur BCD haut / bas préréglable</td></tr>
+                        <tr><td>Boîtier</td><td>DIP-16 (existe aussi en SOIC-16)</td></tr>
+                        <tr><td>Alimentation</td><td>3 V à 18 V (20 V maximum absolu)</td></tr>
+                        <tr><td>Niveaux d'entrée</td><td>0 sous 30 % de VDD, 1 au-dessus de 70 % de VDD</td></tr>
+                        <tr><td>Courant de sortie</td><td>≈ 1 mA à 5 V, ≈ 7 mA à 15 V (typ.)</td></tr>
+                        <tr><td>Fréquence d'horloge max</td><td>≈ 2 à 5 MHz à 5 V, plus de 10 MHz à 15 V (typ.)</td></tr>
+                        <tr><td>Consommation au repos</td><td>quelques µA au plus</td></tr>
+                        <tr><td>Température</td><td>−55 °C à +125 °C (CD4000B)</td></tr>
+                        <tr><td>Équivalents</td><td>HEF4510B, MC14510B</td></tr>
+                    </tbody>
+                    </table>
+                </div>
+                <p class="text-muted" style="font-size: var(--font-size-sm);">
+                    Valeurs typiques à 25 °C, qui varient selon le fabricant : vérifiez toujours la fiche
+                    technique (datasheet) avant de câbler.
+                </p>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <h2>Brochage</h2>
+        <div class="data-table-wrap">
+            <table class="data-table">
+                <thead><tr><th>Broche</th><th>Nom</th><th>Fonction</th></tr></thead>
+                <tbody>
+                        <tr><td>1</td><td>PE</td><td>Chargement des entrées P (actif haut, asynchrone)</td></tr>
+                        <tr><td>2</td><td>Q4</td><td>Sortie 4 (poids 2³)</td></tr>
+                        <tr><td>3</td><td>P4</td><td>Entrée de préréglage 4</td></tr>
+                        <tr><td>4</td><td>P1</td><td>Entrée de préréglage 1</td></tr>
+                        <tr><td>5</td><td><span class="over">CI</span></td><td>Retenue d&#x27;entrée (0 = comptage autorisé)</td></tr>
+                        <tr><td>6</td><td>Q1</td><td>Sortie 1 (poids 2⁰)</td></tr>
+                        <tr><td>7</td><td><span class="over">CO</span></td><td>Retenue de sortie (0 en fin de cycle)</td></tr>
+                        <tr><td>8</td><td>VSS</td><td>Masse (0 V)</td></tr>
+                        <tr><td>9</td><td>RST</td><td>Remise à zéro (active haut)</td></tr>
+                        <tr><td>10</td><td>U/<span class="over">D</span></td><td>Sens : 1 = comptage, 0 = décomptage</td></tr>
+                        <tr><td>11</td><td>Q2</td><td>Sortie 2 (poids 2¹)</td></tr>
+                        <tr><td>12</td><td>P2</td><td>Entrée de préréglage 2</td></tr>
+                        <tr><td>13</td><td>P3</td><td>Entrée de préréglage 3</td></tr>
+                        <tr><td>14</td><td>Q3</td><td>Sortie 3 (poids 2²)</td></tr>
+                        <tr><td>15</td><td>CLK</td><td>Horloge (front montant)</td></tr>
+                        <tr><td>16</td><td>VDD</td><td>Alimentation positive (+3 à +18 V)</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h2>Fonctionnement</h2>
+            <p>Les sorties changent ensemble au front montant de CLK. U/D̄ choisit le sens, PE charge P1-P4, RST remet à 0. C̄I à 0 autorise le comptage ; C̄O passe à 0 à 9 (comptage) ou à 0 (décomptage) pour cascader les décades.</p>
+
+        <div class="divider"></div>
+
+<h2>Simulation : compteur / décompteur BCD</h2>
+        <p>Changez le sens avec U/D̄, chargez une valeur avec PE ou remettez à zéro.</p>
+
+        <div data-lsim="updown" data-lsim-opts="{&quot;reset&quot;: true, &quot;chip&quot;: &quot;CD4510&quot;, &quot;vdd&quot;: 16, &quot;vss&quot;: 8, &quot;pinmap&quot;: {&quot;VDD&quot;: 16, &quot;CLK&quot;: 15, &quot;Q3&quot;: 14, &quot;P3&quot;: 13, &quot;P2&quot;: 12, &quot;Q2&quot;: 11, &quot;U/~D&quot;: 10, &quot;RST&quot;: 9, &quot;VSS&quot;: 8, &quot;~CO&quot;: 7, &quot;Q1&quot;: 6, &quot;~CI&quot;: 5, &quot;P1&quot;: 4, &quot;P4&quot;: 3, &quot;Q4&quot;: 2, &quot;PE&quot;: 1}}"></div>
+
+        <div class="divider"></div>
+
+        <p class="text-center">
+            <a data-retour class="btn btn-primary"></a>
+        </p>
+    </div>
+</body>
+</html>

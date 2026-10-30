@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Horloge CD4060 - FrWA Conception</title>
+    <!-- Carte affichée dans la page de section -->
+    <meta name="description" content="Simulation d'une horloge numérique : quartz 32,768 kHz, CD4060, compteurs CD4518 et afficheurs 7 segments ou 10 sorties, réglée sur l'heure du PC ou par 3 boutons.">
+    <meta name="tags" content="Électronique, Logique, CD4000">
+    <meta name="vignette" content="assets/images/vignette.jpg">
+</head>
+<body>
+    <div class="page-content">
+        <!-- Bannière -->
+        <div class="page-banner">
+            <img src="assets/images/banniere.jpg" alt="Horloge numérique à CD4060 et afficheurs 7 segments">
+            <div class="page-banner-overlay">
+                <h1 class="page-banner-title">Horloge numérique CD4060</h1>
+                <span class="page-banner-subtitle">Du quartz à l'affichage de l'heure</span>
+            </div>
+        </div>
+
+        <!-- Tags -->
+        <div class="flex gap-sm" style="margin-bottom: var(--spacing-lg);">
+            <span class="badge badge-primary">Électronique</span>
+            <span class="badge badge-secondary">Série CD4000</span>
+            <span class="badge badge-accent">Simulation</span>
+        </div>
+
+        <p class="lead">
+            Une horloge numérique entièrement en logique CMOS : un <strong>quartz de 32,768 kHz</strong>
+            et un <strong>CD4060</strong> fabriquent une base de temps précise, des compteurs
+            <strong>CD4518</strong> comptent les secondes, les minutes et les heures, et des décodeurs
+            pilotent les afficheurs. La simulation démarre sur l'heure de votre ordinateur et montre,
+            fil par fil, quelles sorties sont actives.
+        </p>
+
+        <div class="divider"></div>
+
+        <h2>Principe</h2>
+        <ol class="hc-steps">
+            <li><strong>Base de temps :</strong> le quartz de 32 768 Hz oscille avec l'inverseur interne du
+                CD4060, dont les 14 étages divisent la fréquence par 2<sup>14</sup> = 16 384. La sortie
+                Q14 (broche 3) donne exactement <strong>2 Hz</strong>.</li>
+            <li><strong>Seconde :</strong> une bascule D du CD4013, montée en diviseur par 2 (D relié à
+                Q̄), transforme ces 2 Hz en un signal de <strong>1 Hz</strong>. Il fait avancer les
+                secondes et fait clignoter les deux points.</li>
+            <li><strong>Comptage :</strong> chaque CD4518 contient deux compteurs BCD (unités et
+                dizaines). Les unités avancent à chaque front montant ; leur sortie Q4 fait avancer les
+                dizaines quand elles repassent de 9 à 0.</li>
+            <li><strong>Remise à zéro :</strong> une porte ET du CD4081 détecte « 6 » sur les dizaines
+                des secondes et des minutes (Q2 et Q3) et « 24 » sur les heures, puis remet le
+                compteur à zéro. La sortie Q3 des dizaines retombe alors et fait avancer le compteur
+                suivant.</li>
+            <li><strong>Affichage :</strong> chaque chiffre BCD passe par un décodeur : un
+                <strong>CD4511</strong> pour un afficheur 7 segments, ou un <strong>CD4028</strong>
+                (1 parmi 10) pour un afficheur à 10 sorties, qui a une valeur par broche (broche 1 = 0 …
+                broche 10 = 9).</li>
+            <li><strong>Mise à l'heure :</strong> trois boutons poussoirs <strong>H+</strong>,
+                <strong>M+</strong> et <strong>S+</strong> ajoutent chacun 1 à un afficheur. Un filtre RC
+                et un inverseur de Schmitt (CD40106) suppriment les rebonds, puis un petit condensateur
+                transforme l'appui en une <strong>impulsion d'environ 1 ms</strong> (second inverseur).
+                Cette impulsion passe par une porte OU exclusif (CD4070) placée sur l'entrée du compteur :
+                elle ajoute exactement 1, que le signal d'horloge soit à 0 ou à 1. Rester appuyé ne
+                produit rien de plus et la retenue de l'horloge continue de passer normalement.</li>
+        </ol>
+
+        <div class="divider"></div>
+
+        <h2>Simulation</h2>
+        <p>
+            Réglez l'heure vous-même (champ HH:MM:SS, ou boutons H+, M+, S+ : cliquez-les aussi
+            directement sur le schéma), accélérez le temps pour voir défiler les minutes et les heures,
+            ou changez de type d'afficheur. Dans le schéma, les fils et les bits à 1 sont en jaune,
+            ceux à 0 restent sombres ; les sorties actives des décodeurs s'allument en rouge.
+        </p>
+
+        <div class="hc-sim" data-lsim="horloge4060"></div>
+
+        <p class="text-muted" style="font-size: var(--font-size-sm);">
+            Oscilloscope : <strong>S</strong> = unités des secondes, <strong>SD</strong> = dizaines des
+            secondes, <strong>M</strong> / <strong>MD</strong> = minutes, <strong>H</strong> = heures.
+            Les voies affichées s'adaptent à la vitesse choisie.
+        </p>
+
+        <div class="divider"></div>
+
+        <h2>Câblage</h2>
+        <div class="data-table-wrap">
+            <table class="data-table">
+                <thead><tr><th>Liaison</th><th>Depuis</th><th>Vers</th></tr></thead>
+                <tbody>
+                    <tr><td>Quartz</td><td>32,768 kHz + R 10 MΩ entre les broches 10 et 11 du CD4060</td><td>2 condensateurs 22 pF vers la masse (un ajustable 5-30 pF pour régler la précision)</td></tr>
+                    <tr><td>RST</td><td>CD4060 broche 12</td><td>masse</td></tr>
+                    <tr><td>2 Hz</td><td>CD4060 Q14 (broche 3)</td><td>CD4013 CLK (broche 3)</td></tr>
+                    <tr><td>÷ 2</td><td>CD4013 <span class="over">Q</span> (broche 2)</td><td>CD4013 D (broche 5) ; S (6) et R (4) à la masse</td></tr>
+                    <tr><td>1 Hz</td><td>CD4013 Q (broche 1)</td><td>CLK A du CD4518 des secondes (broche 1) et les 2 points (via une résistance)</td></tr>
+                    <tr><td>Unités → dizaines</td><td>Q4A (broche 6) de chaque CD4518</td><td>EN B (broche 10) ; CLK B (broche 9) à la masse, EN A (broche 2) à VDD pour les secondes</td></tr>
+                    <tr><td>Secondes → minutes</td><td>Q3B (broche 13) du CD4518 des secondes</td><td>EN A (broche 2) du CD4518 des minutes, dont CLK A (broche 1) est à la masse</td></tr>
+                    <tr><td>Minutes → heures</td><td>Q3B (broche 13) du CD4518 des minutes</td><td>EN A (broche 2) du CD4518 des heures, CLK A à la masse</td></tr>
+                    <tr><td>RAZ à 60</td><td>Q2B (12) ET Q3B (13), porte du CD4081</td><td>RST B (broche 15) du même CD4518 (secondes, puis minutes)</td></tr>
+                    <tr><td>RAZ à 24 h</td><td>Q2B (12) ET Q3A (5) du CD4518 des heures, porte du CD4081</td><td>RST A (7) et RST B (15) du CD4518 des heures</td></tr>
+                    <tr><td>BCD → 7 segments</td><td>Q1-Q4 de chaque compteur</td><td>A (7), B (1), C (2), D (6) d'un CD4511 ; <span class="over">LT</span> (3) et <span class="over">BL</span> (4) à VDD, LE (5) à la masse ; sorties a-g → résistances → afficheur à cathode commune</td></tr>
+                    <tr><td>BCD → 10 sorties</td><td>Q1-Q4 de chaque compteur</td><td>A (10), B (13), C (12), D (11) d'un CD4028 ; sorties Q0-Q9 → résistances → broches 1 à 10 de l'afficheur (broche 1 = 0, broche 10 = 9)</td></tr>
+                    <tr><td>Boutons</td><td>H+, M+, S+ : poussoir entre VDD et 1 kΩ, nœud tiré à la masse par 100 kΩ et 1 µF (anti-rebond)</td><td>entrée d'un inverseur du CD40106</td></tr>
+                    <tr><td>Impulsion</td><td>sortie de l'inverseur → condensateur 10 nF, entrée du 2<sup>e</sup> inverseur tirée à VDD par 100 kΩ</td><td>impulsion de ≈ 1 ms à l'appui seulement, sur une entrée du CD4070</td></tr>
+                    <tr><td>OU exclusif S+</td><td>1 Hz (CD4013 Q) et impulsion S+</td><td>CLK A du CD4518 des secondes (au lieu du 1 Hz direct)</td></tr>
+                    <tr><td>OU exclusif M+</td><td>Q3B des secondes et impulsion M+</td><td>EN A du CD4518 des minutes</td></tr>
+                    <tr><td>OU exclusif H+</td><td>Q3B des minutes et impulsion H+</td><td>EN A du CD4518 des heures</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h2>Liste des composants</h2>
+        <div class="data-table-wrap">
+            <table class="data-table">
+                <thead><tr><th>Quantité</th><th>Composant</th><th>Rôle</th></tr></thead>
+                <tbody>
+                    <tr><td>1</td><td><a href="../serie_cd4000/cd4060/CD4060.html">CD4060</a> + quartz 32,768 kHz</td><td>oscillateur et diviseur par 16 384 (2 Hz)</td></tr>
+                    <tr><td>1</td><td><a href="../serie_cd4000/cd4013/CD4013.html">CD4013</a></td><td>diviseur par 2 (1 Hz)</td></tr>
+                    <tr><td>3</td><td><a href="../serie_cd4000/cd4518/CD4518.html">CD4518</a></td><td>compteurs BCD : secondes, minutes, heures</td></tr>
+                    <tr><td>1</td><td><a href="../serie_cd4000/cd4081/CD4081.html">CD4081</a></td><td>remises à zéro à 60 et à 24</td></tr>
+                    <tr><td>6</td><td><a href="../serie_cd4000/cd4511/CD4511.html">CD4511</a> ou <a href="../serie_cd4000/cd4028/CD4028.html">CD4028</a></td><td>décodeurs vers afficheurs 7 segments ou à 10 sorties LED</td></tr>
+                    <tr><td>6</td><td>afficheurs 7 segments à cathode commune, ou afficheurs à 10 sorties (une valeur par broche)</td><td>affichage HH:MM:SS</td></tr>
+                    <tr><td>2</td><td>LED</td><td>les deux points, clignotant à 1 Hz</td></tr>
+                    <tr><td>1</td><td><a href="../serie_cd4000/cd40106/CD40106.html">CD40106</a></td><td>6 inverseurs de Schmitt : 2 par bouton (anti-rebond et mise en forme de l'impulsion)</td></tr>
+                    <tr><td>1</td><td><a href="../serie_cd4000/cd4070/CD4070.html">CD4070</a></td><td>3 OU exclusif : injectent l'impulsion des boutons dans les compteurs</td></tr>
+                    <tr><td>3</td><td>boutons poussoirs (contact à la fermeture)</td><td>H+, M+, S+</td></tr>
+                    <tr><td>—</td><td>résistances 1 kΩ et 100 kΩ, R 10 MΩ, 2 × 22 pF, 3 × 1 µF, 3 × 10 nF, découplage 100 nF par circuit</td><td>limitation de courant, oscillateur, alimentation propre</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card-alert info">
+            <div class="card-body">
+                <strong>💡 Bon à savoir :</strong> les boutons agissent comme sur le vrai montage : M+ à
+                xx:59 fait passer les minutes à 00 et la retenue ajoute aussi 1 heure (de même S+ à
+                xx:xx:59). Sans le condensateur de 10 nF, le OU exclusif ajouterait 1 à l'appui
+                <em>et</em> 1 au relâchement, et inverserait le signal d'horloge tant qu'on reste appuyé. Un quartz horloger dérive
+                de quelques secondes par semaine : l'ajustable de 5-30 pF permet de corriger cet écart.
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Retour vers la page de section -->
+        <p class="text-center">
+            <a data-retour class="btn btn-primary"></a>
+        </p>
+
+    <style>
+        .hc-steps { padding-left: 1.4em; line-height: 1.7; }
+        .hc-steps li { margin-bottom: var(--spacing-sm); }
+        .hc-sim .lsim-grid { grid-template-columns: 1fr; }
+        .hc-sim .lsim-controls .card-body { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: var(--spacing-md) var(--spacing-lg); }
+        .hc-sim .lsim-controls .lsim-section + .lsim-section { margin-top: 0; padding-top: 0; border-top: none; }
+        .hc-set-row { display: flex; gap: var(--spacing-xs); align-items: center; }
+        .hc-time { flex: 1; min-width: 0; background: var(--bg-tertiary); border: 1px solid var(--color-primary-dark); border-radius: var(--border-radius-sm); color: var(--text-primary); padding: var(--spacing-xs) var(--spacing-sm); font-family: var(--font-family-mono); font-size: var(--font-size-md); color-scheme: dark; }
+        .hc-time:focus { outline: 2px solid var(--text-accent); outline-offset: 1px; }
+        .hc-face svg { display: block; width: 100%; max-width: 620px; height: auto; margin: 0 auto; }
+        .hc-schem svg { display: block; width: 100%; height: auto; background: #0e1515; border-radius: var(--border-radius-md); }
+        .hc-sim .lsim-schem-row { flex: 1 1 100%; }
+        .hc-push { display: flex; gap: var(--spacing-xs); }
+        .hc-push .lsim-btn { min-width: 3.2em; font-weight: 700; touch-action: none; user-select: none; }
+        .hc-schem [data-btn] { cursor: pointer; outline: none; touch-action: none; }
+        .hc-schem [data-btn]:hover [data-cap] rect,
+        .hc-schem [data-btn]:focus-visible [data-cap] rect { stroke: #4ecdc4; stroke-width: 2; }
+    </style>
+
+    <!-- Simulation : utilise le moteur commun src/js/ui/logic-sim.js -->
+    <script>
+    (function () {
+        if (typeof LogicSim === 'undefined') return;
+
+        LogicSim.scenarios.horloge4060 = (sim) => {
+            const HI = '#f7e36a', LOW = '#3d7a7a', RED = '#ff3b3b', OFF = '#3a1212', SOFF = '#2a0d0d';
+            const TXT = '#e8f0f0', MUT = '#6a7a7a', ACC = '#4ecdc4', ORA = '#e67e22', BOX = '#121a1a';
+            const SEG = LS.SEG.slice(0, 10);
+            SEG[6] = 0x7C;   // le CD4511 affiche le 6 sans barre du haut
+            SEG[9] = 0x67;   // et le 9 sans barre du bas
+            const SEGP = ['M14 6h32l-5 6h-22z', 'M48 8l-6 6v22l6 4z', 'M48 44l-6 4v22l6 6z', 'M14 78h32l-5-6h-22z',
+                'M12 44l6 4v22l-6 6z', 'M12 8l6 6v22l-6 4z', 'M15 42l5-4h20l5 4l-5 4h-20z'];
+            const DAY = 86400;
+            const pcTime = () => {
+                const d = new Date();
+                return d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds() + d.getMilliseconds() / 1000;
+            };
+            const pad = n => String(n).padStart(2, '0');
+            const hms = t => { t = Math.floor(t); return `${pad(Math.floor(t / 3600) % 24)}:${pad(Math.floor(t / 60) % 60)}:${pad(t % 60)}`; };
+
+            // ----- État : T = heure affichée, en secondes depuis minuit -----
+            let T = pcTime(), sync = true, speed = 1, mode = '7seg';
+            const dig = () => {
+                const t = Math.floor(T);
+                const h = Math.floor(t / 3600) % 24, m = Math.floor(t / 60) % 60, s = t % 60;
+                return [Math.floor(h / 10), h % 10, Math.floor(m / 10), m % 10, Math.floor(s / 10), s % 10];
+            };
+            const bit = (i, b) => () => (dig()[i] >> b) & 1;
+            const frac = () => T - Math.floor(T);
+            const q14 = () => ((T % 0.5) < 0.25 ? 1 : 0);   // 2 Hz
+            const hz1 = () => (frac() < 0.5 ? 1 : 0);        // 1 Hz, front montant à chaque seconde
+
+            // ----- Commandes -----
+            const secH = sim.section('Heure');
+            const field = LS.el('div', 'lsim-field');
+            field.innerHTML = `<label class="lsim-label"><span>Régler l'heure (HH:MM:SS)</span></label>
+                <div class="hc-set-row"><input type="time" step="1" class="hc-time" aria-label="Heure à régler">
+                <button type="button" class="btn btn-primary btn-sm">Régler</button></div>`;
+            secH.append(field);
+            const timeIn = field.querySelector('input');
+            const setTime = t => { T = ((t % DAY) + DAY) % DAY; sync = false; };
+            field.querySelector('button').addEventListener('click', () => {
+                const p = (timeIn.value || '').split(':').map(Number);
+                if (p.length >= 2 && p.every(n => !isNaN(n))) setTime(p[0] * 3600 + p[1] * 60 + (p[2] || 0));
+                timeIn._edited = false;
+            });
+            timeIn.addEventListener('keydown', e => { if (e.key === 'Enter') field.querySelector('button').click(); });
+            // Boutons poussoirs de mise à l'heure (aussi cliquables sur le schéma) :
+            // +1 à l'appui, rien tant qu'on reste appuyé, rien au relâchement
+            const BTN = ['H+', 'M+', 'S+'], STEP = [3600, 60, 1];
+            const held = [false, false, false], pulseT = [-1e9, -1e9, -1e9];
+            const press = i => {
+                if (held[i]) return;
+                held[i] = true;
+                pulseT[i] = performance.now();
+                setTime(T + STEP[i]);
+            };
+            const release = i => { held[i] = false; };
+            const pushable = (el, i) => {
+                el.addEventListener('pointerdown', e => {
+                    e.preventDefault();
+                    press(i);
+                    const up = () => { release(i); window.removeEventListener('pointerup', up); window.removeEventListener('pointercancel', up); };
+                    window.addEventListener('pointerup', up);
+                    window.addEventListener('pointercancel', up);
+                });
+                el.addEventListener('keydown', e => {
+                    if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) { e.preventDefault(); press(i); }
+                });
+                el.addEventListener('keyup', e => { if (e.key === ' ' || e.key === 'Enter') release(i); });
+                el.addEventListener('blur', () => release(i));
+            };
+            const pushRow = LS.el('div', 'hc-push');
+            BTN.forEach((label, i) => {
+                const b = LS.el('button', 'btn btn-secondary btn-sm lsim-btn', label);
+                b.type = 'button';
+                b.title = ['+1 heure', '+1 minute', '+1 seconde'][i];
+                pushable(b, i);
+                pushRow.append(b);
+            });
+            secH.append(pushRow);
+            sim.button(secH, 'Secondes à 0', () => setTime(Math.floor(T / 60) * 60));
+            sim.button(secH, "🖥️ Heure du PC", () => {
+                speedBtns[0].click();
+                sync = true;
+                T = pcTime();
+                timeIn._edited = false;
+            });
+            sim.note(secH, "Au chargement, l'horloge prend l'heure de votre ordinateur. H+, M+ et S+ sont les 3 boutons poussoirs du schéma : +1 à chaque appui, rester appuyé ne change rien.");
+
+            const secV = sim.section('Vitesse');
+            sim.choice(secV, '', [
+                { value: 1, label: '×1' }, { value: 60, label: '×60 (1 min/s)' }, { value: 3600, label: '×3600 (1 h/s)' }
+            ], 1, v => {
+                speed = v;
+                if (v !== 1) sync = false;
+                applySpeed();
+            });
+            const speedBtns = secV.querySelectorAll('.lsim-choice button');
+            sim.note(secV, "En accéléré, l'horloge ne suit plus l'heure du PC.");
+
+            const secA = sim.section('Afficheur');
+            sim.choice(secA, '', [
+                { value: '7seg', label: '7 segments + 2 points' }, { value: '10', label: '10 sorties + 2 points' }
+            ], '7seg', v => { mode = v; build(); });
+            sim.note(secA, '7 segments : décodeurs CD4511. 10 sorties : décodeurs CD4028 et afficheurs à une valeur par broche (broche 1 = 0 … broche 10 = 9).');
+
+            // ----- Temps -----
+            sim.onStep(dt => {
+                if (sync) T = pcTime();
+                else T = (T + dt) % DAY;
+            });
+
+            // ----- Montage : afficheur, mesures, schéma -----
+            const rowF = sim.boardRow('Afficheur');
+            rowF.classList.add('lsim-schem-row');
+            const faceBox = LS.el('div', 'hc-face');
+            rowF.append(faceBox);
+            const rowM = sim.boardRow('Mesures');
+            const rT = sim.readout(rowM, 'Heure affichée');
+            const rS = sim.readout(rowM, 'Source');
+            const rQ = sim.readout(rowM, 'Base de temps');
+            const rowS = sim.boardRow('Schéma de câblage');
+            rowS.classList.add('lsim-schem-row');
+            const schemBox = LS.el('div', 'hc-schem');
+            rowS.append(schemBox);
+
+            let F = null, R = null;   // références des éléments SVG à mettre à jour
+
+            const buildFace = () => {
+                const s = [];
+                const ref = { segs: [], leds: [], lt: [], col: [] };
+                if (mode === '7seg') {
+                    const xs = [0, 66, 160, 226, 320, 386];
+                    s.push('<svg viewBox="-16 -14 478 140" role="img" aria-label="Afficheur 7 segments">');
+                    s.push(`<rect x="-16" y="-14" width="478" height="112" rx="10" fill="#0b0d0d" stroke="${LOW}" stroke-width="2"/>`);
+                    xs.forEach((x, i) => {
+                        s.push(`<g transform="translate(${x} 0)">` + SEGP.map((p, j) => `<path d="${p}" data-f="${i * 7 + j}" fill="${SOFF}"/>`).join('') + '</g>');
+                    });
+                    [143, 303].forEach(cx => [28, 58].forEach(cy => s.push(`<circle data-c="1" cx="${cx}" cy="${cy}" r="5" fill="${SOFF}"/>`)));
+                    [['heures', 63], ['minutes', 223], ['secondes', 383]].forEach(([t, x]) => s.push(`<text x="${x}" y="118" text-anchor="middle" font-size="11" fill="${MUT}">${t}</text>`));
+                } else {
+                    // Afficheurs à 10 sorties : une fenêtre par broche, broche 1 = 0 … broche 10 = 9
+                    const xs = [0, 54, 134, 188, 268, 322];
+                    s.push('<svg viewBox="-14 -26 396 256" role="img" aria-label="Afficheurs à 10 sorties">');
+                    s.push(`<rect x="-14" y="-26" width="396" height="234" rx="10" fill="#0b0d0d" stroke="${LOW}" stroke-width="2"/>`);
+                    xs.forEach((x, i) => {
+                        s.push(`<text x="${x + 6}" y="-10" text-anchor="middle" font-size="7" fill="${MUT}">br.</text>`);
+                        s.push(`<rect x="${x + 13}" y="-4" width="34" height="186" rx="3" fill="#140808" stroke="#3a1a1a"/>`);
+                        for (let k = 0; k < 10; k++) {
+                            const y = k * 18;
+                            s.push(`<text x="${x + 10}" y="${y + 10}" text-anchor="end" font-size="7" fill="${MUT}">${k + 1}</text>`);
+                            s.push(`<rect data-l="${i * 10 + k}" x="${x + 16}" y="${y}" width="28" height="15" rx="2" fill="${OFF}"/>`);
+                            s.push(`<text data-lt="${i * 10 + k}" x="${x + 30}" y="${y + 11.5}" text-anchor="middle" font-size="11" font-weight="bold" fill="#5a2a2a">${k}</text>`);
+                        }
+                    });
+                    [118, 252].forEach(cx => [66, 112].forEach(cy => s.push(`<circle data-c="1" cx="${cx}" cy="${cy}" r="5" fill="${OFF}"/>`)));
+                    [['heures', 57], ['minutes', 191], ['secondes', 325]].forEach(([t, x]) => s.push(`<text x="${x}" y="200" text-anchor="middle" font-size="11" fill="${MUT}">${t}</text>`));
+                }
+                s.push('</svg>');
+                faceBox.innerHTML = s.join('');
+                faceBox.querySelectorAll('[data-f]').forEach(e => { ref.segs[+e.dataset.f] = e; });
+                faceBox.querySelectorAll('[data-l]').forEach(e => { ref.leds[+e.dataset.l] = e; });
+                faceBox.querySelectorAll('[data-lt]').forEach(e => { ref.lt[+e.dataset.lt] = e; });
+                ref.col = Array.from(faceBox.querySelectorAll('[data-c]'));
+                return ref;
+            };
+
+            const buildSchem = () => {
+                const seven = mode === '7seg';
+                const OY = 100;                       // décalage sous la zone de mise à l'heure
+                const H = (seven ? 440 : 410) + OY, s = [];
+                const BX = [20, 360, 700];            // blocs CD4518 : heures, minutes, secondes
+                const t = (x, y, txt, o = {}) => `<text x="${x}" y="${y}" font-size="${o.size || 9}" fill="${o.fill || MUT}"${o.anchor ? ` text-anchor="${o.anchor}"` : ''}${o.bold ? ' font-weight="bold"' : ''}${o.data ? ` ${o.data}` : ''}>${txt}</text>`;
+                const w = (key, d) => `<path data-w="${key}" d="${d}" stroke="${LOW}" stroke-width="1.8" fill="none"/>`;
+                const p = (d, sw = 1.2, col = MUT) => `<path d="${d}" stroke="${col}" stroke-width="${sw}" fill="none"/>`;
+                const gnd = (x, y) => p(`M${x - 6} ${y}H${x + 6}M${x - 4} ${y + 3}H${x + 4}M${x - 2} ${y + 6}H${x + 2}`);
+                const dot = (x, y) => `<circle cx="${x}" cy="${y}" r="2.5" fill="${TXT}"/>`;
+                // Porte OU exclusif (CD4070), dessinée pointe à droite puis tournée
+                const xor = (cx, cy, rot, i) => `<g transform="translate(${cx} ${cy}) rotate(${rot})">` +
+                    p('M-18 -5H-8M-18 5H-8') + p('M-14 -9Q-8 0 -14 9', 1.4, TXT) +
+                    `<path data-g="${i}" d="M-10 -9H0Q12 -9 14 0Q12 9 0 9H-10Q-4 0 -10 -9Z" fill="${BOX}" stroke="${TXT}" stroke-width="1.4"/></g>`;
+                // Bouton + anti-rebond RC + 2 inverseurs de Schmitt (40106) avec dérivateur entre les deux
+                const chain = (i, x0, route) => {
+                    const Y = 172, X = v => x0 + v, a = [];
+                    a.push(t(X(0), Y + 3, 'VDD', { size: 8, fill: TXT }), p(`M${X(20)} ${Y}H${X(33)}`, 1.4, TXT));
+                    a.push(`<circle cx="${X(36)}" cy="${Y}" r="2.5" fill="none" stroke="${TXT}"/><circle cx="${X(60)}" cy="${Y}" r="2.5" fill="none" stroke="${TXT}"/>`);
+                    a.push(`<g data-btn="${i}" tabindex="0" role="button" aria-label="Bouton ${BTN[i]}">` +
+                        `<rect x="${X(26)}" y="${Y - 40}" width="44" height="46" fill="transparent"/>` +
+                        `<g data-cap="${i}">${p(`M${X(32)} ${Y - 10}H${X(64)}M${X(48)} ${Y - 10}V${Y - 20}`, 1.8, TXT)}` +
+                        `<rect x="${X(39)}" y="${Y - 27}" width="18" height="7" rx="2" fill="${ORA}"/></g>` +
+                        t(X(48), Y - 31, BTN[i], { anchor: 'middle', size: 10, bold: true, fill: TXT }) + '</g>');
+                    // anti-rebond : 100 kΩ et 1 µF vers la masse
+                    a.push(w('k' + i, `M${X(62)} ${Y}H${X(118)}`), dot(X(84), Y), dot(X(104), Y));
+                    a.push(p(`M${X(84)} ${Y}V${Y + 8}M${X(84)} ${Y + 24}V${Y + 30}`), `<rect x="${X(81)}" y="${Y + 8}" width="6" height="16" fill="none" stroke="${MUT}"/>`, gnd(X(84), Y + 30));
+                    a.push(p(`M${X(104)} ${Y}V${Y + 13}M${X(104)} ${Y + 17}V${Y + 30}`), p(`M${X(98)} ${Y + 13}H${X(110)}M${X(98)} ${Y + 17}H${X(110)}`, 1.6, TXT), gnd(X(104), Y + 30));
+                    a.push(t(X(78), Y + 20, '100k', { anchor: 'end', size: 7 }), t(X(112), Y + 18, '1µ', { size: 7 }));
+                    a.push(t(X(94), Y + 48, 'anti-rebond', { anchor: 'middle', size: 7 }));
+                    // inverseur 1, condensateur série, résistance vers VDD, inverseur 2
+                    const inv = (x, ly) => `<path d="M${X(x)} ${Y - 9}L${X(x + 18)} ${Y}L${X(x)} ${Y + 9}Z" fill="${BOX}" stroke="${TXT}" stroke-width="1.3"/>` +
+                        `<circle cx="${X(x + 21)}" cy="${Y}" r="3" fill="${BOX}" stroke="${TXT}" stroke-width="1.2"/>` +
+                        p(`M${X(x + 2)} ${Y + 3}h3v-6h3`, 0.8, TXT) + t(X(x + 10), ly, '40106', { anchor: 'middle', size: 7 });
+                    a.push(inv(118, Y - 13), w('n' + i, `M${X(142)} ${Y}H${X(162)}`));
+                    a.push(p(`M${X(162)} ${Y - 7}V${Y + 7}M${X(166)} ${Y - 7}V${Y + 7}`, 1.6, TXT), t(X(164), Y - 11, '10n', { anchor: 'middle', size: 7 }));
+                    a.push(w('d' + i, `M${X(166)} ${Y}H${X(184)}`), dot(X(176), Y));
+                    a.push(p(`M${X(176)} ${Y}V${Y - 6}M${X(176)} ${Y - 22}V${Y - 26}`), `<rect x="${X(173)}" y="${Y - 22}" width="6" height="16" fill="none" stroke="${MUT}"/>`);
+                    a.push(t(X(176), Y - 29, 'VDD', { anchor: 'middle', size: 7 }), t(X(182), Y - 14, '100k', { size: 7 }));
+                    a.push(inv(184, Y + 22), w('p' + i, `M${X(208)} ${Y}${route}`), t(X(211), Y - 4, '1 ms', { size: 7 }));
+                    return a.join('');
+                };
+
+                s.push(`<svg viewBox="0 0 980 ${H}" font-family="DejaVu Sans Mono, Consolas, monospace" role="img" aria-label="Schéma de câblage de l'horloge">`);
+
+                // Quartz + CD4060
+                s.push(`<path d="M90 46H44V56M34 56h20M34 80h20M44 80V90H90" stroke="${TXT}" stroke-width="1.6" fill="none"/>`);
+                s.push(`<rect x="37" y="61" width="14" height="14" fill="#1a2424" stroke="${TXT}" stroke-width="1.4"/>`);
+                s.push(t(44, 108, '32,768 kHz', { anchor: 'middle', fill: TXT }));
+                s.push(t(86, 42, '11', { anchor: 'end' }), t(86, 86, '10', { anchor: 'end' }));
+                s.push(`<rect x="90" y="26" width="130" height="84" rx="6" fill="${BOX}" stroke="${LOW}" stroke-width="2"/>`);
+                s.push(t(155, 52, 'CD4060', { anchor: 'middle', size: 13, bold: true, fill: ACC }));
+                s.push(t(155, 68, '÷ 16 384', { anchor: 'middle' }));
+                s.push(t(155, 102, 'RST (12) → 0 V', { anchor: 'middle', size: 8 }));
+                s.push(t(96, 50, 'φI', { fill: TXT }), `<text x="96" y="94" font-size="9" fill="${TXT}">φ<tspan text-decoration="overline">O</tspan></text>`);
+                s.push(t(214, 72, 'Q14', { anchor: 'end', fill: TXT }), t(224, 64, '3'));
+                // Q14 → CD4013
+                s.push(w('q14', 'M220 68H290'), t(255, 60, '2 Hz', { anchor: 'middle', fill: TXT }));
+                s.push(`<rect x="290" y="26" width="110" height="84" rx="6" fill="${BOX}" stroke="${LOW}" stroke-width="2"/>`);
+                s.push(t(345, 52, 'CD4013', { anchor: 'middle', size: 13, bold: true, fill: ACC }));
+                s.push(t(345, 68, '÷ 2', { anchor: 'middle' }));
+                s.push(`<text x="345" y="100" font-size="8" fill="${MUT}" text-anchor="middle">D ← <tspan text-decoration="overline">Q</tspan></text>`);
+                s.push(t(296, 72, 'CLK', { fill: TXT }), t(394, 72, 'Q', { anchor: 'end', fill: TXT }), t(286, 64, '3', { anchor: 'end' }), t(404, 64, '1'));
+                // 1 Hz → OU exclusif des secondes, et vers les 2 points
+                const colY = 356 + OY;
+                s.push(w('hz', 'M400 68H945V187'), t(432, 60, '1 Hz', { fill: TXT }));
+                s.push(w('c2', `M640 68V${colY}`), w('c1', `M420 68V122H300V${colY}`));
+                s.push(dot(420, 68), dot(640, 68));
+                [300, 640].forEach(x => {
+                    [colY + 6, colY + 24].forEach(y => s.push(`<circle data-col="1" cx="${x}" cy="${y}" r="5" fill="${OFF}" stroke="#ff6b6b" stroke-width="1"/>`));
+                    s.push(t(x, colY + 44, '2 points', { anchor: 'middle', size: 8 }));
+                });
+
+                // Mise à l'heure : 3 boutons, chacun ajoute 1 à un afficheur
+                s.push(`<rect x="10" y="126" width="960" height="98" rx="6" fill="none" stroke="${MUT}" stroke-dasharray="4 4"/>`);
+                s.push(t(18, 140, "Mise à l'heure", { size: 9, bold: true, fill: ACC }));
+                s.push(chain(0, 60, 'H354V318H348'), chain(1, 400, 'H694V318H688'), chain(2, 700, 'H935V187'));
+                s.push(xor(330, 323, 180, 0), xor(670, 323, 180, 1), xor(940, 205, 90, 2));
+                s.push(t(330, 310, '4070', { anchor: 'middle', size: 7 }), t(670, 310, '4070', { anchor: 'middle', size: 7 }), t(926, 208, '4070', { anchor: 'end', size: 7 }));
+                s.push(w('x2', `M940 219V${140 + OY}`), t(946, 236, 'CLK', { size: 8 }));
+
+                // Compteurs CD4518 : heures, minutes, secondes
+                const names = ['heures', 'minutes', 'secondes'];
+                BX.forEach((bx, b) => {
+                    s.push(`<rect x="${bx}" y="${140 + OY}" width="260" height="130" rx="6" fill="${BOX}" stroke="${LOW}" stroke-width="2"/>`);
+                    s.push(t(bx + 10, 156 + OY, `CD4518 · ${names[b]}`, { size: 10, bold: true, fill: ACC }));
+                    [0, 1].forEach(half => {
+                        const i = b * 2 + half, hx = bx + (half ? 136 : 8);
+                        s.push(t(hx + 58, 172 + OY, half ? 'unités' : 'dizaines', { anchor: 'middle' }));
+                        for (let j = 0; j < 4; j++) {
+                            const bt = 3 - j, cx = hx + 4 + j * 28, k = i * 4 + bt;
+                            s.push(`<rect data-cell="${k}" x="${cx}" y="${178 + OY}" width="24" height="20" rx="3" fill="#1a2424" stroke="${LOW}"/>`);
+                            s.push(t(cx + 12, 192 + OY, '0', { anchor: 'middle', size: 10, bold: true, fill: '#a8b5b5', data: `data-ct="${k}"` }));
+                            s.push(t(cx + 12, 208 + OY, 'Q' + (bt + 1), { anchor: 'middle', size: 7 }));
+                            s.push(w('li' + k, `M${cx + 12} ${270 + OY}V${310 + OY}`));
+                        }
+                        s.push(t(hx + 58, 232 + OY, '', { anchor: 'middle', size: 14, bold: true, fill: TXT, data: `data-val="${i}"` }));
+                    });
+                    // unités Q4 → EN des dizaines
+                    s.push(w('en' + b, `M${bx + 136} ${188 + OY}H${bx + 124}`));
+                    s.push(t(bx + 130, 220 + OY, 'EN', { anchor: 'middle', size: 7 }));
+                    // remise à zéro (CD4081)
+                    s.push(`<rect data-rst="${b}" x="${bx + 80}" y="${244 + OY}" width="100" height="18" rx="3" fill="#1a2424" stroke="${MUT}"/>`);
+                    s.push(t(bx + 130, 256 + OY, b === 0 ? '4081 : 24 → RST' : '4081 : 6 → RST', { anchor: 'middle', size: 8, fill: TXT }));
+                });
+                // retenues : dizaines Q3 → OU exclusif → EN des unités du compteur suivant
+                s.push(w('ch0', 'M360 328H348'), w('x0', 'M316 323H290V328H280'), t(364, 324, 'Q3', { size: 7 }), t(276, 324, 'EN', { anchor: 'end', size: 7 }));
+                s.push(w('ch1', 'M700 328H688'), w('x1', 'M656 323H630V328H620'), t(704, 324, 'Q3', { size: 7 }), t(616, 324, 'EN', { anchor: 'end', size: 7 }));
+
+                // Décodeurs et sorties
+                BX.forEach((bx, b) => [0, 1].forEach(half => {
+                    const i = b * 2 + half, hx = bx + (half ? 136 : 8), y0 = 310 + OY;
+                    s.push(`<rect x="${hx}" y="${y0}" width="116" height="40" rx="5" fill="${BOX}" stroke="${LOW}" stroke-width="1.6"/>`);
+                    s.push(t(hx + 58, y0 + 16, seven ? 'CD4511' : 'CD4028', { anchor: 'middle', size: 10, bold: true, fill: ACC }));
+                    s.push(t(hx + 58, y0 + 31, seven ? 'BCD → 7 seg.' : 'BCD → 1 parmi 10', { anchor: 'middle', size: 8 }));
+                    const n = seven ? 7 : 10, sp = seven ? 14 : 11, x0 = hx + (seven ? 16 : 8);
+                    for (let k = 0; k < n; k++) {
+                        const cx = x0 + k * sp;
+                        s.push(`<path d="M${cx} ${y0 + 40}V${y0 + 48}" stroke="${LOW}" stroke-width="1"/>`);
+                        s.push(`<circle data-o="${i * 10 + k}" cx="${cx}" cy="${y0 + 52}" r="4" fill="${OFF}"/>`);
+                        s.push(t(cx, y0 + 66, seven ? 'abcdefg'[k] : k, { anchor: 'middle', size: 7 }));
+                    }
+                    if (seven) {
+                        s.push(`<svg x="${hx + 44}" y="${y0 + 74}" width="28" height="39" viewBox="0 0 60 84">` +
+                            SEGP.map((q, j) => `<path d="${q}" data-m="${i * 7 + j}" fill="${SOFF}"/>`).join('') + '</svg>');
+                    } else {
+                        s.push(t(hx + 58, y0 + 80, 'Q0…Q9 → broches 1…10', { anchor: 'middle', size: 7 }));
+                    }
+                }));
+                s.push('</svg>');
+                schemBox.innerHTML = s.join('');
+                const ref = { w: {}, cells: [], ct: [], val: [], o: [], m: [], rst: [], col: [], cap: [], g: [] };
+                schemBox.querySelectorAll('[data-w]').forEach(e => { ref.w[e.dataset.w] = e; });
+                schemBox.querySelectorAll('[data-cell]').forEach(e => { ref.cells[+e.dataset.cell] = e; });
+                schemBox.querySelectorAll('[data-ct]').forEach(e => { ref.ct[+e.dataset.ct] = e; });
+                schemBox.querySelectorAll('[data-val]').forEach(e => { ref.val[+e.dataset.val] = e; });
+                schemBox.querySelectorAll('[data-o]').forEach(e => { ref.o[+e.dataset.o] = e; });
+                schemBox.querySelectorAll('[data-m]').forEach(e => { ref.m[+e.dataset.m] = e; });
+                schemBox.querySelectorAll('[data-rst]').forEach(e => { ref.rst[+e.dataset.rst] = e; });
+                schemBox.querySelectorAll('[data-cap]').forEach(e => { ref.cap[+e.dataset.cap] = e; });
+                schemBox.querySelectorAll('[data-g]').forEach(e => { ref.g[+e.dataset.g] = e; });
+                schemBox.querySelectorAll('[data-btn]').forEach(e => pushable(e, +e.dataset.btn));
+                ref.col = Array.from(schemBox.querySelectorAll('[data-col]'));
+                return ref;
+            };
+
+            const build = () => { F = buildFace(); R = buildSchem(); };
+            build();
+
+            // Ne touche au DOM que si la valeur change
+            const att = (el, name, v) => {
+                if (!el) return;
+                const k = '_' + name;
+                if (el[k] !== v) { el[k] = v; el.setAttribute(name, v); }
+            };
+            const txt = (el, v) => { if (el && el._t !== v) { el._t = v; el.textContent = v; } };
+
+            // Remises à zéro : on les fait briller un instant
+            const flash = [0, 0, 0];
+            let prev = dig();
+
+            sim.onRender(() => {
+                const d = dig(), now = performance.now();
+                // En accéléré, les 2 points clignotent trop vite pour l'œil : ils paraissent allumés
+                const c = speed === 1 ? hz1() : 1;
+                if (prev[4] === 5 && d[4] === 0) flash[2] = now;
+                if (prev[2] === 5 && d[2] === 0) flash[1] = now;
+                if (prev[0] === 2 && prev[1] === 3 && d[0] === 0 && d[1] === 0) flash[0] = now;
+                prev = d;
+
+                // Afficheur
+                if (mode === '7seg') {
+                    d.forEach((n, i) => { for (let j = 0; j < 7; j++) att(F.segs[i * 7 + j], 'fill', (SEG[n] >> j) & 1 ? RED : SOFF); });
+                    F.col.forEach(e => att(e, 'fill', c ? RED : SOFF));
+                } else {
+                    d.forEach((n, i) => {
+                        for (let k = 0; k < 10; k++) {
+                            att(F.leds[i * 10 + k], 'fill', k === n ? RED : OFF);
+                            att(F.lt[i * 10 + k], 'fill', k === n ? '#fff2f2' : '#5a2a2a');
+                        }
+                    });
+                    F.col.forEach(e => att(e, 'fill', c ? RED : OFF));
+                }
+
+                // Schéma
+                const lv = v => (v ? HI : LOW);
+                att(R.w.q14, 'stroke', lv(q14()));
+                ['hz', 'c1', 'c2'].forEach(k => att(R.w[k], 'stroke', lv(c)));
+                R.col.forEach(e => att(e, 'fill', c ? RED : OFF));
+                // Mise à l'heure : l'impulsion (≈ 1 ms en vrai) est montrée 250 ms pour être visible
+                const pu = [0, 1, 2].map(i => (now - pulseT[i] < 250 ? 1 : 0));
+                [0, 1, 2].forEach(i => {
+                    att(R.w['k' + i], 'stroke', lv(held[i]));
+                    att(R.w['n' + i], 'stroke', lv(!held[i]));
+                    att(R.w['d' + i], 'stroke', lv(!pu[i]));
+                    att(R.w['p' + i], 'stroke', lv(pu[i]));
+                    att(R.cap[i], 'transform', held[i] ? 'translate(0 7)' : 'translate(0 0)');
+                    att(R.g[i], 'stroke', pu[i] ? ORA : TXT);
+                });
+                const cy0 = (d[2] >> 2) & 1, cy1 = (d[4] >> 2) & 1;
+                att(R.w.ch0, 'stroke', lv(cy0));
+                att(R.w.x0, 'stroke', lv(cy0 ^ pu[0]));
+                att(R.w.ch1, 'stroke', lv(cy1));
+                att(R.w.x1, 'stroke', lv(cy1 ^ pu[1]));
+                att(R.w.x2, 'stroke', lv(c ^ pu[2]));
+                [1, 3, 5].forEach((u, b) => att(R.w['en' + b], 'stroke', lv((d[u] >> 3) & 1)));
+                d.forEach((n, i) => {
+                    for (let bt = 0; bt < 4; bt++) {
+                        const k = i * 4 + bt, v = (n >> bt) & 1;
+                        att(R.cells[k], 'fill', v ? HI : '#1a2424');
+                        att(R.ct[k], 'fill', v ? '#0a0f0f' : '#a8b5b5');
+                        txt(R.ct[k], String(v));
+                        att(R.w['li' + k], 'stroke', lv(v));
+                    }
+                    txt(R.val[i], '= ' + n);
+                    if (mode === '7seg') {
+                        for (let j = 0; j < 7; j++) {
+                            const on = (SEG[n] >> j) & 1;
+                            att(R.o[i * 10 + j], 'fill', on ? RED : OFF);
+                            att(R.m[i * 7 + j], 'fill', on ? RED : SOFF);
+                        }
+                    } else {
+                        for (let k = 0; k < 10; k++) att(R.o[i * 10 + k], 'fill', k === n ? RED : OFF);
+                    }
+                });
+                R.rst.forEach((e, b) => att(e, 'stroke', now - flash[b] < 400 ? ORA : MUT));
+
+                // Mesures
+                rT.set(hms(T));
+                rS.set(sync ? "horloge du PC" : (speed === 1 ? 'réglée à la main' : `accélérée ×${speed}`));
+                rQ.set('32 768 Hz → Q14 : 2 Hz → 1 Hz');
+                if (document.activeElement !== timeIn && (sync || speed !== 1 || !timeIn._edited)) {
+                    const v = hms(T);
+                    if (timeIn.value !== v) timeIn.value = v;
+                }
+            });
+            timeIn.addEventListener('input', () => { timeIn._edited = true; });
+
+            // ----- Oscilloscope : les voies suivent la vitesse -----
+            const LANES = [
+                [['Q14', q14], ['1 Hz', hz1], ['S Q1', bit(5, 0)], ['S Q2', bit(5, 1)], ['S Q3', bit(5, 2)], ['S Q4', bit(5, 3)], ['SD Q1', bit(4, 0)]],
+                [['SD Q1', bit(4, 0)], ['SD Q2', bit(4, 1)], ['SD Q3', bit(4, 2)], ['M Q1', bit(3, 0)], ['M Q2', bit(3, 1)], ['M Q3', bit(3, 2)], ['M Q4', bit(3, 3)]],
+                [['MD Q1', bit(2, 0)], ['MD Q2', bit(2, 1)], ['MD Q3', bit(2, 2)], ['H Q1', bit(1, 0)], ['H Q2', bit(1, 1)], ['H Q3', bit(1, 2)], ['H Q4', bit(1, 3)]]
+            ];
+            const WIN = [8, 480, 28800];
+            let lvl = 0;
+            const traces = LANES[0].map((_, i) => ({
+                label: LANES[0][i][0],
+                get: () => LANES[lvl][i][1](),
+                color: i < 2 && lvl === 0 ? '#c8d5d5' : undefined,
+                bold: i === 2
+            }));
+            sim.scope({ mode: 'lanes', window: () => WIN[lvl], traces });
+            traces.forEach((tr, i) => { if (i >= 2) tr.color = i % 2 ? '#4ecdc4' : '#f7e36a'; });
+
+            function applySpeed() {
+                lvl = speed === 1 ? 0 : speed === 60 ? 1 : 2;
+                sim.timeScale = speed;
+                traces.forEach((tr, i) => { tr.label = LANES[lvl][i][0]; });
+                sim.resetScope();
+            }
+        };
+    })();
+    </script>
+    </div>
+</body>
+</html>

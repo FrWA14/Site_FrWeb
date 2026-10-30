@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>CD4028 - FrWA Conception</title>
+    <meta name="description" content="Le CD4028 transforme un nombre binaire de 4 bits (0 à 9) en dix sorties : seule la sortie correspondant au nombre passe à 1.">
+    <meta name="tags" content="Électronique, CD4000, Décodeurs">
+    <meta name="vignette" content="assets/images/cd4028.svg">
+</head>
+<body>
+    <!-- Page générée par _sources/serie_cd4000/generer.py -->
+    <div class="page-content">
+        <h1>CD4028 — Décodeur BCD → décimal (1 parmi 10)</h1>
+
+        <div class="flex gap-sm" style="margin-bottom: var(--spacing-lg);">
+            <span class="badge badge-primary">Électronique</span>
+            <span class="badge badge-secondary">Série CD4000</span>
+            <span class="badge badge-accent">Décodeurs</span>
+        </div>
+
+        <p class="lead">Le CD4028 transforme un nombre binaire de 4 bits (0 à 9) en dix sorties : seule la sortie correspondant au nombre passe à 1. Il sert à sélectionner un élément parmi dix à partir de quatre fils (LED, relais, afficheurs multiplexés).</p>
+
+        <div class="chip-head">
+            <div class="chip-pinout chip-live" data-chip-live="{&quot;pins&quot;: [&quot;Q4&quot;, &quot;Q2&quot;, &quot;Q0&quot;, &quot;Q7&quot;, &quot;Q9&quot;, &quot;Q5&quot;, &quot;Q6&quot;, &quot;VSS&quot;, &quot;Q8&quot;, &quot;A&quot;, &quot;D&quot;, &quot;C&quot;, &quot;B&quot;, &quot;Q1&quot;, &quot;Q3&quot;, &quot;VDD&quot;], &quot;model&quot;: &quot;c4028&quot;}">
+<svg role="img" aria-label="Brochage et schéma interne du CD4028" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 306" width="384" height="306" font-family="DejaVu Sans Mono, Consolas, monospace">
+<rect width="384" height="306" rx="12" fill="#1e2a2a"/>
+<text x="192.0" y="32" text-anchor="middle" font-size="20" font-weight="bold" fill="#4ecdc4">CD4028</text>
+<g class="pin" data-pin="1">
+<rect class="pin-hl" x="50.2" y="67.0" width="23.8" height="18" rx="3" fill="none"/>
+<rect class="lead p1" x="76" y="70.0" width="16" height="12" rx="2" fill="#e67e22"/>
+<text class="pin-v" x="84" y="79.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="70" y="81.0" text-anchor="end" font-size="13" fill="#e8f0f0">Q4</text>
+</g>
+<g class="pin" data-pin="16">
+<rect class="pin-hl" x="310" y="67.0" width="31.7" height="18" rx="3" fill="none"/>
+<rect class="lead" x="292" y="70.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="300" y="79.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="314" y="81.0" font-size="13" fill="#e67e22">VDD</text>
+</g>
+<g class="pin" data-pin="2">
+<rect class="pin-hl" x="50.2" y="93.0" width="23.8" height="18" rx="3" fill="none"/>
+<rect class="lead" x="76" y="96.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="84" y="105.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="70" y="107.0" text-anchor="end" font-size="13" fill="#e8f0f0">Q2</text>
+</g>
+<g class="pin" data-pin="15">
+<rect class="pin-hl" x="310" y="93.0" width="23.8" height="18" rx="3" fill="none"/>
+<rect class="lead" x="292" y="96.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="300" y="105.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="314" y="107.0" font-size="13" fill="#e8f0f0">Q3</text>
+</g>
+<g class="pin" data-pin="3">
+<rect class="pin-hl" x="50.2" y="119.0" width="23.8" height="18" rx="3" fill="none"/>
+<rect class="lead" x="76" y="122.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="84" y="131.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="70" y="133.0" text-anchor="end" font-size="13" fill="#e8f0f0">Q0</text>
+</g>
+<g class="pin" data-pin="14">
+<rect class="pin-hl" x="310" y="119.0" width="23.8" height="18" rx="3" fill="none"/>
+<rect class="lead" x="292" y="122.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="300" y="131.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="314" y="133.0" font-size="13" fill="#e8f0f0">Q1</text>
+</g>
+<g class="pin" data-pin="4">
+<rect class="pin-hl" x="50.2" y="145.0" width="23.8" height="18" rx="3" fill="none"/>
+<rect class="lead" x="76" y="148.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="84" y="157.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="70" y="159.0" text-anchor="end" font-size="13" fill="#e8f0f0">Q7</text>
+</g>
+<g class="pin" data-pin="13">
+<rect class="pin-hl" x="310" y="145.0" width="15.9" height="18" rx="3" fill="none"/>
+<rect class="lead" x="292" y="148.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="300" y="157.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="314" y="159.0" font-size="13" fill="#e8f0f0">B</text>
+</g>
+<g class="pin" data-pin="5">
+<rect class="pin-hl" x="50.2" y="171.0" width="23.8" height="18" rx="3" fill="none"/>
+<rect class="lead" x="76" y="174.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="84" y="183.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="70" y="185.0" text-anchor="end" font-size="13" fill="#e8f0f0">Q9</text>
+</g>
+<g class="pin" data-pin="12">
+<rect class="pin-hl" x="310" y="171.0" width="15.9" height="18" rx="3" fill="none"/>
+<rect class="lead" x="292" y="174.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="300" y="183.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="314" y="185.0" font-size="13" fill="#e8f0f0">C</text>
+</g>
+<g class="pin" data-pin="6">
+<rect class="pin-hl" x="50.2" y="197.0" width="23.8" height="18" rx="3" fill="none"/>
+<rect class="lead" x="76" y="200.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="84" y="209.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="70" y="211.0" text-anchor="end" font-size="13" fill="#e8f0f0">Q5</text>
+</g>
+<g class="pin" data-pin="11">
+<rect class="pin-hl" x="310" y="197.0" width="15.9" height="18" rx="3" fill="none"/>
+<rect class="lead" x="292" y="200.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="300" y="209.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="314" y="211.0" font-size="13" fill="#e8f0f0">D</text>
+</g>
+<g class="pin" data-pin="7">
+<rect class="pin-hl" x="50.2" y="223.0" width="23.8" height="18" rx="3" fill="none"/>
+<rect class="lead" x="76" y="226.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="84" y="235.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="70" y="237.0" text-anchor="end" font-size="13" fill="#e8f0f0">Q6</text>
+</g>
+<g class="pin" data-pin="10">
+<rect class="pin-hl" x="310" y="223.0" width="15.9" height="18" rx="3" fill="none"/>
+<rect class="lead" x="292" y="226.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="300" y="235.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="314" y="237.0" font-size="13" fill="#e8f0f0">A</text>
+</g>
+<g class="pin" data-pin="8">
+<rect class="pin-hl" x="42.3" y="249.0" width="31.7" height="18" rx="3" fill="none"/>
+<rect class="lead" x="76" y="252.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="84" y="261.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="70" y="263.0" text-anchor="end" font-size="13" fill="#4ecdc4">VSS</text>
+</g>
+<g class="pin" data-pin="9">
+<rect class="pin-hl" x="310" y="249.0" width="23.8" height="18" rx="3" fill="none"/>
+<rect class="lead" x="292" y="252.0" width="16" height="12" rx="2" fill="#a8b5b5"/>
+<text class="pin-v" x="300" y="261.5" text-anchor="middle" font-size="10" font-weight="bold"></text>
+<text class="pin-n" x="314" y="263.0" font-size="13" fill="#e8f0f0">Q8</text>
+</g>
+<rect x="92" y="56" width="200" height="222" rx="6" fill="#121a1a" stroke="#3d7a7a" stroke-width="2"/>
+<path d="M180.0 56 a12 12 0 0 0 24 0" fill="#1e2a2a" stroke="#3d7a7a" stroke-width="2"/>
+<rect x="126" y="64.0" width="132" height="206.0" rx="5" fill="#173332" stroke="#c8d5d5" stroke-width="1.4"/>
+<polyline points="92.0,76.0 126.0,76.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="92.0,102.0 126.0,102.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="92.0,128.0 126.0,128.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="92.0,154.0 126.0,154.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="92.0,180.0 126.0,180.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="92.0,206.0 126.0,206.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="92.0,232.0 126.0,232.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="292.0,258.0 258.0,258.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="292.0,232.0 258.0,232.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="292.0,206.0 258.0,206.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="292.0,180.0 258.0,180.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="292.0,154.0 258.0,154.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="292.0,128.0 258.0,128.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline points="292.0,102.0 258.0,102.0" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linejoin="round"/>
+<text x="192.0" y="155.0" text-anchor="middle" font-size="12" font-weight="bold" fill="#4ecdc4">DÉCODEUR</text>
+<text x="192.0" y="171.0" text-anchor="middle" font-size="12" font-weight="bold" fill="#4ecdc4">BCD</text>
+<text x="192.0" y="187.0" text-anchor="middle" font-size="12" font-weight="bold" fill="#4ecdc4">→ 1 PARMI 10</text>
+<text x="96" y="72.0" font-size="9" fill="#6a7a7a">1</text>
+<text x="288" y="72.0" text-anchor="end" font-size="9" fill="#6a7a7a">16</text>
+<text x="96" y="98.0" font-size="9" fill="#6a7a7a">2</text>
+<text x="288" y="98.0" text-anchor="end" font-size="9" fill="#6a7a7a">15</text>
+<text x="96" y="124.0" font-size="9" fill="#6a7a7a">3</text>
+<text x="288" y="124.0" text-anchor="end" font-size="9" fill="#6a7a7a">14</text>
+<text x="96" y="150.0" font-size="9" fill="#6a7a7a">4</text>
+<text x="288" y="150.0" text-anchor="end" font-size="9" fill="#6a7a7a">13</text>
+<text x="96" y="176.0" font-size="9" fill="#6a7a7a">5</text>
+<text x="288" y="176.0" text-anchor="end" font-size="9" fill="#6a7a7a">12</text>
+<text x="96" y="202.0" font-size="9" fill="#6a7a7a">6</text>
+<text x="288" y="202.0" text-anchor="end" font-size="9" fill="#6a7a7a">11</text>
+<text x="96" y="228.0" font-size="9" fill="#6a7a7a">7</text>
+<text x="288" y="228.0" text-anchor="end" font-size="9" fill="#6a7a7a">10</text>
+<text x="96" y="254.0" font-size="9" fill="#6a7a7a">8</text>
+<text x="288" y="254.0" text-anchor="end" font-size="9" fill="#6a7a7a">9</text>
+<text x="192.0" y="296" text-anchor="middle" font-size="10" fill="#6a7a7a">DIP-16 · vue de dessus</text>
+</svg>
+            </div>
+            <div>
+                <h2>Caractéristiques</h2>
+                <div class="data-table-wrap">
+                    <table class="data-table">
+                    <tbody>
+                        <tr><td>Fonction</td><td>Décodeur BCD → décimal (1 parmi 10)</td></tr>
+                        <tr><td>Boîtier</td><td>DIP-16 (existe aussi en SOIC-16)</td></tr>
+                        <tr><td>Alimentation</td><td>3 V à 18 V (20 V maximum absolu)</td></tr>
+                        <tr><td>Niveaux d'entrée</td><td>0 sous 30 % de VDD, 1 au-dessus de 70 % de VDD</td></tr>
+                        <tr><td>Courant de sortie</td><td>≈ 1 mA à 5 V, ≈ 7 mA à 15 V (typ.)</td></tr>
+                        <tr><td>Consommation au repos</td><td>quelques µA au plus</td></tr>
+                        <tr><td>Température</td><td>−55 °C à +125 °C (CD4000B)</td></tr>
+                        <tr><td>Équivalents</td><td>HEF4028B, MC14028B</td></tr>
+                    </tbody>
+                    </table>
+                </div>
+                <p class="text-muted" style="font-size: var(--font-size-sm);">
+                    Valeurs typiques à 25 °C, qui varient selon le fabricant : vérifiez toujours la fiche
+                    technique (datasheet) avant de câbler.
+                </p>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <h2>Brochage</h2>
+        <div class="data-table-wrap">
+            <table class="data-table">
+                <thead><tr><th>Broche</th><th>Nom</th><th>Fonction</th></tr></thead>
+                <tbody>
+                        <tr><td>1</td><td>Q4</td><td>Sortie 4 (à 1 quand DCBA = 4)</td></tr>
+                        <tr><td>2</td><td>Q2</td><td>Sortie 2 (à 1 quand DCBA = 2)</td></tr>
+                        <tr><td>3</td><td>Q0</td><td>Sortie 0 (à 1 quand DCBA = 0)</td></tr>
+                        <tr><td>4</td><td>Q7</td><td>Sortie 7 (à 1 quand DCBA = 7)</td></tr>
+                        <tr><td>5</td><td>Q9</td><td>Sortie 9 (à 1 quand DCBA = 9)</td></tr>
+                        <tr><td>6</td><td>Q5</td><td>Sortie 5 (à 1 quand DCBA = 5)</td></tr>
+                        <tr><td>7</td><td>Q6</td><td>Sortie 6 (à 1 quand DCBA = 6)</td></tr>
+                        <tr><td>8</td><td>VSS</td><td>Masse (0 V)</td></tr>
+                        <tr><td>9</td><td>Q8</td><td>Sortie 8 (à 1 quand DCBA = 8)</td></tr>
+                        <tr><td>10</td><td>A</td><td>Entrée BCD, poids 1</td></tr>
+                        <tr><td>11</td><td>D</td><td>Entrée BCD, poids 8</td></tr>
+                        <tr><td>12</td><td>C</td><td>Entrée BCD, poids 4</td></tr>
+                        <tr><td>13</td><td>B</td><td>Entrée BCD, poids 2</td></tr>
+                        <tr><td>14</td><td>Q1</td><td>Sortie 1 (à 1 quand DCBA = 1)</td></tr>
+                        <tr><td>15</td><td>Q3</td><td>Sortie 3 (à 1 quand DCBA = 3)</td></tr>
+                        <tr><td>16</td><td>VDD</td><td>Alimentation positive (+3 à +18 V)</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h2>Fonctionnement</h2>
+            <p>Les entrées D-C-B-A forment le nombre (A = poids 1, D = poids 8). Pour les codes 10 à 15, aucune sortie n'est active. Utilisé en 3 bits (D = 0), il devient un décodeur 1 parmi 8.</p>
+
+        <div class="divider"></div>
+
+<h2>Simulation : sélection d&#x27;une LED parmi 10</h2>
+        <p>Les quatre interrupteurs forment le code BCD ; la LED du chiffre correspondant s'allume. Au-delà de 9, tout s'éteint.</p>
+
+        <div data-lsim="bcd10" data-lsim-opts="{&quot;chip&quot;: &quot;CD4028&quot;, &quot;vdd&quot;: 16, &quot;vss&quot;: 8, &quot;pinmap&quot;: {&quot;VDD&quot;: 16, &quot;Q3&quot;: 15, &quot;Q1&quot;: 14, &quot;B&quot;: 13, &quot;C&quot;: 12, &quot;D&quot;: 11, &quot;A&quot;: 10, &quot;Q8&quot;: 9, &quot;VSS&quot;: 8, &quot;Q6&quot;: 7, &quot;Q5&quot;: 6, &quot;Q9&quot;: 5, &quot;Q7&quot;: 4, &quot;Q0&quot;: 3, &quot;Q2&quot;: 2, &quot;Q4&quot;: 1}}"></div>
+
+        <div class="divider"></div>
+
+        <p class="text-center">
+            <a data-retour class="btn btn-primary"></a>
+        </p>
+    </div>
+</body>
+</html>

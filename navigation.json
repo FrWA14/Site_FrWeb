@@ -1,5 +1,5 @@
 {
-  "generated": "2026-10-28 23:17:02",
+  "generated": "2026-10-30 13:37:28",
   "children": [
 {
   "name": "code",
@@ -51,6 +51,20 @@
   "name": "Bargraph_LM3914.html",
   "displayName": "Bargraph LM3914",
   "path": "pages/electronique/bargraph_lm3914/Bargraph_LM3914.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "horloge_cd4060",
+  "displayName": "Horloge Cd4060",
+  "path": "pages/electronique/horloge_cd4060",
+  "type": "folder",
+  "children": [
+{
+  "name": "Horloge_CD4060.html",
+  "displayName": "Horloge CD4060",
+  "path": "pages/electronique/horloge_cd4060/Horloge_CD4060.html",
   "type": "file"
 }
 ]
@@ -192,6 +206,678 @@
   "displayName": "NE555 Astable",
   "path": "pages/electronique/ne555_astable/NE555_astable.html",
   "type": "file"
+}
+]
+},
+{
+  "name": "serie_cd4000",
+  "displayName": "Serie Cd4000",
+  "path": "pages/electronique/serie_cd4000",
+  "type": "folder",
+  "children": [
+{
+  "name": "Serie_CD4000.html",
+  "displayName": "Serie CD4000",
+  "path": "pages/electronique/serie_cd4000/Serie_CD4000.html",
+  "type": "file"
+},
+{
+  "name": "cd4001",
+  "displayName": "Cd4001",
+  "path": "pages/electronique/serie_cd4000/cd4001",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4001.html",
+  "displayName": "CD4001",
+  "path": "pages/electronique/serie_cd4000/cd4001/CD4001.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4002",
+  "displayName": "Cd4002",
+  "path": "pages/electronique/serie_cd4000/cd4002",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4002.html",
+  "displayName": "CD4002",
+  "path": "pages/electronique/serie_cd4000/cd4002/CD4002.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4008",
+  "displayName": "Cd4008",
+  "path": "pages/electronique/serie_cd4000/cd4008",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4008.html",
+  "displayName": "CD4008",
+  "path": "pages/electronique/serie_cd4000/cd4008/CD4008.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd40106",
+  "displayName": "Cd40106",
+  "path": "pages/electronique/serie_cd4000/cd40106",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD40106.html",
+  "displayName": "CD40106",
+  "path": "pages/electronique/serie_cd4000/cd40106/CD40106.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4011",
+  "displayName": "Cd4011",
+  "path": "pages/electronique/serie_cd4000/cd4011",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4011.html",
+  "displayName": "CD4011",
+  "path": "pages/electronique/serie_cd4000/cd4011/CD4011.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4012",
+  "displayName": "Cd4012",
+  "path": "pages/electronique/serie_cd4000/cd4012",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4012.html",
+  "displayName": "CD4012",
+  "path": "pages/electronique/serie_cd4000/cd4012/CD4012.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4013",
+  "displayName": "Cd4013",
+  "path": "pages/electronique/serie_cd4000/cd4013",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4013.html",
+  "displayName": "CD4013",
+  "path": "pages/electronique/serie_cd4000/cd4013/CD4013.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4014",
+  "displayName": "Cd4014",
+  "path": "pages/electronique/serie_cd4000/cd4014",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4014.html",
+  "displayName": "CD4014",
+  "path": "pages/electronique/serie_cd4000/cd4014/CD4014.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4015",
+  "displayName": "Cd4015",
+  "path": "pages/electronique/serie_cd4000/cd4015",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4015.html",
+  "displayName": "CD4015",
+  "path": "pages/electronique/serie_cd4000/cd4015/CD4015.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4016",
+  "displayName": "Cd4016",
+  "path": "pages/electronique/serie_cd4000/cd4016",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4016.html",
+  "displayName": "CD4016",
+  "path": "pages/electronique/serie_cd4000/cd4016/CD4016.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4017",
+  "displayName": "Cd4017",
+  "path": "pages/electronique/serie_cd4000/cd4017",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4017.html",
+  "displayName": "CD4017",
+  "path": "pages/electronique/serie_cd4000/cd4017/CD4017.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4020",
+  "displayName": "Cd4020",
+  "path": "pages/electronique/serie_cd4000/cd4020",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4020.html",
+  "displayName": "CD4020",
+  "path": "pages/electronique/serie_cd4000/cd4020/CD4020.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4021",
+  "displayName": "Cd4021",
+  "path": "pages/electronique/serie_cd4000/cd4021",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4021.html",
+  "displayName": "CD4021",
+  "path": "pages/electronique/serie_cd4000/cd4021/CD4021.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4023",
+  "displayName": "Cd4023",
+  "path": "pages/electronique/serie_cd4000/cd4023",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4023.html",
+  "displayName": "CD4023",
+  "path": "pages/electronique/serie_cd4000/cd4023/CD4023.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4024",
+  "displayName": "Cd4024",
+  "path": "pages/electronique/serie_cd4000/cd4024",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4024.html",
+  "displayName": "CD4024",
+  "path": "pages/electronique/serie_cd4000/cd4024/CD4024.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4025",
+  "displayName": "Cd4025",
+  "path": "pages/electronique/serie_cd4000/cd4025",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4025.html",
+  "displayName": "CD4025",
+  "path": "pages/electronique/serie_cd4000/cd4025/CD4025.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4026",
+  "displayName": "Cd4026",
+  "path": "pages/electronique/serie_cd4000/cd4026",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4026.html",
+  "displayName": "CD4026",
+  "path": "pages/electronique/serie_cd4000/cd4026/CD4026.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4027",
+  "displayName": "Cd4027",
+  "path": "pages/electronique/serie_cd4000/cd4027",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4027.html",
+  "displayName": "CD4027",
+  "path": "pages/electronique/serie_cd4000/cd4027/CD4027.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4028",
+  "displayName": "Cd4028",
+  "path": "pages/electronique/serie_cd4000/cd4028",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4028.html",
+  "displayName": "CD4028",
+  "path": "pages/electronique/serie_cd4000/cd4028/CD4028.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4029",
+  "displayName": "Cd4029",
+  "path": "pages/electronique/serie_cd4000/cd4029",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4029.html",
+  "displayName": "CD4029",
+  "path": "pages/electronique/serie_cd4000/cd4029/CD4029.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4030",
+  "displayName": "Cd4030",
+  "path": "pages/electronique/serie_cd4000/cd4030",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4030.html",
+  "displayName": "CD4030",
+  "path": "pages/electronique/serie_cd4000/cd4030/CD4030.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4040",
+  "displayName": "Cd4040",
+  "path": "pages/electronique/serie_cd4000/cd4040",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4040.html",
+  "displayName": "CD4040",
+  "path": "pages/electronique/serie_cd4000/cd4040/CD4040.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4046",
+  "displayName": "Cd4046",
+  "path": "pages/electronique/serie_cd4000/cd4046",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4046.html",
+  "displayName": "CD4046",
+  "path": "pages/electronique/serie_cd4000/cd4046/CD4046.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4047",
+  "displayName": "Cd4047",
+  "path": "pages/electronique/serie_cd4000/cd4047",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4047.html",
+  "displayName": "CD4047",
+  "path": "pages/electronique/serie_cd4000/cd4047/CD4047.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4049",
+  "displayName": "Cd4049",
+  "path": "pages/electronique/serie_cd4000/cd4049",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4049.html",
+  "displayName": "CD4049",
+  "path": "pages/electronique/serie_cd4000/cd4049/CD4049.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4050",
+  "displayName": "Cd4050",
+  "path": "pages/electronique/serie_cd4000/cd4050",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4050.html",
+  "displayName": "CD4050",
+  "path": "pages/electronique/serie_cd4000/cd4050/CD4050.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4051",
+  "displayName": "Cd4051",
+  "path": "pages/electronique/serie_cd4000/cd4051",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4051.html",
+  "displayName": "CD4051",
+  "path": "pages/electronique/serie_cd4000/cd4051/CD4051.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4052",
+  "displayName": "Cd4052",
+  "path": "pages/electronique/serie_cd4000/cd4052",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4052.html",
+  "displayName": "CD4052",
+  "path": "pages/electronique/serie_cd4000/cd4052/CD4052.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4053",
+  "displayName": "Cd4053",
+  "path": "pages/electronique/serie_cd4000/cd4053",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4053.html",
+  "displayName": "CD4053",
+  "path": "pages/electronique/serie_cd4000/cd4053/CD4053.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4060",
+  "displayName": "Cd4060",
+  "path": "pages/electronique/serie_cd4000/cd4060",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4060.html",
+  "displayName": "CD4060",
+  "path": "pages/electronique/serie_cd4000/cd4060/CD4060.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4066",
+  "displayName": "Cd4066",
+  "path": "pages/electronique/serie_cd4000/cd4066",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4066.html",
+  "displayName": "CD4066",
+  "path": "pages/electronique/serie_cd4000/cd4066/CD4066.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4069",
+  "displayName": "Cd4069",
+  "path": "pages/electronique/serie_cd4000/cd4069",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4069.html",
+  "displayName": "CD4069",
+  "path": "pages/electronique/serie_cd4000/cd4069/CD4069.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4070",
+  "displayName": "Cd4070",
+  "path": "pages/electronique/serie_cd4000/cd4070",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4070.html",
+  "displayName": "CD4070",
+  "path": "pages/electronique/serie_cd4000/cd4070/CD4070.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4071",
+  "displayName": "Cd4071",
+  "path": "pages/electronique/serie_cd4000/cd4071",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4071.html",
+  "displayName": "CD4071",
+  "path": "pages/electronique/serie_cd4000/cd4071/CD4071.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4072",
+  "displayName": "Cd4072",
+  "path": "pages/electronique/serie_cd4000/cd4072",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4072.html",
+  "displayName": "CD4072",
+  "path": "pages/electronique/serie_cd4000/cd4072/CD4072.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4073",
+  "displayName": "Cd4073",
+  "path": "pages/electronique/serie_cd4000/cd4073",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4073.html",
+  "displayName": "CD4073",
+  "path": "pages/electronique/serie_cd4000/cd4073/CD4073.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4075",
+  "displayName": "Cd4075",
+  "path": "pages/electronique/serie_cd4000/cd4075",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4075.html",
+  "displayName": "CD4075",
+  "path": "pages/electronique/serie_cd4000/cd4075/CD4075.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4077",
+  "displayName": "Cd4077",
+  "path": "pages/electronique/serie_cd4000/cd4077",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4077.html",
+  "displayName": "CD4077",
+  "path": "pages/electronique/serie_cd4000/cd4077/CD4077.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4081",
+  "displayName": "Cd4081",
+  "path": "pages/electronique/serie_cd4000/cd4081",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4081.html",
+  "displayName": "CD4081",
+  "path": "pages/electronique/serie_cd4000/cd4081/CD4081.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4082",
+  "displayName": "Cd4082",
+  "path": "pages/electronique/serie_cd4000/cd4082",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4082.html",
+  "displayName": "CD4082",
+  "path": "pages/electronique/serie_cd4000/cd4082/CD4082.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4093",
+  "displayName": "Cd4093",
+  "path": "pages/electronique/serie_cd4000/cd4093",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4093.html",
+  "displayName": "CD4093",
+  "path": "pages/electronique/serie_cd4000/cd4093/CD4093.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4094",
+  "displayName": "Cd4094",
+  "path": "pages/electronique/serie_cd4000/cd4094",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4094.html",
+  "displayName": "CD4094",
+  "path": "pages/electronique/serie_cd4000/cd4094/CD4094.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4510",
+  "displayName": "Cd4510",
+  "path": "pages/electronique/serie_cd4000/cd4510",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4510.html",
+  "displayName": "CD4510",
+  "path": "pages/electronique/serie_cd4000/cd4510/CD4510.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4511",
+  "displayName": "Cd4511",
+  "path": "pages/electronique/serie_cd4000/cd4511",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4511.html",
+  "displayName": "CD4511",
+  "path": "pages/electronique/serie_cd4000/cd4511/CD4511.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4518",
+  "displayName": "Cd4518",
+  "path": "pages/electronique/serie_cd4000/cd4518",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4518.html",
+  "displayName": "CD4518",
+  "path": "pages/electronique/serie_cd4000/cd4518/CD4518.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4520",
+  "displayName": "Cd4520",
+  "path": "pages/electronique/serie_cd4000/cd4520",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4520.html",
+  "displayName": "CD4520",
+  "path": "pages/electronique/serie_cd4000/cd4520/CD4520.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "cd4538",
+  "displayName": "Cd4538",
+  "path": "pages/electronique/serie_cd4000/cd4538",
+  "type": "folder",
+  "children": [
+{
+  "name": "CD4538.html",
+  "displayName": "CD4538",
+  "path": "pages/electronique/serie_cd4000/cd4538/CD4538.html",
+  "type": "file"
+}
+]
 }
 ]
 },

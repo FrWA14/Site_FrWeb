@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Série CD4000 - FrWA Conception</title>
+    <!-- Carte affichée dans la page de section -->
+    <meta name="description" content="Liste des circuits logiques CMOS de la série CD4000 avec leur brochage : portes, bascules, compteurs, registres, multiplexeurs analogiques, décodeurs et temporisateurs.">
+    <meta name="tags" content="Électronique, CMOS, CD4000">
+    <meta name="vignette" content="assets/images/vignette.jpg">
+</head>
+<body>
+    <!-- Page générée par _sources/serie_cd4000/generer.py -->
+    <div class="page-content">
+        <!-- Bannière -->
+        <div class="page-banner">
+            <img src="assets/images/banniere.jpg" alt="Circuits intégrés CMOS de la série CD4000">
+            <div class="page-banner-overlay">
+                <h1 class="page-banner-title">Série CD4000</h1>
+                <span class="page-banner-subtitle">Circuits logiques CMOS et brochages</span>
+            </div>
+        </div>
+
+        <!-- Tags -->
+        <div class="flex gap-sm" style="margin-bottom: var(--spacing-lg);">
+            <span class="badge badge-primary">Électronique</span>
+            <span class="badge badge-secondary">CMOS</span>
+            <span class="badge badge-accent">Brochages</span>
+        </div>
+
+        <p class="lead">
+            La série 4000 est une famille classique de circuits CMOS : portes logiques, bascules,
+            compteurs, registres à décalage, interrupteurs analogiques, décodeurs… Ce sont les
+            briques de base de l'électronique numérique, l'équivalent CMOS de la série 7400 (TTL).
+            Peu coûteux et très sobres, ils restent parfaits pour les montages sans microcontrôleur.
+        </p>
+
+        <div class="divider"></div>
+
+        <h2>Liste des circuits</h2>
+
+        <p>
+            Cliquez sur un circuit ou sur son brochage pour ouvrir sa fiche : caractéristiques, rôle de
+            chaque broche et simulation d'un montage classique. Les boîtiers sont vus
+            <strong>de dessus</strong>, encoche vers le haut : la broche 1 est en haut à gauche, puis la
+            numérotation tourne dans le sens inverse des aiguilles d'une montre.
+        </p>
+
+        <div class="cd4k-filters">
+            <input type="search" id="cd4k-search" placeholder="Rechercher : 4017, compteur, NAND, Schmitt…" aria-label="Rechercher un circuit">
+            <div class="cd4k-cats" role="group" aria-label="Filtrer par catégorie">
+                <button type="button" data-cat="" class="active">Tous</button>
+                <button type="button" data-cat="Portes">Portes</button>
+                <button type="button" data-cat="Schmitt / buffers">Schmitt / buffers</button>
+                <button type="button" data-cat="Bascules">Bascules</button>
+                <button type="button" data-cat="Compteurs">Compteurs</button>
+                <button type="button" data-cat="Registres">Registres</button>
+                <button type="button" data-cat="Analogique">Analogique</button>
+                <button type="button" data-cat="Décodeurs">Décodeurs</button>
+                <button type="button" data-cat="Arithmétique">Arithmétique</button>
+                <button type="button" data-cat="Temporisation">Temporisation</button>
+            </div>
+        </div>
+
+        <div class="cd4k-count" id="cd4k-count">47 circuits</div>
+
+        <div class="cd4k-table-wrap">
+            <table class="cd4k-table" id="cd4k-table">
+                <thead>
+                    <tr>
+                        <th>Circuit</th>
+                        <th>Brochage</th>
+                        <th>Description</th>
+                        <th>Catégorie</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr data-cat="Portes">
+                        <td class="cd4k-ref"><a href="cd4001/CD4001.html">CD4001</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4001/CD4001.html" title="Fiche du CD4001"><img src="assets/images/cd4001.svg" alt="Brochage du CD4001 : 4 portes NOR à 2 entrées" loading="lazy" width="384"></a>
+                        </td>
+                        <td>4 portes NOR à 2 entrées<br><span class="cd4k-meta">DIP-14</span></td>
+                        <td><span class="badge badge-primary">Portes</span></td>
+                    </tr>
+                    <tr data-cat="Portes">
+                        <td class="cd4k-ref"><a href="cd4002/CD4002.html">CD4002</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4002/CD4002.html" title="Fiche du CD4002"><img src="assets/images/cd4002.svg" alt="Brochage du CD4002 : 2 portes NOR à 4 entrées" loading="lazy" width="384"></a>
+                        </td>
+                        <td>2 portes NOR à 4 entrées<br><span class="cd4k-meta">DIP-14</span></td>
+                        <td><span class="badge badge-primary">Portes</span></td>
+                    </tr>
+                    <tr data-cat="Arithmétique">
+                        <td class="cd4k-ref"><a href="cd4008/CD4008.html">CD4008</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4008/CD4008.html" title="Fiche du CD4008"><img src="assets/images/cd4008.svg" alt="Brochage du CD4008 : Additionneur complet 4 bits" loading="lazy" width="384"></a>
+                        </td>
+                        <td>Additionneur complet 4 bits<br><span class="cd4k-meta">DIP-16</span></td>
+                        <td><span class="badge badge-primary">Arithmétique</span></td>
+                    </tr>
+                    <tr data-cat="Portes">
+                        <td class="cd4k-ref"><a href="cd4011/CD4011.html">CD4011</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4011/CD4011.html" title="Fiche du CD4011"><img src="assets/images/cd4011.svg" alt="Brochage du CD4011 : 4 portes NAND à 2 entrées" loading="lazy" width="384"></a>
+                        </td>
+                        <td>4 portes NAND à 2 entrées<br><span class="cd4k-meta">DIP-14</span></td>
+                        <td><span class="badge badge-primary">Portes</span></td>
+                    </tr>
+                    <tr data-cat="Portes">
+                        <td class="cd4k-ref"><a href="cd4012/CD4012.html">CD4012</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4012/CD4012.html" title="Fiche du CD4012"><img src="assets/images/cd4012.svg" alt="Brochage du CD4012 : 2 portes NAND à 4 entrées" loading="lazy" width="384"></a>
+                        </td>
+                        <td>2 portes NAND à 4 entrées<br><span class="cd4k-meta">DIP-14</span></td>
+                        <td><span class="badge badge-primary">Portes</span></td>
+                    </tr>
+                    <tr data-cat="Bascules">
+                        <td class="cd4k-ref"><a href="cd4013/CD4013.html">CD4013</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4013/CD4013.html" title="Fiche du CD4013"><img src="assets/images/cd4013.svg" alt="Brochage du CD4013 : 2 bascules D avec Set / Reset" loading="lazy" width="384"></a>
+                        </td>
+                        <td>2 bascules D avec Set / Reset<br><span class="cd4k-meta">DIP-14</span></td>
+                        <td><span class="badge badge-primary">Bascules</span></td>
+                    </tr>
+                    <tr data-cat="Registres">
+                        <td class="cd4k-ref"><a href="cd4014/CD4014.html">CD4014</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4014/CD4014.html" title="Fiche du CD4014"><img src="assets/images/cd4014.svg" alt="Brochage du CD4014 : Registre à décalage 8 bits, chargement parallèle synchrone" loading="lazy" width="384"></a>
+                        </td>
+                        <td>Registre à décalage 8 bits, chargement parallèle synchrone<br><span class="cd4k-meta">DIP-16</span></td>
+                        <td><span class="badge badge-primary">Registres</span></td>
+                    </tr>
+                    <tr data-cat="Registres">
+                        <td class="cd4k-ref"><a href="cd4015/CD4015.html">CD4015</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4015/CD4015.html" title="Fiche du CD4015"><img src="assets/images/cd4015.svg" alt="Brochage du CD4015 : 2 registres à décalage 4 bits, entrée série" loading="lazy" width="384"></a>
+                        </td>
+                        <td>2 registres à décalage 4 bits, entrée série<br><span class="cd4k-meta">DIP-16</span></td>
+                        <td><span class="badge badge-primary">Registres</span></td>
+                    </tr>
+                    <tr data-cat="Analogique">
+                        <td class="cd4k-ref"><a href="cd4016/CD4016.html">CD4016</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4016/CD4016.html" title="Fiche du CD4016"><img src="assets/images/cd4016.svg" alt="Brochage du CD4016 : 4 interrupteurs analogiques bidirectionnels" loading="lazy" width="384"></a>
+                        </td>
+                        <td>4 interrupteurs analogiques bidirectionnels<br><span class="cd4k-meta">DIP-14</span></td>
+                        <td><span class="badge badge-primary">Analogique</span></td>
+                    </tr>
+                    <tr data-cat="Compteurs">
+                        <td class="cd4k-ref"><a href="cd4017/CD4017.html">CD4017</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4017/CD4017.html" title="Fiche du CD4017"><img src="assets/images/cd4017.svg" alt="Brochage du CD4017 : Compteur décimal Johnson, 10 sorties décodées" loading="lazy" width="384"></a>
+                        </td>
+                        <td>Compteur décimal Johnson, 10 sorties décodées<br><span class="cd4k-meta">DIP-16</span></td>
+                        <td><span class="badge badge-primary">Compteurs</span></td>
+                    </tr>
+                    <tr data-cat="Compteurs">
+                        <td class="cd4k-ref"><a href="cd4020/CD4020.html">CD4020</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4020/CD4020.html" title="Fiche du CD4020"><img src="assets/images/cd4020.svg" alt="Brochage du CD4020 : Compteur binaire asynchrone 14 étages" loading="lazy" width="384"></a>
+                        </td>
+                        <td>Compteur binaire asynchrone 14 étages<br><span class="cd4k-meta">DIP-16</span></td>
+                        <td><span class="badge badge-primary">Compteurs</span></td>
+                    </tr>
+                    <tr data-cat="Registres">
+                        <td class="cd4k-ref"><a href="cd4021/CD4021.html">CD4021</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4021/CD4021.html" title="Fiche du CD4021"><img src="assets/images/cd4021.svg" alt="Brochage du CD4021 : Registre à décalage 8 bits, chargement parallèle asynchrone" loading="lazy" width="384"></a>
+                        </td>
+                        <td>Registre à décalage 8 bits, chargement parallèle asynchrone<br><span class="cd4k-meta">DIP-16</span></td>
+                        <td><span class="badge badge-primary">Registres</span></td>
+                    </tr>
+                    <tr data-cat="Portes">
+                        <td class="cd4k-ref"><a href="cd4023/CD4023.html">CD4023</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4023/CD4023.html" title="Fiche du CD4023"><img src="assets/images/cd4023.svg" alt="Brochage du CD4023 : 3 portes NAND à 3 entrées" loading="lazy" width="384"></a>
+                        </td>
+                        <td>3 portes NAND à 3 entrées<br><span class="cd4k-meta">DIP-14</span></td>
+                        <td><span class="badge badge-primary">Portes</span></td>
+                    </tr>
+                    <tr data-cat="Compteurs">
+                        <td class="cd4k-ref"><a href="cd4024/CD4024.html">CD4024</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4024/CD4024.html" title="Fiche du CD4024"><img src="assets/images/cd4024.svg" alt="Brochage du CD4024 : Compteur binaire asynchrone 7 étages" loading="lazy" width="384"></a>
+                        </td>
+                        <td>Compteur binaire asynchrone 7 étages<br><span class="cd4k-meta">DIP-14</span></td>
+                        <td><span class="badge badge-primary">Compteurs</span></td>
+                    </tr>
+                    <tr data-cat="Portes">
+                        <td class="cd4k-ref"><a href="cd4025/CD4025.html">CD4025</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4025/CD4025.html" title="Fiche du CD4025"><img src="assets/images/cd4025.svg" alt="Brochage du CD4025 : 3 portes NOR à 3 entrées" loading="lazy" width="384"></a>
+                        </td>
+                        <td>3 portes NOR à 3 entrées<br><span class="cd4k-meta">DIP-14</span></td>
+                        <td><span class="badge badge-primary">Portes</span></td>
+                    </tr>
+                    <tr data-cat="Compteurs">
+                        <td class="cd4k-ref"><a href="cd4026/CD4026.html">CD4026</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4026/CD4026.html" title="Fiche du CD4026"><img src="assets/images/cd4026.svg" alt="Brochage du CD4026 : Compteur décimal avec sorties 7 segments" loading="lazy" width="384"></a>
+                        </td>
+                        <td>Compteur décimal avec sorties 7 segments<br><span class="cd4k-meta">DIP-16</span></td>
+                        <td><span class="badge badge-primary">Compteurs</span></td>
+                    </tr>
+                    <tr data-cat="Bascules">
+                        <td class="cd4k-ref"><a href="cd4027/CD4027.html">CD4027</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4027/CD4027.html" title="Fiche du CD4027"><img src="assets/images/cd4027.svg" alt="Brochage du CD4027 : 2 bascules JK avec Set / Reset" loading="lazy" width="384"></a>
+                        </td>
+                        <td>2 bascules JK avec Set / Reset<br><span class="cd4k-meta">DIP-16</span></td>
+                        <td><span class="badge badge-primary">Bascules</span></td>
+                    </tr>
+                    <tr data-cat="Décodeurs">
+                        <td class="cd4k-ref"><a href="cd4028/CD4028.html">CD4028</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4028/CD4028.html" title="Fiche du CD4028"><img src="assets/images/cd4028.svg" alt="Brochage du CD4028 : Décodeur BCD → décimal (1 parmi 10)" loading="lazy" width="384"></a>
+                        </td>
+                        <td>Décodeur BCD → décimal (1 parmi 10)<br><span class="cd4k-meta">DIP-16</span></td>
+                        <td><span class="badge badge-primary">Décodeurs</span></td>
+                    </tr>
+                    <tr data-cat="Compteurs">
+                        <td class="cd4k-ref"><a href="cd4029/CD4029.html">CD4029</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4029/CD4029.html" title="Fiche du CD4029"><img src="assets/images/cd4029.svg" alt="Brochage du CD4029 : Compteur haut / bas préréglable, binaire ou BCD" loading="lazy" width="384"></a>
+                        </td>
+                        <td>Compteur haut / bas préréglable, binaire ou BCD<br><span class="cd4k-meta">DIP-16</span></td>
+                        <td><span class="badge badge-primary">Compteurs</span></td>
+                    </tr>
+                    <tr data-cat="Portes">
+                        <td class="cd4k-ref"><a href="cd4030/CD4030.html">CD4030</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4030/CD4030.html" title="Fiche du CD4030"><img src="assets/images/cd4030.svg" alt="Brochage du CD4030 : 4 portes XOR à 2 entrées" loading="lazy" width="384"></a>
+                        </td>
+                        <td>4 portes XOR à 2 entrées<br><span class="cd4k-meta">DIP-14</span></td>
+                        <td><span class="badge badge-primary">Portes</span></td>
+                    </tr>
+                    <tr data-cat="Compteurs">
+                        <td class="cd4k-ref"><a href="cd4040/CD4040.html">CD4040</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4040/CD4040.html" title="Fiche du CD4040"><img src="assets/images/cd4040.svg" alt="Brochage du CD4040 : Compteur binaire asynchrone 12 étages" loading="lazy" width="384"></a>
+                        </td>
+                        <td>Compteur binaire asynchrone 12 étages<br><span class="cd4k-meta">DIP-16</span></td>
+                        <td><span class="badge badge-primary">Compteurs</span></td>
+                    </tr>
+                    <tr data-cat="Temporisation">
+                        <td class="cd4k-ref"><a href="cd4046/CD4046.html">CD4046</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4046/CD4046.html" title="Fiche du CD4046"><img src="assets/images/cd4046.svg" alt="Brochage du CD4046 : Boucle à verrouillage de phase (PLL) avec VCO" loading="lazy" width="384"></a>
+                        </td>
+                        <td>Boucle à verrouillage de phase (PLL) avec VCO<br><span class="cd4k-meta">DIP-16</span></td>
+                        <td><span class="badge badge-primary">Temporisation</span></td>
+                    </tr>
+                    <tr data-cat="Temporisation">
+                        <td class="cd4k-ref"><a href="cd4047/CD4047.html">CD4047</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4047/CD4047.html" title="Fiche du CD4047"><img src="assets/images/cd4047.svg" alt="Brochage du CD4047 : Multivibrateur monostable / astable" loading="lazy" width="384"></a>
+                        </td>
+                        <td>Multivibrateur monostable / astable<br><span class="cd4k-meta">DIP-14</span></td>
+                        <td><span class="badge badge-primary">Temporisation</span></td>
+                    </tr>
+                    <tr data-cat="Schmitt / buffers">
+                        <td class="cd4k-ref"><a href="cd4049/CD4049.html">CD4049</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4049/CD4049.html" title="Fiche du CD4049"><img src="assets/images/cd4049.svg" alt="Brochage du CD4049 : 6 buffers inverseurs, convertisseurs de niveau" loading="lazy" width="384"></a>
+                        </td>
+                        <td>6 buffers inverseurs, convertisseurs de niveau<br><span class="cd4k-meta">DIP-16</span></td>
+                        <td><span class="badge badge-primary">Schmitt / buffers</span></td>
+                    </tr>
+                    <tr data-cat="Schmitt / buffers">
+                        <td class="cd4k-ref"><a href="cd4050/CD4050.html">CD4050</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4050/CD4050.html" title="Fiche du CD4050"><img src="assets/images/cd4050.svg" alt="Brochage du CD4050 : 6 buffers non inverseurs, convertisseurs de niveau" loading="lazy" width="384"></a>
+                        </td>
+                        <td>6 buffers non inverseurs, convertisseurs de niveau<br><span class="cd4k-meta">DIP-16</span></td>
+                        <td><span class="badge badge-primary">Schmitt / buffers</span></td>
+                    </tr>
+                    <tr data-cat="Analogique">
+                        <td class="cd4k-ref"><a href="cd4051/CD4051.html">CD4051</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4051/CD4051.html" title="Fiche du CD4051"><img src="assets/images/cd4051.svg" alt="Brochage du CD4051 : Multiplexeur / démultiplexeur analogique 8 voies" loading="lazy" width="384"></a>
+                        </td>
+                        <td>Multiplexeur / démultiplexeur analogique 8 voies<br><span class="cd4k-meta">DIP-16</span></td>
+                        <td><span class="badge badge-primary">Analogique</span></td>
+                    </tr>
+                    <tr data-cat="Analogique">
+                        <td class="cd4k-ref"><a href="cd4052/CD4052.html">CD4052</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4052/CD4052.html" title="Fiche du CD4052"><img src="assets/images/cd4052.svg" alt="Brochage du CD4052 : 2 multiplexeurs / démultiplexeurs analogiques 4 voies" loading="lazy" width="384"></a>
+                        </td>
+                        <td>2 multiplexeurs / démultiplexeurs analogiques 4 voies<br><span class="cd4k-meta">DIP-16</span></td>
+                        <td><span class="badge badge-primary">Analogique</span></td>
+                    </tr>
+                    <tr data-cat="Analogique">
+                        <td class="cd4k-ref"><a href="cd4053/CD4053.html">CD4053</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4053/CD4053.html" title="Fiche du CD4053"><img src="assets/images/cd4053.svg" alt="Brochage du CD4053 : 3 multiplexeurs / démultiplexeurs analogiques 2 voies" loading="lazy" width="384"></a>
+                        </td>
+                        <td>3 multiplexeurs / démultiplexeurs analogiques 2 voies<br><span class="cd4k-meta">DIP-16</span></td>
+                        <td><span class="badge badge-primary">Analogique</span></td>
+                    </tr>
+                    <tr data-cat="Compteurs">
+                        <td class="cd4k-ref"><a href="cd4060/CD4060.html">CD4060</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4060/CD4060.html" title="Fiche du CD4060"><img src="assets/images/cd4060.svg" alt="Brochage du CD4060 : Compteur binaire 14 étages avec oscillateur intégré" loading="lazy" width="384"></a>
+                        </td>
+                        <td>Compteur binaire 14 étages avec oscillateur intégré<br><span class="cd4k-meta">DIP-16</span></td>
+                        <td><span class="badge badge-primary">Compteurs</span></td>
+                    </tr>
+                    <tr data-cat="Analogique">
+                        <td class="cd4k-ref"><a href="cd4066/CD4066.html">CD4066</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4066/CD4066.html" title="Fiche du CD4066"><img src="assets/images/cd4066.svg" alt="Brochage du CD4066 : 4 interrupteurs analogiques bidirectionnels (Ron faible)" loading="lazy" width="384"></a>
+                        </td>
+                        <td>4 interrupteurs analogiques bidirectionnels (Ron faible)<br><span class="cd4k-meta">DIP-14</span></td>
+                        <td><span class="badge badge-primary">Analogique</span></td>
+                    </tr>
+                    <tr data-cat="Portes">
+                        <td class="cd4k-ref"><a href="cd4069/CD4069.html">CD4069</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4069/CD4069.html" title="Fiche du CD4069"><img src="assets/images/cd4069.svg" alt="Brochage du CD4069 : 6 inverseurs" loading="lazy" width="384"></a>
+                        </td>
+                        <td>6 inverseurs<br><span class="cd4k-meta">DIP-14</span></td>
+                        <td><span class="badge badge-primary">Portes</span></td>
+                    </tr>
+                    <tr data-cat="Portes">
+                        <td class="cd4k-ref"><a href="cd4070/CD4070.html">CD4070</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4070/CD4070.html" title="Fiche du CD4070"><img src="assets/images/cd4070.svg" alt="Brochage du CD4070 : 4 portes XOR à 2 entrées" loading="lazy" width="384"></a>
+                        </td>
+                        <td>4 portes XOR à 2 entrées<br><span class="cd4k-meta">DIP-14</span></td>
+                        <td><span class="badge badge-primary">Portes</span></td>
+                    </tr>
+                    <tr data-cat="Portes">
+                        <td class="cd4k-ref"><a href="cd4071/CD4071.html">CD4071</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4071/CD4071.html" title="Fiche du CD4071"><img src="assets/images/cd4071.svg" alt="Brochage du CD4071 : 4 portes OR à 2 entrées" loading="lazy" width="384"></a>
+                        </td>
+                        <td>4 portes OR à 2 entrées<br><span class="cd4k-meta">DIP-14</span></td>
+                        <td><span class="badge badge-primary">Portes</span></td>
+                    </tr>
+                    <tr data-cat="Portes">
+                        <td class="cd4k-ref"><a href="cd4072/CD4072.html">CD4072</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4072/CD4072.html" title="Fiche du CD4072"><img src="assets/images/cd4072.svg" alt="Brochage du CD4072 : 2 portes OR à 4 entrées" loading="lazy" width="384"></a>
+                        </td>
+                        <td>2 portes OR à 4 entrées<br><span class="cd4k-meta">DIP-14</span></td>
+                        <td><span class="badge badge-primary">Portes</span></td>
+                    </tr>
+                    <tr data-cat="Portes">
+                        <td class="cd4k-ref"><a href="cd4073/CD4073.html">CD4073</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4073/CD4073.html" title="Fiche du CD4073"><img src="assets/images/cd4073.svg" alt="Brochage du CD4073 : 3 portes AND à 3 entrées" loading="lazy" width="384"></a>
+                        </td>
+                        <td>3 portes AND à 3 entrées<br><span class="cd4k-meta">DIP-14</span></td>
+                        <td><span class="badge badge-primary">Portes</span></td>
+                    </tr>
+                    <tr data-cat="Portes">
+                        <td class="cd4k-ref"><a href="cd4075/CD4075.html">CD4075</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4075/CD4075.html" title="Fiche du CD4075"><img src="assets/images/cd4075.svg" alt="Brochage du CD4075 : 3 portes OR à 3 entrées" loading="lazy" width="384"></a>
+                        </td>
+                        <td>3 portes OR à 3 entrées<br><span class="cd4k-meta">DIP-14</span></td>
+                        <td><span class="badge badge-primary">Portes</span></td>
+                    </tr>
+                    <tr data-cat="Portes">
+                        <td class="cd4k-ref"><a href="cd4077/CD4077.html">CD4077</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4077/CD4077.html" title="Fiche du CD4077"><img src="assets/images/cd4077.svg" alt="Brochage du CD4077 : 4 portes XNOR à 2 entrées" loading="lazy" width="384"></a>
+                        </td>
+                        <td>4 portes XNOR à 2 entrées<br><span class="cd4k-meta">DIP-14</span></td>
+                        <td><span class="badge badge-primary">Portes</span></td>
+                    </tr>
+                    <tr data-cat="Portes">
+                        <td class="cd4k-ref"><a href="cd4081/CD4081.html">CD4081</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4081/CD4081.html" title="Fiche du CD4081"><img src="assets/images/cd4081.svg" alt="Brochage du CD4081 : 4 portes AND à 2 entrées" loading="lazy" width="384"></a>
+                        </td>
+                        <td>4 portes AND à 2 entrées<br><span class="cd4k-meta">DIP-14</span></td>
+                        <td><span class="badge badge-primary">Portes</span></td>
+                    </tr>
+                    <tr data-cat="Portes">
+                        <td class="cd4k-ref"><a href="cd4082/CD4082.html">CD4082</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4082/CD4082.html" title="Fiche du CD4082"><img src="assets/images/cd4082.svg" alt="Brochage du CD4082 : 2 portes AND à 4 entrées" loading="lazy" width="384"></a>
+                        </td>
+                        <td>2 portes AND à 4 entrées<br><span class="cd4k-meta">DIP-14</span></td>
+                        <td><span class="badge badge-primary">Portes</span></td>
+                    </tr>
+                    <tr data-cat="Schmitt / buffers">
+                        <td class="cd4k-ref"><a href="cd4093/CD4093.html">CD4093</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4093/CD4093.html" title="Fiche du CD4093"><img src="assets/images/cd4093.svg" alt="Brochage du CD4093 : 4 portes NAND à 2 entrées à trigger de Schmitt" loading="lazy" width="384"></a>
+                        </td>
+                        <td>4 portes NAND à 2 entrées à trigger de Schmitt<br><span class="cd4k-meta">DIP-14</span></td>
+                        <td><span class="badge badge-primary">Schmitt / buffers</span></td>
+                    </tr>
+                    <tr data-cat="Registres">
+                        <td class="cd4k-ref"><a href="cd4094/CD4094.html">CD4094</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4094/CD4094.html" title="Fiche du CD4094"><img src="assets/images/cd4094.svg" alt="Brochage du CD4094 : Registre à décalage 8 bits avec verrou et sorties 3 états" loading="lazy" width="384"></a>
+                        </td>
+                        <td>Registre à décalage 8 bits avec verrou et sorties 3 états<br><span class="cd4k-meta">DIP-16</span></td>
+                        <td><span class="badge badge-primary">Registres</span></td>
+                    </tr>
+                    <tr data-cat="Compteurs">
+                        <td class="cd4k-ref"><a href="cd4510/CD4510.html">CD4510</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4510/CD4510.html" title="Fiche du CD4510"><img src="assets/images/cd4510.svg" alt="Brochage du CD4510 : Compteur BCD haut / bas préréglable" loading="lazy" width="384"></a>
+                        </td>
+                        <td>Compteur BCD haut / bas préréglable<br><span class="cd4k-meta">DIP-16</span></td>
+                        <td><span class="badge badge-primary">Compteurs</span></td>
+                    </tr>
+                    <tr data-cat="Décodeurs">
+                        <td class="cd4k-ref"><a href="cd4511/CD4511.html">CD4511</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4511/CD4511.html" title="Fiche du CD4511"><img src="assets/images/cd4511.svg" alt="Brochage du CD4511 : Décodeur BCD → 7 segments avec verrou" loading="lazy" width="384"></a>
+                        </td>
+                        <td>Décodeur BCD → 7 segments avec verrou<br><span class="cd4k-meta">DIP-16</span></td>
+                        <td><span class="badge badge-primary">Décodeurs</span></td>
+                    </tr>
+                    <tr data-cat="Compteurs">
+                        <td class="cd4k-ref"><a href="cd4518/CD4518.html">CD4518</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4518/CD4518.html" title="Fiche du CD4518"><img src="assets/images/cd4518.svg" alt="Brochage du CD4518 : 2 compteurs BCD synchrones" loading="lazy" width="384"></a>
+                        </td>
+                        <td>2 compteurs BCD synchrones<br><span class="cd4k-meta">DIP-16</span></td>
+                        <td><span class="badge badge-primary">Compteurs</span></td>
+                    </tr>
+                    <tr data-cat="Compteurs">
+                        <td class="cd4k-ref"><a href="cd4520/CD4520.html">CD4520</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4520/CD4520.html" title="Fiche du CD4520"><img src="assets/images/cd4520.svg" alt="Brochage du CD4520 : 2 compteurs binaires 4 bits synchrones" loading="lazy" width="384"></a>
+                        </td>
+                        <td>2 compteurs binaires 4 bits synchrones<br><span class="cd4k-meta">DIP-16</span></td>
+                        <td><span class="badge badge-primary">Compteurs</span></td>
+                    </tr>
+                    <tr data-cat="Temporisation">
+                        <td class="cd4k-ref"><a href="cd4538/CD4538.html">CD4538</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd4538/CD4538.html" title="Fiche du CD4538"><img src="assets/images/cd4538.svg" alt="Brochage du CD4538 : 2 monostables de précision redéclenchables" loading="lazy" width="384"></a>
+                        </td>
+                        <td>2 monostables de précision redéclenchables<br><span class="cd4k-meta">DIP-16</span></td>
+                        <td><span class="badge badge-primary">Temporisation</span></td>
+                    </tr>
+                    <tr data-cat="Schmitt / buffers">
+                        <td class="cd4k-ref"><a href="cd40106/CD40106.html">CD40106</a></td>
+                        <td class="cd4k-pinout">
+                            <a href="cd40106/CD40106.html" title="Fiche du CD40106"><img src="assets/images/cd40106.svg" alt="Brochage du CD40106 : 6 inverseurs à trigger de Schmitt" loading="lazy" width="384"></a>
+                        </td>
+                        <td>6 inverseurs à trigger de Schmitt<br><span class="cd4k-meta">DIP-14</span></td>
+                        <td><span class="badge badge-primary">Schmitt / buffers</span></td>
+                    </tr>
+                    <tr class="cd4k-empty-row" hidden>
+                        <td colspan="4" class="cd4k-empty">Aucun circuit ne correspond à la recherche.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="cd4k-legend">
+            <span><span class="cd4k-dot"></span>Broche 1 (en orange, près de l'encoche)</span>
+            <span><span class="cd4k-over">EN</span> : signal actif à l'état bas</span>
+            <span>NC : broche non connectée</span>
+            <span>VEE : alimentation négative des signaux analogiques (à relier à VSS si inutilisée)</span>
+        </div>
+
+        <div class="divider"></div>
+
+        <h2>Bon à savoir</h2>
+
+        <div class="card-alert info">
+            <div class="card-body">
+                <strong>🏷️ Préfixes :</strong> le même circuit existe sous plusieurs noms selon le
+                fabricant : CD4011, HEF4011, MC14011, NTE4011… Le suffixe <strong>B</strong> indique une
+                version à sorties bufferisées, <strong>UB</strong> une version non bufferisée (ex. 4069UB,
+                pratique pour les oscillateurs à quartz).
+            </div>
+        </div>
+
+        <div class="card-alert warning">
+            <div class="card-body">
+                <strong>⚡ Électricité statique :</strong> les entrées CMOS sont sensibles aux décharges
+                électrostatiques. Les manipuler en se déchargeant avant (toucher une masse) et les
+                ranger dans leur mousse ou leur tube.
+            </div>
+        </div>
+
+        <div class="card-alert info">
+            <div class="card-body">
+                <strong>📚 Crédit :</strong><br>
+                Page inspirée de la liste de la série 4000 de
+                <a href="https://www.build-electronic-circuits.com/4000-series-integrated-circuits/" target="_blank" rel="noopener">Build Electronic Circuits</a>.
+                Les brochages ont été redessinés aux couleurs du site ; vérifiez toujours la fiche
+                technique (datasheet) du fabricant avant de câbler.
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Retour vers la page de section -->
+        <p class="text-center">
+            <a data-retour class="btn btn-primary"></a>
+        </p>
+
+    <style>
+        .cd4k-filters { display: flex; flex-wrap: wrap; gap: var(--spacing-sm); align-items: center; margin: var(--spacing-lg) 0 var(--spacing-md); }
+        .cd4k-filters input { flex: 1 1 220px; min-width: 0; background: var(--bg-tertiary); border: 1px solid var(--color-primary-dark); border-radius: var(--border-radius-sm); color: var(--text-primary); padding: var(--spacing-xs) var(--spacing-sm); font-size: var(--font-size-sm); }
+        .cd4k-filters input:focus { outline: 2px solid var(--text-accent); outline-offset: 1px; }
+        .cd4k-cats { display: flex; flex-wrap: wrap; gap: var(--spacing-xs); }
+        .cd4k-cats button { background: var(--bg-tertiary); color: var(--text-secondary); border: 1px solid var(--color-primary-dark); border-radius: var(--border-radius-sm); padding: var(--spacing-xs) var(--spacing-md); font-size: var(--font-size-sm); cursor: pointer; }
+        .cd4k-cats button.active { background: var(--color-primary); color: #fff; font-weight: 700; }
+        .cd4k-cats button:focus-visible { outline: 2px solid var(--text-accent); outline-offset: 1px; }
+        .cd4k-count { font-size: var(--font-size-sm); color: var(--text-muted); margin-bottom: var(--spacing-sm); }
+        .cd4k-table-wrap { overflow-x: auto; border-radius: var(--border-radius-md); border: 1px solid var(--bg-tertiary); }
+        .cd4k-table { width: 100%; border-collapse: collapse; font-size: var(--font-size-sm); }
+        .cd4k-table th { background: var(--color-primary); color: #fff; text-align: left; padding: var(--spacing-sm) var(--spacing-md); }
+        .cd4k-table td { padding: var(--spacing-sm) var(--spacing-md); border-top: 1px solid var(--bg-tertiary); vertical-align: middle; color: var(--text-primary); }
+        .cd4k-table tbody tr:nth-child(even) { background: var(--bg-secondary); }
+        .cd4k-ref a { font-family: var(--font-family-mono); font-weight: 700; color: var(--text-accent); white-space: nowrap; text-decoration: none; }
+        .cd4k-ref a:hover { text-decoration: underline; }
+        .cd4k-pinout { width: 190px; }
+        .cd4k-pinout a { display: block; border-radius: var(--border-radius-sm); transition: transform var(--transition-fast), box-shadow var(--transition-fast); }
+        .cd4k-pinout a:hover { transform: scale(1.03); box-shadow: var(--shadow-glow); }
+        .cd4k-pinout img { display: block; width: 170px; height: auto; border-radius: var(--border-radius-sm); }
+        .cd4k-meta { font-size: var(--font-size-xs); color: var(--text-muted); }
+        .cd4k-empty { text-align: center; color: var(--text-muted); padding: var(--spacing-lg); }
+        .cd4k-legend { display: flex; flex-wrap: wrap; gap: var(--spacing-md) var(--spacing-xl); font-size: var(--font-size-sm); color: var(--text-secondary); margin-top: var(--spacing-md); }
+        .cd4k-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--color-accent); margin-right: var(--spacing-xs); }
+        .cd4k-over { text-decoration: overline; }
+        @media (max-width: 600px) {
+            .cd4k-table th:last-child, .cd4k-table td:last-child { display: none; }
+            .cd4k-pinout { width: 110px; }
+            .cd4k-pinout img { width: 100px; }
+        }
+    </style>
+
+    <script>
+    (function () {
+        const table = document.getElementById('cd4k-table');
+        if (!table) return;
+        const search = document.getElementById('cd4k-search');
+        const count = document.getElementById('cd4k-count');
+        const buttons = document.querySelectorAll('.cd4k-cats button');
+        const rows = Array.from(table.querySelectorAll('tbody tr[data-cat]'));
+        const empty = table.querySelector('.cd4k-empty-row');
+        let cat = '';
+
+        // Recherche sans tenir compte des accents ni des majuscules
+        const norm = s => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
+        function apply() {
+            const q = norm(search.value.trim());
+            let shown = 0;
+            rows.forEach(row => {
+                const ok = (!cat || row.dataset.cat === cat) && (!q || norm(row.textContent).includes(q));
+                row.hidden = !ok;
+                if (ok) shown++;
+            });
+            empty.hidden = shown > 0;
+            count.textContent = shown + (shown > 1 ? ' circuits' : ' circuit');
+        }
+
+        buttons.forEach(btn => btn.addEventListener('click', () => {
+            buttons.forEach(b => b.classList.toggle('active', b === btn));
+            cat = btn.dataset.cat;
+            apply();
+        }));
+        search.addEventListener('input', apply);
+    })();
+    </script>
+    </div>
+</body>
+</html>

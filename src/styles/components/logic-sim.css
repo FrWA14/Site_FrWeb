@@ -1,0 +1,551 @@
+/**
+ * Logic Sim - Simulateurs de circuits logiques et fiches de circuits intégrés
+ * (utilisé par les pages de la série CD4000, voir src/js/ui/logic-sim.js)
+ */
+
+/* ===== Disposition ===== */
+.lsim {
+    margin: var(--spacing-lg) 0;
+}
+
+.lsim-grid {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: var(--spacing-lg);
+}
+
+.lsim-right {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    min-width: 0;
+}
+
+/* ===== Commandes ===== */
+.lsim-section + .lsim-section {
+    margin-top: var(--spacing-md);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--bg-tertiary);
+}
+
+.lsim-section-title {
+    font-size: var(--font-size-sm);
+    font-weight: 700;
+    color: var(--text-accent);
+    margin-bottom: var(--spacing-sm);
+}
+
+.lsim-toggles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+    margin-bottom: var(--spacing-sm);
+}
+
+.lsim-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    border: 1px solid var(--color-primary-dark);
+    border-radius: var(--border-radius-sm);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+}
+
+.lsim-toggle small {
+    color: var(--text-muted);
+    font-size: var(--font-size-xs);
+}
+
+.lsim-toggle-state {
+    font-family: var(--font-family-mono);
+    font-weight: 700;
+    min-width: 1.4em;
+    text-align: center;
+    border-radius: 3px;
+    background: var(--bg-primary);
+    color: var(--text-muted);
+}
+
+.lsim-toggle.on {
+    border-color: var(--text-accent);
+    color: var(--text-primary);
+}
+
+.lsim-toggle.on .lsim-toggle-state {
+    background: var(--color-accent);
+    color: #fff;
+}
+
+.lsim-toggle:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.lsim-toggle:focus-visible,
+.lsim-choice button:focus-visible {
+    outline: 2px solid var(--text-accent);
+    outline-offset: 1px;
+}
+
+.lsim-field {
+    margin-bottom: var(--spacing-sm);
+}
+
+.lsim-label {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.lsim-value {
+    font-family: var(--font-family-mono);
+    color: var(--text-primary);
+}
+
+.lsim-field input[type="range"] {
+    width: 100%;
+    accent-color: var(--color-accent);
+}
+
+.lsim-choice {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+}
+
+.lsim-choice button {
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    border: 1px solid var(--color-primary-dark);
+    border-radius: var(--border-radius-sm);
+    padding: 2px var(--spacing-sm);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+}
+
+.lsim-choice button.active {
+    background: var(--color-primary);
+    color: #fff;
+    font-weight: 700;
+}
+
+.lsim-btn {
+    margin: var(--spacing-xs) var(--spacing-xs) var(--spacing-xs) 0;
+}
+
+.lsim-note {
+    font-size: var(--font-size-xs);
+    color: var(--text-muted);
+    margin: var(--spacing-xs) 0 0;
+    line-height: 1.5;
+}
+
+/* ===== Montage : indicateurs ===== */
+.lsim-board {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-lg);
+    align-items: flex-start;
+}
+
+.lsim-board-title {
+    font-size: var(--font-size-xs);
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: var(--spacing-sm);
+}
+
+.lsim-leds {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+}
+
+.lsim-led-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 34px;
+}
+
+.lsim-led {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #3a1212;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    transition: background 60ms, box-shadow 60ms;
+}
+
+.lsim-led.on {
+    background: #ff4d4d;
+    box-shadow: 0 0 10px #ff4d4d;
+}
+
+.lsim-led-orange { background: #3a2410; }
+.lsim-led-orange.on { background: #f39c12; box-shadow: 0 0 10px #f39c12; }
+
+.lsim-led.on.fast {
+    opacity: 0.7;
+    animation: lsim-flicker 0.12s steps(2) infinite;
+}
+
+@keyframes lsim-flicker {
+    from { opacity: 0.85; }
+    to { opacity: 0.55; }
+}
+
+.lsim-led-label {
+    font-size: var(--font-size-xs);
+    color: var(--text-secondary);
+    font-family: var(--font-family-mono);
+    text-align: center;
+    line-height: 1.2;
+}
+
+.lsim-led-label small {
+    color: var(--text-muted);
+    font-size: 10px;
+}
+
+.lsim-seg7 {
+    display: flex;
+    gap: 6px;
+    background: #0b0d0d;
+    padding: 8px 10px;
+    border-radius: var(--border-radius-sm);
+}
+
+.lsim-seg7-digit {
+    width: 44px;
+    height: 62px;
+}
+
+.lsim-seg7-digit path {
+    fill: #2a0d0d;
+    transition: fill 60ms;
+}
+
+.lsim-seg7-digit path.on {
+    fill: #ff3b3b;
+    filter: drop-shadow(0 0 3px #ff3b3b);
+}
+
+.lsim-readout {
+    display: flex;
+    flex-direction: column;
+    margin-right: var(--spacing-lg);
+    margin-bottom: var(--spacing-xs);
+}
+
+.lsim-readout-label {
+    font-size: var(--font-size-xs);
+    color: var(--text-muted);
+}
+
+.lsim-readout-value {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-md);
+    color: var(--text-primary);
+}
+
+.lsim-readout-value small {
+    color: var(--text-muted);
+}
+
+.lsim-board-row {
+    display: flex;
+    flex-direction: column;
+}
+
+.lsim-board-row > .lsim-readout {
+    display: inline-flex;
+}
+
+.lsim-cells {
+    display: flex;
+    gap: 3px;
+}
+
+.lsim-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 32px;
+    padding: 4px 0;
+    border-radius: 3px;
+    background: var(--bg-tertiary);
+    border: 1px solid transparent;
+    font-family: var(--font-family-mono);
+}
+
+.lsim-cell.marked {
+    border-color: var(--color-accent);
+}
+
+.lsim-cell.on {
+    background: var(--color-primary);
+}
+
+.lsim-cell-v {
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.lsim-cell-l {
+    font-size: 10px;
+    color: var(--text-muted);
+}
+
+.lsim-truth {
+    border-collapse: collapse;
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-sm);
+}
+
+.lsim-truth th,
+.lsim-truth td {
+    padding: 2px 10px;
+    text-align: center;
+    border-bottom: 1px solid var(--bg-tertiary);
+}
+
+.lsim-truth th {
+    color: var(--text-accent);
+}
+
+.lsim-truth td.out {
+    color: var(--color-accent);
+    font-weight: 700;
+}
+
+.lsim-truth tr.active td {
+    background: var(--color-primary);
+    color: #fff;
+}
+
+/* ===== Oscilloscope ===== */
+.lsim-scope-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.lsim-scope-info {
+    margin-left: auto;
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    color: var(--text-muted);
+}
+
+.lsim-pause {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--color-primary-dark);
+    border-radius: var(--border-radius-sm);
+    padding: 0 var(--spacing-sm);
+    cursor: pointer;
+}
+
+.lsim-scope {
+    width: 100%;
+    height: 200px;
+    display: block;
+    background: #04100f;
+    border-radius: var(--border-radius-md);
+}
+
+/* ===== Fiche de circuit ===== */
+.chip-head {
+    display: grid;
+    grid-template-columns: minmax(0, 380px) 1fr;
+    gap: var(--spacing-lg);
+    align-items: start;
+    margin: var(--spacing-lg) 0;
+}
+
+.chip-pinout img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: var(--border-radius-md);
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--font-size-sm);
+}
+
+.data-table th {
+    background: var(--color-primary);
+    color: #fff;
+    text-align: left;
+    padding: var(--spacing-xs) var(--spacing-md);
+}
+
+.data-table td {
+    padding: var(--spacing-xs) var(--spacing-md);
+    border-top: 1px solid var(--bg-tertiary);
+    color: var(--text-primary);
+    vertical-align: top;
+}
+
+.data-table tbody tr:nth-child(even) {
+    background: var(--bg-secondary);
+}
+
+.data-table td:first-child {
+    font-family: var(--font-family-mono);
+    color: var(--text-accent);
+    white-space: nowrap;
+}
+
+.data-table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--bg-tertiary);
+    border-radius: var(--border-radius-md);
+    margin: var(--spacing-md) 0;
+}
+
+.data-table .over {
+    text-decoration: overline;
+}
+
+.lsim .over,
+.page-content .over {
+    text-decoration: overline;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 1024px) {
+    .lsim-grid,
+    .chip-head {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ===== Brochage interactif (fiches) ===== */
+.chip-live-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-xs) var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+}
+
+.chip-live-hint {
+    font-size: var(--font-size-xs);
+    color: var(--text-muted);
+    flex: 1 1 180px;
+}
+
+.chip-live svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: var(--border-radius-md);
+}
+
+.chip-live .pin-hl {
+    transition: fill 80ms;
+}
+
+.chip-live .pin.in {
+    cursor: pointer;
+    outline: none;
+}
+
+.chip-live .pin.in .pin-hl {
+    stroke: #3d7a7a;
+    stroke-width: 1;
+}
+
+.chip-live .pin.in:hover .pin-hl,
+.chip-live .pin.in:focus-visible .pin-hl {
+    stroke: #4ecdc4;
+    stroke-width: 1.5;
+}
+
+.chip-live.manual .pin.in .pin-hl {
+    stroke: #e67e22;
+}
+
+.chip-live .pin-v {
+    fill: #a8b5b5;
+    pointer-events: none;
+}
+
+.chip-live .pin.v0 .lead {
+    fill: #2a3838;
+}
+
+.chip-live .pin.v1 .lead {
+    fill: #f7e36a;
+}
+
+.chip-live .pin.v1 .pin-v {
+    fill: #0a0f0f;
+}
+
+.chip-live .pin.v1 .pin-hl {
+    fill: rgba(247, 227, 106, 0.22);
+}
+
+.chip-live .pin.v1 .pin-n {
+    fill: #f7e36a;
+}
+
+.chip-live .pin.vz .lead {
+    fill: #1a2424;
+    stroke: #6a7a7a;
+    stroke-dasharray: 2 2;
+}
+
+.chip-live .pin.vz .pin-n {
+    fill: #6a7a7a;
+}
+
+/* La broche 1 garde son repère orange quel que soit son état */
+.chip-live .pin .lead.p1 {
+    stroke: #e67e22;
+    stroke-width: 2;
+}
+
+/* ===== Schéma de câblage des simulations ===== */
+.lsim-schem-row {
+    flex: 1 1 100%;
+}
+
+.lsim-schem svg {
+    display: block;
+    width: 100%;
+    max-width: 560px;
+    height: auto;
+    background: #0e1515;
+    border-radius: var(--border-radius-md);
+}
+
+.lsim-sch-click {
+    cursor: pointer;
+    outline: none;
+}
+
+.lsim-sch-click:hover circle,
+.lsim-sch-click:focus-visible circle {
+    stroke: #4ecdc4;
+    stroke-width: 2;
+}
+
+.lsim-sch-flicker {
+    animation: lsim-flicker 0.12s steps(2) infinite;
+}

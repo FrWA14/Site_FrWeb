@@ -63,6 +63,9 @@ const App = {
 
         // Liens de retour et cartes de section automatiques
         SectionPages.init();
+
+        // Simulateurs logiques (fiches de circuits)
+        LogicSim.init();
     },
 
     /**
