@@ -1,0 +1,156 @@
+/* frwa_flow-Circuit — même palette que les autres applis frwa-flow (accent turquoise) pour les panneaux ;
+   plan de travail, pastilles et molette inspirés du style PROTO ; boutons d'action : carrés arrondis à liseré, propres
+   à FrWA Circuit (la classe s'appelle encore .rond). */
+:root { --bg:#0a0f0f; --bg2:#121a1a; --bg3:#1e2a2a; --bord:#2c3d3b; --teal:#4ecdc4; --txt:#d7e4e2; --muted:#7d908d; --rouge:#ff6b6b; --surf-4:#243030;
+  --p-rouge:#f2453d; --p-orange:#f5a023; --p-jaune:#ffcc00; --p-gris:#5c6b70; --p-violet:#c38fe0; }
+* { box-sizing:border-box }
+html, body { margin:0; height:100%; background:var(--bg); color:var(--txt); font:14px ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif; overflow:hidden }
+body { display:flex; flex-direction:column }
+[hidden] { display:none !important }
+code { background:var(--bg3); border-radius:4px; padding:0 4px; font-size:12px }
+.sous { color:var(--muted); font-size:12px } .aide { color:var(--muted); font-size:12px; line-height:1.5; margin:6px 0 }
+
+#haut { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:7px 14px; background:var(--bg2); border-bottom:1px solid var(--bg3); flex-wrap:wrap; z-index:5 }
+.titre { display:flex; align-items:center; gap:8px } .titre b { color:var(--teal); font-size:16px } .logo { font-size:18px }
+.boutons { display:flex; gap:6px; flex-wrap:wrap; align-items:center }
+.chip { background:var(--bg3); color:var(--muted); border-radius:99px; padding:3px 11px; font-size:12px; font-variant-numeric:tabular-nums; max-width:52vw; overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
+.chip.ko { color:var(--rouge) }
+/* état + alerte « ralenti » sur sa propre ligne, au-dessus : sa place est toujours réservée, la barre ne bouge pas */
+#statut-bloc { display:flex; flex-direction:column; align-items:flex-end; gap:1px; min-width:0 }
+#statut-alerte { visibility:hidden; color:var(--p-orange); font-size:10.5px; line-height:11px; padding-right:11px; white-space:nowrap; max-width:52vw; overflow:hidden; text-overflow:ellipsis }
+#statut-alerte.visible { visibility:visible }
+.btn { background:var(--bg3); color:var(--txt); border:1px solid var(--bord); border-radius:8px; padding:6px 12px; font:inherit; cursor:pointer; text-decoration:none; display:inline-block }
+.btn:hover { border-color:var(--teal) } .btn.primaire { background:var(--teal); color:#04110f; border-color:var(--teal); font-weight:600 }
+.btn.petit { padding:3px 9px; font-size:12px } .btn.danger:hover { border-color:var(--rouge); color:var(--rouge) }
+
+/* oscilloscope en bandeau (comme PROTO) */
+#oscillo { position:relative; height:190px; max-height:70vh; background:#050707; border-bottom:1px solid var(--bg3); flex-shrink:0 }
+#osc { position:absolute; inset:0; width:100%; height:100% }
+#osc-legende { position:absolute; left:74px; top:0; right:190px; height:0 }
+.leg-groupe { position:absolute; left:0; right:0; display:flex; gap:6px; flex-wrap:wrap; z-index:2 }
+.voie[draggable] { cursor:grab }
+.voie { background:rgba(0,0,0,.6); color:var(--c); border:1px solid var(--c); border-radius:99px; padding:1px 9px; font:600 12px ui-sans-serif, system-ui, sans-serif; cursor:pointer }
+.voie:hover { text-decoration:line-through }
+.osc-btns { position:absolute; right:10px; bottom:10px; display:flex; gap:8px }
+.osc-btns button { width:38px; height:38px; border:none; background:none; color:#fff; cursor:pointer; padding:4px }
+.osc-btns svg { width:100%; height:100% }
+.osc-btns button.actif { color:var(--teal) }
+.mc-ligne { display:flex; justify-content:space-between; align-items:center; gap:14px; padding:4px 9px; font:13px ui-sans-serif, system-ui, sans-serif; color:var(--txt) }
+.mc-ligne select { max-width:190px }
+.mc-aide { color:var(--muted); font:11.5px/1.4 ui-sans-serif, system-ui, sans-serif; padding:6px 9px 4px; max-width:340px; margin:0 }
+
+/* oscilloscope de bureau (oscillo_bureau.js), sur le modèle de l'écran TiePie de frwa_flow-Instrument : barre d'outils,
+   barre d'échelles, écran de 10 × 8 divisions, tableau de mesures. Remplace le bandeau quand #oscillo porte .bureau. */
+#ob { display:none }
+#oscillo.bureau { height:46vh; min-height:300px; resize:vertical; overflow:hidden; background:var(--bg) }
+#oscillo.bureau > #osc, #oscillo.bureau > #osc-legende { display:none }
+#oscillo.bureau #ob { position:absolute; inset:0; display:flex; flex-direction:column; gap:6px; padding:6px 12px 8px; min-height:0 }
+#oscillo.bureau .osc-btns { top:4px; right:10px; bottom:auto; gap:2px } #oscillo.bureau .osc-btns button { width:28px; height:28px; color:var(--txt) }
+#ob-barre { display:flex; align-items:center; gap:6px; flex-wrap:wrap; font-size:12px; color:var(--muted); padding-right:190px }
+#ob-barre .ov-mini.alerte { background:var(--p-jaune); color:#1a1400; border-color:var(--p-jaune); font-weight:600 }
+#ob-barre .espace { flex:1 } #ob-barre select { padding:2px 6px } #ob-zoom { font-variant-numeric:tabular-nums }
+.seg { display:inline-flex; border:1px solid var(--bord); border-radius:7px; overflow:hidden }
+.seg button { background:var(--bg3); color:var(--txt); border:none; padding:3px 10px; font:inherit; font-size:12px; cursor:pointer }
+.seg button.on { background:var(--teal); color:#04110f; font-weight:600 }
+#ob-echelles { display:flex; flex-wrap:wrap; gap:6px; font-size:11px }
+.echelle { display:flex; flex-direction:column; gap:1px; padding:3px 9px; background:var(--bg2); border:1px solid var(--bord); border-left:3px solid var(--c, var(--teal)); border-radius:7px; min-width:96px }
+.echelle .nom { color:var(--muted); font-size:10px; text-transform:uppercase; letter-spacing:.05em; display:flex; justify-content:space-between; gap:8px }
+.echelle .val { font:600 13px ui-monospace, Consolas, monospace; color:var(--txt) }
+.echelle .sous { color:var(--muted); font-size:10.5px; font-variant-numeric:tabular-nums }
+.echelle.voie-o { cursor:pointer } .echelle.voie-o .nom { color:var(--c) } .echelle.voie-o.ref { border-color:var(--c) }
+.echelle .plus { background:none; border:none; color:var(--muted); cursor:pointer; padding:0 2px; font-size:11px; line-height:1 } .echelle .plus:hover { color:var(--rouge) }
+#ob-corps { flex:1; min-height:0; display:flex; gap:10px }
+#ob-ecran-bloc { position:relative; flex:1; min-width:0; border:1px solid var(--bord); border-radius:10px; overflow:hidden; background:#050909 }
+#ob-ecran { position:absolute; inset:0; width:100%; height:100%; display:block; cursor:crosshair }
+#ob-lecture { position:absolute; right:8px; top:6px; font:11px ui-monospace, Consolas, monospace; color:#e7efee; background:rgba(5,9,9,.78); border:1px solid #2c3d3b; border-radius:6px; padding:4px 7px; white-space:pre; pointer-events:none }
+#ob-lecture:empty { display:none }
+#ob-mesures-bloc { flex:0 0 auto; max-width:46%; overflow:auto }
+table.mesures { border-collapse:collapse; font-size:12px; font-variant-numeric:tabular-nums }
+table.mesures th { text-align:right; color:var(--muted); font-weight:500; padding:3px 8px; border-bottom:1px solid var(--bg3); white-space:nowrap }
+table.mesures th:first-child, table.mesures td:first-child { text-align:left; font-weight:600 }
+table.mesures td { text-align:right; padding:3px 8px; border-bottom:1px solid var(--bg3); white-space:nowrap }
+@media (max-width:1300px) { #ob-corps { flex-direction:column } #ob-mesures-bloc { max-width:none; max-height:32% } }
+
+/* plan de travail */
+#zone { position:relative; flex:1; min-height:0; overflow:hidden; background:#000; touch-action:none }
+#toile { position:absolute; inset:0; width:100%; height:100%; touch-action:none }
+#infos { position:absolute; left:14px; top:10px; margin:0; padding:8px 11px; background:rgba(10,15,15,.82); border:1px solid var(--bg3); border-radius:10px;
+  font:12px/1.45 ui-monospace, Consolas, monospace; color:#e7efee; pointer-events:none; white-space:pre; max-width:46vw; overflow:hidden }
+#infos::first-line { color:var(--teal); font-weight:700 }
+
+/* œil : réafficher l'oscilloscope masqué */
+#osc-montrer { position:absolute; right:14px; top:10px; width:40px; height:40px; padding:7px; z-index:3; cursor:pointer; background:rgba(10,15,15,.82); color:#e7efee; border:1px solid var(--bg3); border-radius:10px }
+#osc-montrer:hover { border-color:var(--teal); color:var(--teal) } #osc-montrer svg { width:100%; height:100%; display:block }
+
+/* boutons d'action : carrés arrondis, liseré clair en haut et bord sombre en bas (touche en relief) */
+.rond { border:none; border-radius:16px; width:56px; height:56px; display:grid; place-items:center; cursor:pointer; color:#1a1a1a; padding:0; transition:transform .08s;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35), inset 0 -3px 0 rgba(0,0,0,.22), 0 3px 10px rgba(0,0,0,.55) }
+.rond:active { transform:scale(.94) } .rond svg { width:26px; height:26px } .rond svg:not([fill]) { fill:currentColor }
+.rond.grand { width:68px; height:68px; border-radius:20px } .rond.grand svg { width:30px; height:30px }
+.rond.rouge { background:var(--p-rouge); color:#fff } .rond.orange { background:var(--p-orange); color:#2b1700 }
+.rond.jaune { background:var(--p-jaune); color:#1a1400 } .rond.gris { background:var(--p-gris); color:#e8eeee } .rond.violet { background:var(--p-violet); color:#2a1336 }
+.rond.actif { background:var(--teal); color:#04110f }
+#fabs-g { position:absolute; left:18px; bottom:18px; display:flex; flex-direction:column; align-items:center; gap:12px }
+#fabs-d { position:absolute; right:18px; bottom:18px; display:flex; flex-direction:column; align-items:center; gap:12px }
+#actions { position:absolute; left:24px; bottom:170px; display:flex; flex-direction:column; gap:12px }
+#actions .rond { width:52px; height:52px } #actions .rond svg { width:24px; height:24px }
+#menu-broches { position:absolute; left:88px; bottom:170px; background:var(--bg2); border:1px solid var(--bord); border-radius:10px; padding:8px; display:flex; flex-wrap:wrap; gap:5px; max-width:260px }
+#menu-broches .bloc-titre { width:100% }
+
+/* molette (comme PROTO) */
+#molette { position:absolute; right:96px; bottom:20px; width:200px; height:200px }
+#molette svg { position:absolute; inset:0; cursor:grab; touch-action:none } #molette svg:active { cursor:grabbing }
+#mol-val { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:100px; text-align:center; color:#fff; cursor:text; display:flex; flex-direction:column; align-items:center; line-height:1.05 }
+#mol-val .n { font-size:30px; font-weight:500 } #mol-val .u { font-size:22px } #mol-val .nom { font-size:9px; color:var(--muted); margin-top:3px; max-width:90px }
+#mol-val input { width:92px; text-align:center; font-size:18px; background:#000; color:#fff; border:1px solid var(--teal); border-radius:6px; padding:4px }
+
+/* tiroir latéral */
+#tiroir { position:fixed; right:0; top:46px; bottom:0; width:360px; max-width:94vw; background:var(--bg2); border-left:1px solid var(--bord); z-index:10; display:flex; flex-direction:column; box-shadow:-10px 0 30px rgba(0,0,0,.45) }
+.tiroir-tete { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; border-bottom:1px solid var(--bg3) } .tiroir-tete b { color:var(--teal); font-size:15px }
+#tiroir-corps { overflow:auto; padding:12px 14px; flex:1 }
+.bloc-titre { color:var(--muted); text-transform:uppercase; letter-spacing:.08em; font-size:11px; margin:14px 0 8px }
+.grille-comp { display:grid; grid-template-columns:repeat(3, 1fr); gap:6px }
+.comp { background:var(--bg); border:1px solid var(--bg3); border-radius:10px; padding:6px 4px; color:var(--txt); cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:3px; font:11px ui-sans-serif, system-ui, sans-serif }
+.comp:hover { border-color:var(--teal) } .comp span { text-align:center; line-height:1.2 } .comp small { color:var(--muted); font-size:10px; text-align:center; line-height:1.1 }
+.comp.perso { border-color:#5b4a14 } .comp.perso span::before { content:'★ '; color:#ffcc00 }
+.carte { background:var(--bg); border:1px solid var(--bg3); border-radius:10px; padding:9px 11px; margin-bottom:8px; cursor:pointer }
+.carte:hover { border-color:var(--teal) } .carte .n { font-weight:600; color:#ffcc00; margin-bottom:3px } .carte .d { color:var(--muted); font-size:12px; line-height:1.4 }
+.carte.ex { display:flex; gap:10px; align-items:flex-start } .carte.ex canvas { border-radius:6px; flex-shrink:0 }
+.ov-ligne { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:8px 0; font-size:12px } .ov-ligne > span:first-child { min-width:140px; color:var(--muted) }
+.ov-mini { background:var(--bg3); color:var(--txt); border:1px solid var(--bord); border-radius:6px; padding:3px 8px; font-size:11px; cursor:pointer; font-family:inherit } .ov-mini:hover { border-color:var(--teal) }
+input[type=text], select { background:var(--surf-4); color:var(--txt); border:1px solid var(--bord); border-radius:6px; padding:5px 8px; font:inherit; font-size:12px; min-width:0 }
+input.large { width:100% } input:focus, select:focus { outline:none; border-color:var(--teal) }
+input[type=range] { flex:1; accent-color:var(--teal) } input[type=checkbox] { accent-color:var(--teal); width:16px; height:16px }
+.pied-cat { display:flex; flex-direction:column; gap:8px; margin:12px 0 }
+.liste-perso { margin-top:8px } .ligne-perso { display:flex; justify-content:space-between; align-items:center; gap:8px; padding:4px 0; font-size:12px }
+.schema-nom { cursor:pointer; min-width:0; overflow-wrap:anywhere } .schema-nom:hover { color:var(--teal) } .schema-nom small { display:block; color:var(--muted) }
+.ligne-perso > span:last-child { white-space:nowrap }
+pre.erreurs { color:var(--rouge); background:#1a0d0d; border:1px solid #4a2020; border-radius:8px; padding:8px; white-space:pre-wrap; font-size:11px }
+table.brochage { width:100%; border-collapse:collapse; font-size:12px } table.brochage th, table.brochage td { text-align:left; padding:3px 6px; border-bottom:1px solid var(--bg3) } table.brochage th { color:var(--muted); font-weight:500 }
+.aide-liste { padding-left:18px; color:var(--muted); font-size:12px; line-height:1.55 } .aide-liste b { color:var(--txt) }
+
+#toast { position:fixed; left:50%; bottom:24px; transform:translate(-50%, 30px); opacity:0; pointer-events:none; background:var(--bg2); border:1px solid var(--teal); color:var(--txt);
+  padding:9px 16px; border-radius:10px; font-size:13px; transition:.2s; z-index:20; max-width:80vw; white-space:pre-line }
+#toast.on { opacity:1; transform:translate(-50%, 0) } #toast.erreur { border-color:var(--rouge) }
+body.depot #zone::after { content:'Déposer un fichier .puce.js / .puce.json (puce) ou .circuit.json (circuit)'; position:absolute; inset:16px; border:2px dashed var(--teal); border-radius:16px;
+  display:grid; place-items:center; color:var(--teal); font-size:18px; background:rgba(78,205,196,.06); pointer-events:none }
+
+@media (max-width:700px) {
+  .titre .sous { display:none } #molette { right:84px; width:170px; height:170px } #mol-val .n { font-size:24px }
+  .rond { width:48px; height:48px } .rond.grand { width:58px; height:58px } #actions { bottom:150px; left:18px } #actions .rond { width:46px; height:46px }
+}
+
+/* menus flottants : clic droit, étiquette de courbe */
+.menu-flottant { position:fixed; z-index:30; min-width:220px; max-width:340px; background:var(--bg2); border:1px solid var(--bord); border-radius:10px; padding:5px; box-shadow:0 10px 30px rgba(0,0,0,.6) }
+.menu-flottant hr { border:none; border-top:1px solid var(--bg3); margin:4px 2px }
+.mc-titre { color:var(--teal); font-size:12px; font-weight:600; padding:4px 9px 6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+.mc-item { display:flex; justify-content:space-between; align-items:center; gap:16px; width:100%; background:none; border:none; color:var(--txt); font:13px ui-sans-serif, system-ui, sans-serif; padding:6px 9px; border-radius:6px; cursor:pointer; text-align:left }
+.mc-item:hover { background:var(--bg3) } .mc-item kbd { color:var(--muted); font:11px ui-monospace, Consolas, monospace }
+.mc-item.inactif { opacity:.4; cursor:default } .mc-item.inactif:hover { background:none }
+/* bibliothèque : recherche + mode Basique / Tout, filtre par étiquettes (R12) */
+.ligne-recherche { display:flex; gap:8px; align-items:center } .ligne-recherche input { flex:1; min-width:0 }
+.bascule-mode { display:flex; flex-shrink:0; border:1px solid var(--bg3); border-radius:8px; overflow:hidden }
+.bascule-mode .btn { border:none; border-radius:0; margin:0 } .bascule-mode .btn.actif { background:var(--teal); color:#062523 }
+.filtre-tags { margin:10px 0 0; font-size:12px } .filtre-tags summary { cursor:pointer; color:var(--muted) }
+.cases-tags { display:flex; flex-wrap:wrap; gap:4px 12px; padding:8px 0 } .cases-tags label { cursor:pointer; white-space:nowrap }
+.cases-tags small { color:var(--muted) } .cases-tags .boutons { width:100% }

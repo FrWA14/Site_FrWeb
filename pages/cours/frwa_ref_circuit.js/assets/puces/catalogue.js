@@ -1,0 +1,41 @@
+// Puces chargées au démarrage, dans cet ordre.
+// Pour ajouter une puce au projet : poser son fichier *.puce.js dans ce dossier et ajouter son nom ici.
+// (Fichier JS et non JSON : le navigateur refuse de lire un JSON quand index.html est ouvert directement
+//  depuis le disque, en file://. Les puces importées depuis la page sont gardées dans le navigateur
+//  et n'ont pas besoin d'être listées.)
+window.FrWACatalogue = [
+  'ne555.puce.js',
+  'cd4017.puce.js',
+  'cd4013.puce.js',
+  'cd4060.puce.js',
+  'cd4081.puce.js',
+  'cd4511.puce.js',
+  'cd4518.puce.js',
+  'ams1117.puce.js',
+  'ltv817.puce.js',
+  'acs712.puce.js',
+  'ttp223.puce.js',
+  'drv8871.puce.js',
+  'lm2902.puce.js',
+  'lm3914.puce.js',
+  'tcrt5000.puce.js',
+  'afficheur7seg.puce.js',
+  'bargraph10.puce.js',
+  'reseau8r.puce.js',
+  'quartz.puce.js',
+  'mecanique.puce.js',
+  'monture_solaire.puce.js',
+  'ht12e.puce.js',
+  'ht12d.puce.js',
+  'radio433.puce.js',
+  'ultrason.puce.js',
+  'climat.puce.js',
+  'lesd5d5.puce.js',
+  'bus_serie.puce.js',
+  'serie7400.puce.js',
+  'serie4000.puce.js',
+  'ali.puce.js',
+  'amplis.puce.js',
+  'commutation.puce.js',
+  'arduino.puce.js',
+];

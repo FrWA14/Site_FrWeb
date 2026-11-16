@@ -1,0 +1,18 @@
+/* FrWA Circuit sur le site FrWA Conception : la page reprend la palette, les polices et les boutons du site
+   (src/styles/base/variables.css, thèmes sombre / clair / cyan compris). Chargé après simulateur.css.
+   Le plan de travail et l'écran de l'oscilloscope restent noirs dans tous les thèmes (couleurs des tensions). */
+:root {
+  --bg:var(--bg-primary); --bg2:var(--bg-secondary); --bg3:var(--bg-tertiary); --bord:var(--color-secondary-dark);
+  --teal:var(--text-accent); --txt:var(--text-primary); --muted:var(--text-muted); --rouge:var(--color-error); --surf-4:var(--bg-card);
+}
+html, body { font-family:var(--font-family-primary) }
+#haut { border-bottom:1px solid var(--bg-tertiary) }
+.btn { border-radius:var(--border-radius-md); font-weight:500; border-color:var(--color-secondary-dark); transition:all var(--transition-fast) }
+.btn:hover { background:var(--bg-tertiary); border-color:var(--color-secondary) }
+.btn.primaire, .seg button.on, .bascule-mode .btn.actif {
+  background:linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%); color:#fff; border-color:var(--color-primary) }
+.btn.primaire:hover { background:linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-primary) 100%) }
+#tiroir { box-shadow:var(--shadow-lg) }
+.carte { border-radius:var(--border-radius-md) }
+.menu-flottant { border-radius:var(--border-radius-md); box-shadow:var(--shadow-lg) }
+code { font-family:var(--font-family-mono) }

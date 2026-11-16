@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>FrWA Circuit</title>
+<link rel="stylesheet" href="../../../../src/styles/base/variables.css">
+<link rel="stylesheet" href="css/simulateur.css">
+<link rel="stylesheet" href="css/site.css">
+<script>
+/* thème du site (sombre, clair, cyan) : celui de la page qui contient le simulateur, sinon le dernier choisi */
+(function () {
+  const appliquer = t => { if (t) document.documentElement.setAttribute('data-theme', t); };
+  try { appliquer(localStorage.getItem('frwa_theme')); } catch (e) { /* stockage indisponible */ }
+  try { if (parent !== window) { appliquer(parent.document.documentElement.getAttribute('data-theme')); parent.document.addEventListener('themeChange', e => appliquer(e.detail.theme)); } } catch (e) { /* autre origine */ }
+})();
+/* version du site : pas de serveur local, pas de pilotage, rien de gardé dans le navigateur */
+window.FrWAConfig = { stockage: false, oscilloBureau: true, sansTags: ['pilotage'], vue3d: false };
+</script>
+</head>
+<body>
+<header id="haut">
+  <div class="titre"><span class="logo">⚡</span><b>FrWA Circuit</b><span class="sous">simulateur temps réel</span></div>
+  <div class="boutons">
+    <span id="statut-bloc"><span id="statut-alerte">ralenti (calcul trop lourd)</span><span id="statut" class="chip">chargement…</span></span>
+    <button class="btn" data-panneau="exemples">Exemples</button>
+    <button class="btn" data-panneau="fichier">Fichier</button>
+    <button class="btn" data-panneau="simulation">Simulation</button>
+    <button class="btn" data-panneau="regles">Règles</button>
+    <button class="btn" data-panneau="aide">Aide</button>
+  </div>
+</header>
+
+<section id="oscillo" hidden>
+  <canvas id="osc"></canvas>
+  <div id="osc-legende"></div>
+  <div class="osc-btns"><button id="osc-analyse" title="Analyse : temporel, analyseur de spectre, cascade (waterfall)"></button><button id="osc-joindre" title="Joindre toutes les courbes dans un seul graphe" hidden></button><button id="osc-dissocier" title="Un graphe par courbe" hidden></button><button id="osc-masquer" title="Masquer l'oscilloscope"></button><button id="osc-fermer" title="Retirer toutes les courbes"></button></div>
+</section>
+
+<main id="zone">
+  <canvas id="toile"></canvas>
+  <pre id="infos" hidden></pre>
+  <button id="osc-montrer" title="Réafficher l'oscilloscope" hidden></button>
+
+  <div id="actions" hidden>
+    <button class="rond gris" id="a-reglages" title="Réglages (double-clic)"></button>
+    <button class="rond gris" id="a-rotation" title="Tourner (R)"></button>
+    <button class="rond gris" id="a-oscillo" title="Ajouter à l'oscilloscope"></button>
+    <button class="rond violet" id="a-copier" title="Dupliquer (Ctrl+D)"></button>
+  </div>
+  <div id="menu-broches" hidden></div>
+
+  <div id="fabs-g">
+    <button class="rond orange" id="b-reset" title="Remettre la simulation à zéro"></button>
+    <button class="rond rouge grand" id="b-pause" title="Pause / lecture (Espace)"></button>
+  </div>
+  <div id="fabs-d">
+    <button class="rond violet" id="b-copier" title="Copier la sélection (Ctrl+C)" hidden></button>
+    <button class="rond violet" id="b-coller" title="Coller au centre de la vue (Ctrl+V : sous la souris)" hidden></button>
+    <button class="rond gris" id="b-fil" title="Mode fil (W)"></button>
+    <button class="rond jaune" id="b-suppr" title="Supprimer (Suppr)" hidden></button>
+    <button class="rond jaune grand" id="b-ajout" title="Ajouter un composant ou une puce"></button>
+  </div>
+
+  <div id="molette" hidden>
+    <svg viewBox="0 0 200 200">
+      <circle cx="100" cy="100" r="78" fill="none" stroke="#1b1718" stroke-width="40"/>
+      <path id="mol-arc" fill="none" stroke="#ffcc00" stroke-width="40" stroke-linecap="round"/>
+      <circle cx="100" cy="100" r="56" fill="#000"/>
+      <circle id="mol-bouton" cx="100" cy="22" r="17" fill="#fff" stroke="#ffcc00" stroke-width="3"/>
+    </svg>
+    <div id="mol-val" title="Cliquer pour taper une valeur (ex. 4,7k · 100n)"></div>
+  </div>
+</main>
+
+<aside id="tiroir" hidden>
+  <div class="tiroir-tete"><b id="tiroir-titre"></b><button id="tiroir-fermer" class="btn petit">✕</button></div>
+  <div id="tiroir-corps"></div>
+</aside>
+
+<div id="menu-contexte" class="menu-flottant" hidden></div>
+<div id="menu-voie" class="menu-flottant" hidden></div>
+<div id="toast"></div>
+<input type="file" id="f-puce" accept=".js,.json" multiple hidden>
+<input type="file" id="f-circuit" accept=".json" hidden>
+
+<script src="js/regles.js"></script>
+<script src="js/bus.js"></script>
+<script src="js/moteur.js"></script>
+<script src="js/composants.js"></script>
+<script src="js/puces.js"></script>
+<script src="js/circuit.js"></script>
+<script src="js/monde.js"></script>
+<script src="js/exemples.js"></script>
+<script src="js/spectre.js"></script>
+<script src="js/oscillo_bureau.js"></script>
+<script src="js/interface.js"></script>
+</body>
+</html>

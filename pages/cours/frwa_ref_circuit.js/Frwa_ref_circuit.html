@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>FrWA Circuit - Simulateur de circuits - FrWA Conception</title>
+    <!-- Carte affichée dans la page de section -->
+    <meta name="description" content="Simulateur de circuits électroniques en temps réel : composants, puces, oscilloscope avec zoom et mesures, exemples prêts à l'emploi.">
+    <meta name="tags" content="Électronique, Simulation">
+</head>
+<body>
+    <!-- Page générée par outils/construire_site.py du projet frwa_flow-Circuit : ne pas la modifier ici (modèle : site/page.html).
+         Tout le simulateur est dans assets/ (simulateur.html, css/, js/, puces/). -->
+    <div class="page-content">
+        <!-- Bannière -->
+        <div class="page-banner">
+            <img src="assets/images/banniere.png" alt="FrWA Circuit">
+            <div class="page-banner-overlay">
+                <h1 class="page-banner-title">FrWA Circuit</h1>
+                <span class="page-banner-subtitle">Simulateur de circuits en temps réel</span>
+            </div>
+        </div>
+
+        <!-- Tags -->
+        <div class="flex gap-sm" style="margin-bottom: var(--spacing-lg);">
+            <span class="badge badge-primary">Électronique</span>
+            <span class="badge badge-secondary">Simulation</span>
+        </div>
+
+        <p class="lead">
+            Dessinez un circuit, il fonctionne tout de suite : fils colorés par la tension, points jaunes du courant,
+            <strong>oscilloscope</strong> avec zoom, curseurs et mesures. Bibliothèque de composants et de puces
+            (NE555, séries 4000 et 7400, amplis, capteurs, transformateur…) et exemples prêts à l'emploi.
+        </p>
+
+        <div class="flex gap-sm" style="margin-bottom: var(--spacing-md); flex-wrap: wrap;">
+            <button class="btn btn-primary" onclick="document.getElementById('frwa-circuit-cadre').requestFullscreen()">⛶ Plein écran</button>
+            <button class="btn btn-secondary" onclick="window.open(document.getElementById('frwa-circuit-cadre').src, '_blank')">↗ Ouvrir dans un nouvel onglet</button>
+        </div>
+
+        <iframe id="frwa-circuit-cadre" src="assets/simulateur.html" title="FrWA Circuit" allow="fullscreen; clipboard-read; clipboard-write"
+                style="display:block; width:100%; height:calc(100vh - 120px); min-height:620px; border:1px solid var(--bg-tertiary); border-radius:var(--border-radius-lg); background:#000;"></iframe>
+
+        <div class="divider"></div>
+
+        <h2>Prise en main</h2>
+        <ul>
+            <li><strong>＋</strong> (en bas à droite) : ajouter un composant ou une puce. <strong>Exemples</strong> : circuits tout faits.</li>
+            <li><strong>Glisser depuis une broche</strong> : tracer un fil. <strong>Glisser un composant</strong> : le déplacer. Molette de la souris ou pincement : zoom.</li>
+            <li><strong>Sélectionner un composant</strong> : la molette jaune règle sa valeur ; le bouton oscilloscope affiche sa tension.</li>
+            <li><strong>Oscilloscope</strong> (sur ordinateur) : clic gauche glissé = agrandir une zone, molette = zoom en temps, clic droit maintenu = se déplacer, double-clic = tout voir ; graphes joints ou séparés, trigger (front montant ou descendant), curseurs, mesures, export CSV et PNG.</li>
+            <li><strong>Fichier</strong> : rien n'est gardé par le site. « Enregistrer » télécharge le circuit sur votre ordinateur (fichier <code>.circuit.json</code>) ; « Ouvrir » le recharge, ou glissez le fichier sur le simulateur.</li>
+        </ul>
+
+        <div class="divider"></div>
+        <a data-retour class="btn btn-primary"></a>
+    </div>
+</body>
+</html>
