@@ -1,5 +1,5 @@
 {
-  "generated": "2026-11-16 17:59:26",
+  "generated": "2026-11-16 18:07:04",
   "children": [
 {
   "name": "code",
@@ -34,9 +34,9 @@
   "type": "folder",
   "children": [
 {
-  "name": "Frwa_ref_circuit.html",
-  "displayName": "Frwa Ref Circuit",
-  "path": "pages/cours/frwa_ref_circuit.js/Frwa_ref_circuit.html",
+  "name": "Circuit.js.html",
+  "displayName": "Circuit.js",
+  "path": "pages/cours/frwa_ref_circuit.js/Circuit.js.html",
   "type": "file"
 }
 ]

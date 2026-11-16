@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>FrWA Circuit - Simulateur de circuits - FrWA Conception</title>
+    <title>Circuit.js - Simulateur de circuits - FrWA Conception</title>
     <!-- Carte affichée dans la page de section -->
     <meta name="description" content="Simulateur de circuits électroniques en temps réel : composants, puces, oscilloscope avec zoom et mesures, exemples prêts à l'emploi.">
     <meta name="tags" content="Électronique, Simulation">
@@ -13,9 +13,9 @@
     <div class="page-content">
         <!-- Bannière -->
         <div class="page-banner">
-            <img src="assets/images/banniere.png" alt="FrWA Circuit">
+            <img src="assets/images/banniere.png" alt="Circuit.js">
             <div class="page-banner-overlay">
-                <h1 class="page-banner-title">FrWA Circuit</h1>
+                <h1 class="page-banner-title">Circuit.js</h1>
                 <span class="page-banner-subtitle">Simulateur de circuits en temps réel</span>
             </div>
         </div>
@@ -37,7 +37,7 @@
             <button class="btn btn-secondary" onclick="window.open(document.getElementById('frwa-circuit-cadre').src, '_blank')">↗ Ouvrir dans un nouvel onglet</button>
         </div>
 
-        <iframe id="frwa-circuit-cadre" src="assets/simulateur.html" title="FrWA Circuit" allow="fullscreen; clipboard-read; clipboard-write"
+        <iframe id="frwa-circuit-cadre" src="assets/simulateur.html" title="Circuit.js" allow="fullscreen; clipboard-read; clipboard-write"
                 style="display:block; width:100%; height:calc(100vh - 120px); min-height:620px; border:1px solid var(--bg-tertiary); border-radius:var(--border-radius-lg); background:#000;"></iframe>
 
         <div class="divider"></div>
@@ -50,6 +50,18 @@
             <li><strong>Oscilloscope</strong> (sur ordinateur) : clic gauche glissé = agrandir une zone, molette = zoom en temps, clic droit maintenu = se déplacer, double-clic = tout voir ; graphes joints ou séparés, trigger (front montant ou descendant), curseurs, mesures, export CSV et PNG.</li>
             <li><strong>Fichier</strong> : rien n'est gardé par le site. « Enregistrer » télécharge le circuit sur votre ordinateur (fichier <code>.circuit.json</code>) ; « Ouvrir » le recharge, ou glissez le fichier sur le simulateur.</li>
         </ul>
+
+        <div class="card-alert info">
+            <div class="card-body">
+                <strong>📚 Crédit :</strong><br>
+                Simulateur inspiré de <strong>CircuitJS</strong>, le simulateur de circuits de Paul Falstad
+                (version JavaScript d'Iain Sharp) :
+                <a href="https://www.falstad.com/circuit/" target="_blank" rel="noopener">page originale du projet</a> ·
+                <a href="https://github.com/pfalstad/circuitjs1" target="_blank" rel="noopener">dépôt historique de CircuitJS</a>.
+                Le code de cette page a été réécrit pour le site ; les résultats d'une simulation sont à vérifier
+                avant de câbler un montage réel.
+            </div>
+        </div>
 
         <div class="divider"></div>
         <a data-retour class="btn btn-primary"></a>
