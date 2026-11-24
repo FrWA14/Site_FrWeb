@@ -1,5 +1,5 @@
 {
-  "generated": "2026-11-16 18:07:04",
+  "generated": "2026-11-24 18:45:36",
   "children": [
 {
   "name": "code",
@@ -66,6 +66,62 @@
   "displayName": "Bargraph LM3914",
   "path": "pages/electronique/bargraph_lm3914/Bargraph_LM3914.html",
   "type": "file"
+}
+]
+},
+{
+  "name": "coupe_de_france_robotique",
+  "displayName": "Coupe De France Robotique",
+  "path": "pages/electronique/coupe_de_france_robotique",
+  "type": "folder",
+  "children": [
+{
+  "name": "Coupe_de_France_de_robotique.html",
+  "displayName": "Coupe De France De Robotique",
+  "path": "pages/electronique/coupe_de_france_robotique/Coupe_de_France_de_robotique.html",
+  "type": "file"
+},
+{
+  "name": "2026-2027",
+  "displayName": "2026 2027",
+  "path": "pages/electronique/coupe_de_france_robotique/2026-2027",
+  "type": "folder",
+  "children": [
+{
+  "name": "2026-2027.html",
+  "displayName": "2026 2027",
+  "path": "pages/electronique/coupe_de_france_robotique/2026-2027/2026-2027.html",
+  "type": "file"
+},
+{
+  "name": "pami",
+  "displayName": "Pami",
+  "path": "pages/electronique/coupe_de_france_robotique/2026-2027/pami",
+  "type": "folder",
+  "children": [
+{
+  "name": "PAMI.html",
+  "displayName": "Pami",
+  "path": "pages/electronique/coupe_de_france_robotique/2026-2027/pami/PAMI.html",
+  "type": "file"
+}
+]
+},
+{
+  "name": "robot",
+  "displayName": "Robot",
+  "path": "pages/electronique/coupe_de_france_robotique/2026-2027/robot",
+  "type": "folder",
+  "children": [
+{
+  "name": "Robot.html",
+  "displayName": "Robot",
+  "path": "pages/electronique/coupe_de_france_robotique/2026-2027/robot/Robot.html",
+  "type": "file"
+}
+]
+}
+]
 }
 ]
 },

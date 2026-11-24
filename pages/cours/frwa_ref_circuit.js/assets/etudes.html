@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Circuit.js · Études</title>
+<style>
+  :root { --bg:#0a0f0f; --bg2:#121a1a; --bg3:#1e2a2a; --bord:#2c3d3b; --teal:#4ecdc4; --txt:#d7e4e2; --muted:#7d908d; --jaune:#ffcc00 }
+  html, body { margin:0; height:100%; background:var(--bg); color:var(--txt); font:14px ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif; overflow:hidden }
+  #page { display:grid; grid-template-columns:400px 1fr; height:100% }
+  #gauche { display:flex; flex-direction:column; min-height:0; background:var(--bg2); border-right:1px solid var(--bg3) }
+  header { padding:12px 14px 10px; border-bottom:1px solid var(--bg3) }
+  header b { color:var(--teal); font-size:15px; display:block; line-height:1.3 }
+  header .sous, .sous { color:var(--muted); font-size:12px; line-height:1.45 }
+  header a { color:var(--teal) }
+  select { width:100%; margin-top:8px; background:var(--bg3); color:var(--txt); border:1px solid var(--bord); border-radius:8px; padding:5px 8px; font:inherit }
+  #etapes { list-style:none; margin:0; padding:6px; border-bottom:1px solid var(--bg3); overflow:auto; max-height:38vh; flex-shrink:0 }
+  #etapes li { display:flex; gap:9px; align-items:baseline; padding:5px 8px; border-radius:8px; cursor:pointer; line-height:1.3 }
+  #etapes li:hover { background:var(--bg3) }
+  #etapes li.actif { background:var(--bg3); outline:1px solid var(--teal) }
+  #etapes .bloc { flex:0 0 30px; font-weight:700; color:var(--teal); font-variant-numeric:tabular-nums }
+  #etapes .partie { color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.06em; padding:8px 8px 2px; cursor:default }
+  #etapes .partie:hover { background:none }
+  #detail { flex:1; overflow:auto; padding:12px 14px 16px }
+  #detail h2 { font-size:15px; margin:0 0 10px; color:var(--txt); line-height:1.35 }
+  #detail h3 { font-size:11px; margin:14px 0 4px; color:var(--teal); text-transform:uppercase; letter-spacing:.06em }
+  #detail p { margin:0; line-height:1.55; font-size:13.5px }
+  #detail .gen { border-left:3px solid var(--jaune); padding-left:9px }
+  nav { display:flex; gap:8px; padding:10px 14px; border-top:1px solid var(--bg3) }
+  .btn { background:var(--bg3); color:var(--txt); border:1px solid var(--bord); border-radius:8px; padding:6px 12px; font:inherit; cursor:pointer; text-decoration:none; display:inline-block }
+  .btn:hover:not(:disabled) { border-color:var(--teal) } .btn:disabled { opacity:.4; cursor:default }
+  .btn.primaire { background:var(--teal); color:#04110f; border-color:var(--teal); font-weight:600; margin-left:auto }
+  iframe { width:100%; height:100%; border:0; background:var(--bg); display:block }
+  @media (max-width: 900px) { #page { grid-template-columns:1fr; grid-template-rows:45vh 1fr } #etapes { max-height:16vh } }
+</style>
+</head>
+<body>
+<!-- Fenêtre des études : une suite d'étapes (static/etudes.js), chacune simulée dans le simulateur à droite
+     (index.html?etude#exemple=ID : le circuit en cours de la fenêtre principale n'est ni relu ni écrasé).
+     Adresse : etudes.html#ETUDE ou etudes.html#ETUDE/ETAPE ; flèches ← → du clavier : étape précédente / suivante. -->
+<div id="page">
+  <div id="gauche">
+    <header>
+      <b id="titre">Études</b>
+      <div class="sous" id="description"></div>
+      <div class="sous" id="source"></div>
+      <select id="choix-etude" hidden></select>
+    </header>
+    <ul id="etapes"></ul>
+    <div id="detail"></div>
+    <nav>
+      <button class="btn" id="prec">← Précédente</button>
+      <button class="btn" id="suiv">Suivante →</button>
+      <button class="btn primaire" id="recharger" title="Recharger l'étape avec ses valeurs d'origine">Réinitialiser</button>
+    </nav>
+  </div>
+  <iframe id="simulateur" title="Simulateur"></iframe>
+</div>
+<script>window.FrWAConfig = { simulateur: 'simulateur.html', documents: { "demod6k": { href: "../../../../index.html#pages/electronique/coupe_de_france_robotique/2026-2027/robot/Robot.html", texte: "Coupe de France de robotique 2026-2027 \u00b7 robot" } } };</script>
+<script src="js/regles.js"></script>
+<script src="js/bus.js"></script>
+<script src="js/moteur.js"></script>
+<script src="js/composants.js"></script>
+<script src="js/puces.js"></script>
+<script src="js/circuit.js"></script>
+<script src="js/monde.js"></script>
+<script src="js/exemples.js"></script>
+<script src="js/etudes.js"></script>
+<script>
+'use strict';
+(() => {
+  const ETUDES = window.FrWAEtudes || [], $ = s => document.querySelector(s);
+  const el = (tag, attrs = {}, ...enfants) => { const e = document.createElement(tag); for (const [k, v] of Object.entries(attrs)) if (k === 'onclick') e.onclick = v; else e.setAttribute(k, v); for (const c of enfants) if (c != null) e.append(c); return e; };
+  const PARTIE = { M1: 'Partie 2 · carte moteur' };
+  // version du site : page du simulateur et document de l'étude réglés par window.FrWAConfig (outils/construire_site.py)
+  const CFG = window.FrWAConfig || {}, SIM = CFG.simulateur || 'index.html';
+  let etude = null, k = 0, chargee = false;
+
+  function lireAdresse() {
+    const [idE, idS] = decodeURIComponent(location.hash.slice(1)).split('/');
+    etude = ETUDES.find(e => e.id === idE) || ETUDES[0];
+    if (!etude) return;
+    const i = etude.etapes.findIndex(s => s.id === idS); k = i >= 0 ? i : 0;
+  }
+  function afficherEtude() {
+    $('#titre').textContent = etude ? 'Étude · ' + etude.titre : 'Aucune étude';
+    $('#description').textContent = etude?.description || '';
+    const doc = CFG.documents?.[etude?.id] || (etude?.document ? { href: etude.document, texte: 'version 2 (claude.ai)' } : null);
+    $('#source').replaceChildren(...(doc ? ['Document : ', el('a', { href: doc.href, target: '_blank', rel: 'noopener' }, doc.texte)] : []));
+    const sel = $('#choix-etude'); sel.hidden = ETUDES.length < 2; sel.replaceChildren(...ETUDES.map(e => { const o = el('option', { value: e.id }, e.titre); if (e === etude) o.selected = true; return o; }));
+    const ul = $('#etapes'); ul.replaceChildren();
+    if (!etude) return;
+    ul.append(el('li', { class: 'partie' }, 'Partie 1 · carte de réception'));
+    etude.etapes.forEach((s, i) => {
+      if (PARTIE[s.bloc]) ul.append(el('li', { class: 'partie' }, PARTIE[s.bloc]));
+      ul.append(el('li', { 'data-i': i, onclick: () => aller(i) }, el('span', { class: 'bloc' }, s.bloc), el('span', {}, s.titre.replace(/^[^—]*—\s*/, ''))));
+    });
+  }
+  function afficherEtape(recharger) {
+    if (!etude) return;
+    const s = etude.etapes[k];
+    for (const li of document.querySelectorAll('#etapes li[data-i]')) li.classList.toggle('actif', +li.dataset.i === k);
+    document.querySelector('#etapes li.actif')?.scrollIntoView({ block: 'nearest' });
+    $('#detail').replaceChildren(
+      el('h2', {}, `${k + 1} / ${etude.etapes.length} · ${s.titre}`),
+      el('h3', {}, 'Générateur équivalent'), el('p', { class: 'gen' }, s.generateur),
+      el('h3', {}, 'Fonctionnement'), el('p', {}, s.texte),
+      el('h3', {}, 'À observer, à essayer'), el('p', {}, s.observer),
+      el('h3', {}, 'Simulation'), el('p', { class: 'sous' }, `pas de calcul ${fmt(s.dt)}s · vitesse ×${String(s.vitesse ?? 1).replace('.', ',')} · oscilloscope ${fmt(s.fenetre ?? 2)}s par écran`));
+    $('#prec').disabled = k === 0; $('#suiv').disabled = k === etude.etapes.length - 1;
+    document.title = `${s.bloc} · ${etude.titre} · FrWA Circuit`;
+    const f = $('#simulateur'), cible = SIM + '?etude#exemple=' + s.id;
+    if (!chargee || recharger) { f.src = 'about:blank'; setTimeout(() => { f.src = cible; }, 0); chargee = true; }
+    else f.contentWindow.location.hash = 'exemple=' + s.id;     // même page : l'étape change sans recharger les puces
+  }
+  const fmt = x => { const u = [[1, ''], [1e-3, 'm'], [1e-6, 'µ'], [1e-9, 'n']].find(([m]) => x >= m) || [1e-9, 'n']; return String(+(x / u[0]).toPrecision(3)).replace('.', ',') + ' ' + u[1]; };
+  function aller(i) {
+    if (!etude || i < 0 || i >= etude.etapes.length) return;
+    k = i; history.replaceState(null, '', '#' + etude.id + '/' + etude.etapes[k].id); afficherEtape(false);
+  }
+  $('#prec').onclick = () => aller(k - 1); $('#suiv').onclick = () => aller(k + 1);
+  $('#recharger').onclick = () => afficherEtape(true);
+  $('#choix-etude').onchange = e => { location.hash = e.target.value; };
+  addEventListener('hashchange', () => { const avant = etude; lireAdresse(); if (etude !== avant) afficherEtude(); afficherEtape(false); });
+  addEventListener('keydown', e => { if (e.target.closest?.('input, select, textarea')) return; if (e.key === 'ArrowLeft') aller(k - 1); if (e.key === 'ArrowRight') aller(k + 1); });
+  lireAdresse(); afficherEtude(); afficherEtape(true);
+})();
+</script>
+</body>
+</html>

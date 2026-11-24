@@ -38,4 +38,6 @@ window.FrWACatalogue = [
   'amplis.puce.js',
   'commutation.puce.js',
   'arduino.puce.js',
+  'discrets.puce.js',
+  'generateurs.puce.js',
 ];

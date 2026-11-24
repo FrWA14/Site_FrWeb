@@ -35,6 +35,8 @@
         <div class="flex gap-sm" style="margin-bottom: var(--spacing-md); flex-wrap: wrap;">
             <button class="btn btn-primary" onclick="document.getElementById('frwa-circuit-cadre').requestFullscreen()">⛶ Plein écran</button>
             <button class="btn btn-secondary" onclick="window.open(document.getElementById('frwa-circuit-cadre').src, '_blank')">↗ Ouvrir dans un nouvel onglet</button>
+            <!-- data-src : chemin corrigé par le site (un lien <a> vers un .html deviendrait une navigation interne) -->
+            <button class="btn btn-secondary" data-src="assets/etudes.html#demod6k" onclick="window.open(this.dataset.src, '_blank')">📘 Études pas à pas</button>
         </div>
 
         <iframe id="frwa-circuit-cadre" src="assets/simulateur.html" title="Circuit.js" allow="fullscreen; clipboard-read; clipboard-write"
@@ -48,6 +50,12 @@
             <li><strong>Glisser depuis une broche</strong> : tracer un fil. <strong>Glisser un composant</strong> : le déplacer. Molette de la souris ou pincement : zoom.</li>
             <li><strong>Sélectionner un composant</strong> : la molette jaune règle sa valeur ; le bouton oscilloscope affiche sa tension.</li>
             <li><strong>Oscilloscope</strong> (sur ordinateur) : clic gauche glissé = agrandir une zone, molette = zoom en temps, clic droit maintenu = se déplacer, double-clic = tout voir ; graphes joints ou séparés, trigger (front montant ou descendant), curseurs, mesures, export CSV et PNG.</li>
+            <li><strong>Études</strong> (bouton ci-dessus, ou carte « Études » dans Exemples) : un montage complet découpé en étapes,
+                chacune simulée avec un générateur équivalent à la place de l'étage précédent. Première étude : la démodulation de
+                tonalités à référence 6 kHz (version 2) du robot de la Coupe de France de robotique 2026-2027 : entrée isolée,
+                banc de filtres, PLL, actionneurs, alimentation batterie, puis la carte moteur pas à pas.</li>
+            <li><strong>Indicateur</strong> (réglages d'un composant) : un nom libre affiché sur le schéma, par exemple son rôle
+                (« Ampli du signal », « Transistor A1M1 »). Il est vide par défaut et n'agit pas sur la simulation.</li>
             <li><strong>Fichier</strong> : rien n'est gardé par le site. « Enregistrer » télécharge le circuit sur votre ordinateur (fichier <code>.circuit.json</code>) ; « Ouvrir » le recharge, ou glissez le fichier sur le simulateur.</li>
         </ul>
 

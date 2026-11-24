@@ -72,12 +72,13 @@ boitier({ id: 'lm324', nom: 'LM324', nAli: 4, vp: 'VCC', vn: 'GND', chuteHaut: 1
   broches: ['OUT1', 'IN1-', 'IN1+', 'VCC', 'IN2+', 'IN2-', 'OUT2', 'OUT3', 'IN3-', 'IN3+', 'GND', 'IN4+', 'IN4-', 'OUT4'] });
 
 /* ---------- Comparateurs à collecteur ouvert (résistance de rappel externe) ---------- */
-function comparateur(id, nom, description, broches, nComp, tags = []) {
+function comparateur(id, nom, description, broches, nComp, tags = [], extra = {}) {
   const ent = [], sor = [], el = [];
   for (let k = 1; k <= nComp; k++) { ent.push(`IN${k}+`, `IN${k}-`); sor.push('OUT' + k); el.push({ t: 'S', a: 'OUT' + k, b: 'GND', ferme: false, Ron: 60, nom: 'sortie' + k }); }
   FrWA.puce({
     id, tags: ['ali', 'analogique', ...tags], nom, prefixe: 'U', categorie: 'Amplificateurs', version: '1.0.0', regles: 1, description,
     broches: broches.map(b => (/-$/.test(b) ? etiq(b) : b)),
+    ...extra,
     typesBroches: { entree: ent, drain_ouvert: sor, alim_entree: ['VCC', 'GND'] }, variables: [], modele3d: null,
     modele: {
       elements: [...el, { t: 'R', a: 'VCC', b: 'GND', R: 6e3 }],
@@ -97,4 +98,18 @@ comparateur('lm393', 'LM393', 'Double comparateur, alimentation simple 2 à 36 V
   ['OUT1', 'IN1-', 'IN1+', 'GND', 'IN2+', 'IN2-', 'OUT2', 'VCC'], 2, ['basic', 'arduino']);
 comparateur('lm339', 'LM339', 'Quadruple comparateur, alimentation simple, sorties à collecteur ouvert.',
   ['OUT2', 'OUT1', 'VCC', 'IN1-', 'IN1+', 'IN2-', 'IN2+', 'IN3-', 'IN3+', 'IN4-', 'IN4+', 'GND', 'OUT4', 'OUT3'], 4);
+
+/* ---------- Unités séparées (comme les « unités » d'un symbole KiCad) : un seul ampli ou comparateur par symbole,
+   avec ses broches d'alimentation. Même modèle que le boîtier complet ; schémas plus lisibles (étude démodulation). */
+const COTES_UNITE = (vp, vn) => ({ gauche: ['IN1+', null, 'IN1-'], droite: [null, 'OUT1'], haut: [vp], bas: [vn] });
+comparateur('lm339-u', 'LM339 ¼', 'Un comparateur du LM339 (unité ¼ du boîtier), sortie à collecteur ouvert : tirée à 0 quand IN− > IN+, relâchée sinon (résistance de rappel externe). VCC et GND : alimentation du boîtier.',
+  ['IN1+', 'IN1-', 'OUT1', 'VCC', 'GND'], 1, ['comparateur'], { cotes: COTES_UNITE('VCC', 'GND') });
+FrWA.puce({
+  id: 'lm358-u', tags: ['ali', 'analogique'], nom: 'LM358 ½', prefixe: 'U', categorie: 'Amplificateurs', version: '1.0.0', regles: 1,
+  description: 'Un ampli-op du LM358 (unité ½ du boîtier) : alimentation simple, entrées jusqu\'à 0 V, sortie haute ≈ VCC − 1,5 V.',
+  broches: ['IN1+', etiq('IN1-'), 'OUT1', 'VCC', 'GND'],
+  typesBroches: { entree: ['IN1+', 'IN1-'], sortie: ['OUT1'], alim_entree: ['VCC', 'GND'] },
+  cotes: COTES_UNITE('VCC', 'GND'), parametres: PARAM_ALI(1.5, 0.02, 1e5), principal: 'A', variables: [], modele3d: null,
+  modele: { elements: [...ali(1, 'VCC', 'GND'), { t: 'R', a: 'VCC', b: 'GND', R: 14e3 }] },
+});
 })();

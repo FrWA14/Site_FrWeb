@@ -17,8 +17,11 @@ const EXEMPLES = G.FrWAExemples;
    stockage : garder le circuit en cours et la liste des schémas (navigateur / fichier du projet) ; sinon tout passe par
    des fichiers que l'on télécharge et que l'on rouvre. oscilloBureau : oscilloscope à un écran avec zoom, curseurs et
    mesures (oscillo_bureau.js) sur les écrans larges. sansTags : étiquettes de composants à ne pas proposer.
-   vue3d : proposer la fenêtre 3D des modules (vue3d.html). */
-const CONFIG = { stockage: true, oscilloBureau: false, sansTags: [], vue3d: true, ...(G.FrWAConfig || {}) };
+   vue3d : proposer la fenêtre 3D des modules (vue3d.html). etudes : proposer la fenêtre des études (etudes.html). */
+const CONFIG = { stockage: true, oscilloBureau: false, sansTags: [], vue3d: true, etudes: true, ...(G.FrWAConfig || {}) };
+/* page ouverte dans la fenêtre des études (index.html?etude#exemple=…) : le circuit en cours n'y est ni relu ni gardé,
+   pour ne pas écraser celui de la fenêtre principale */
+const MODE_ETUDE = /[?&]etude\b/.test(location.search);
 const typePropose = T => !(T.tags || []).some(t => CONFIG.sansTags.includes(t));
 
 const $ = s => document.querySelector(s);
@@ -72,7 +75,7 @@ function toast(msg, type = '') {
 }
 let _sauveT = 0;
 function sauvegarder() {
-  if (!CONFIG.stockage) return;
+  if (!CONFIG.stockage || MODE_ETUDE) return;
   clearTimeout(_sauveT);
   _sauveT = setTimeout(() => {
     const o = schema.serialiser();
@@ -205,7 +208,7 @@ function capturer(objs) {
   return {
     format: 'frwa-circuit-copie', version: 1,
     elements: els.map(e => ({ type: e.type, nom: e.nom, x: e.x, y: e.y, rot: e.rot, params: JSON.parse(JSON.stringify(e.params)),
-      ...(e.sansPastille ? { sansPastille: true } : {}), ...(e.pastille ? { pastille: e.pastille } : {}), ...(e.inverse ? { inverse: true } : {}) })),
+      ...(e.sansPastille ? { sansPastille: true } : {}), ...(e.pastille ? { pastille: e.pastille } : {}), ...(e.inverse ? { inverse: true } : {}), ...(e.indicateur ? { indicateur: e.indicateur } : {}), ...(e.indicateur && e.indicateurPos ? { indicateurPos: [...e.indicateurPos] } : {}) })),
     fils: fils.map(f => [f.x1, f.y1, f.x2, f.y2]),
   };
 }
@@ -229,7 +232,7 @@ function coller(donnees = pressePapier, ou = null) {
     if (!TYPES[e.type]) { manquants.add(e.type.replace('puce:', '')); continue; }
     const pris = schema.elements.some(z => z.nom === e.nom);
     const n = schema.ajouter(e.type, e.x + dx, e.y + dy, e.rot || 0, JSON.parse(JSON.stringify(e.params || {})), pris ? undefined : e.nom);
-    if (e.sansPastille) n.sansPastille = true; if (e.pastille) n.pastille = e.pastille; if (e.inverse) n.inverse = true;
+    if (e.sansPastille) n.sansPastille = true; if (e.pastille) n.pastille = e.pastille; if (e.inverse) n.inverse = true; if (e.indicateur) n.indicateur = String(e.indicateur); if (e.indicateur && e.indicateurPos) n.indicateurPos = [...e.indicateurPos];
     nouveaux.add(n);
   }
   for (const [a, b, c, d] of donnees.fils) { const f = schema.ajouterFil(a + dx, b + dy, c + dx, d + dy); if (f) nouveaux.add(f); }
@@ -382,11 +385,12 @@ function dessinerPastilles(dpr) {
   if (!montrerPastilles || vue.z < 0.55) return;
   g.setTransform(dpr, 0, 0, dpr, 0, 0);
   const fs = Math.max(9, Math.min(14, 9 * vue.z));
+  const fsInd = 9 * vue.z;   // indicateurs : à l'échelle du schéma, masqués sous 7 px
   const ecran = (x, y) => [x * vue.z + vue.x, y * vue.z + vue.y];
   for (const el of schema.elements) {
     const T = TYPES[el.type];
-    if (T.etiquette || el.sansPastille) continue;
-    const val = texteValeur(el);
+    if (T.etiquette) continue;
+    const val = el.sansPastille ? null : texteValeur(el);
     let pn, pv, an = 'center', av = 'center';
     if (T.dipole) {
       // comme PROTO : horizontal → nom au-dessus, valeur en dessous ; vertical → nom à gauche, valeur à droite
@@ -401,6 +405,19 @@ function dessinerPastilles(dpr) {
     } else {
       const b = boiteMonde(el); pn = [b[2] + 6, b[1] + 6]; an = 'left'; pv = [b[2] + 6, b[3] - 6]; av = 'left';
     }
+    // el.indicateur : repère libre saisi par l'utilisateur (vide par défaut), pastille jaune collée à celle du nom,
+    // du côté opposé au composant ; à la place du nom quand celui-ci est masqué
+    const avecNom = !el.sansPastille && el.pastille !== 'valeur';
+    if (el.indicateur && fsInd >= 7) {
+      // taille liée au schéma (9 px à l'échelle 1) : la place réservée par le placement reste juste à tout zoom
+      // el.indicateurPos : centre de la pastille relatif au composant (placement automatique des études), sinon collée au nom
+      if (el.indicateurPos) { const [ix, iy] = ecran(el.x + el.indicateurPos[0], el.y + el.indicateurPos[1]); pastille(ix, iy, el.indicateur, COUL.pastilleInd, '#1a1400', 'center', fsInd); }
+      else {
+        const d = !avecNom ? 0 : T.dipole ? -18 * (el.inverse && el.rot % 2 === 0 ? -1 : 1) : 18;
+        const [ix, iy] = ecran(pn[0], pn[1] + d); pastille(ix, iy, el.indicateur, COUL.pastilleInd, '#1a1400', an, fsInd);
+      }
+    }
+    if (el.sansPastille) continue;
     // el.pastille : 'valeur' ou 'nom' pour n'en montrer qu'une (circuits denses)
     if (el.pastille !== 'valeur') { const [sx, sy] = ecran(...pn); pastille(sx, sy, el.nom, COUL.pastilleNom, '#ffffff', an, fs); }
     if (val && pv && el.pastille !== 'nom') { const [tx, ty] = ecran(...pv); pastille(tx, ty, val, COUL.pastilleVal, '#04110f', av, fs); }
@@ -1301,8 +1318,12 @@ function exempleUtilisable(ex) {
 }
 function remplirExemples(corps) {
   corps.append(el_('p', { class: 'aide' }, 'Cliquez un exemple pour le charger (le circuit en cours est remplacé ; exportez-le d\'abord dans Fichier si besoin).'));
+  if (CONFIG.etudes) for (const et of G.FrWAEtudes || []) {
+    corps.append(el_('div', { class: 'carte ex', onclick: () => { const w = window.open('etudes.html#' + et.id, 'frwa_etudes'); if (!w) toast('Fenêtre bloquée par le navigateur : autorisez les fenêtres surgissantes pour cette page.', 'erreur'); } },
+      el_('div', {}, el_('div', { class: 'n' }, `Étude : ${et.titre} (${et.etapes.length} étapes, fenêtre)`), el_('div', { class: 'd' }, et.description))));
+  }
   for (const ex of EXEMPLES) {
-    if (!exempleUtilisable(ex)) continue;
+    if (ex.etude || !exempleUtilisable(ex)) continue;
     corps.append(el_('div', { class: 'carte ex', onclick: () => { chargerSchema(ex); fermerTiroir(); } },
       apercuSchema(resoudreExemple(ex)), el_('div', {}, el_('div', { class: 'n' }, ex.titre), el_('div', { class: 'd' }, ex.description))));
   }
@@ -1332,6 +1353,11 @@ function remplirReglages(corps) {
   const nom = el_('input', { type: 'text', class: 'large' }); nom.value = el.nom;
   nom.onchange = () => { const n = nom.value.trim(); if (n && !schema.elements.some(e => e !== el && e.nom === n)) { el.nom = n; sauvegarder(); majLegende(); } else nom.value = el.nom; };
   corps.append(el_('div', { class: 'ov-ligne' }, el_('span', {}, 'Nom'), nom));
+  // indicateur : nom libre, purement visuel (n'entre ni dans la simulation ni dans les liaisons), vide par défaut
+  const ind = el_('input', { type: 'text', class: 'large', maxlength: '40', placeholder: 'vide : rien d\'affiché', title: 'Repère libre affiché sur le schéma (pastille jaune) ; sans effet sur la simulation' });
+  ind.value = el.indicateur || '';
+  ind.onchange = () => { const t = ind.value.trim().slice(0, 40); if (t) el.indicateur = t; else delete el.indicateur; ind.value = t; sauvegarder(); };
+  corps.append(el_('div', { class: 'ov-ligne' }, el_('span', {}, 'Indicateur'), ind));
   corps.append(el_('div', { class: 'ov-ligne' }, el_('span', {}, 'Type'), el_('b', {}, T.nom)));
   if (T.famille) {
     const freres = Object.values(TYPES).filter(U => U.famille?.id === T.famille.id).sort((x, y) => x.famille.valeur.localeCompare(y.famille.valeur, 'fr', { numeric: true }));
@@ -1681,10 +1707,15 @@ async function demarrer() {
   await chargerTout();
   if (Puces.erreurs.length) toast(Puces.erreurs.length + ' message(s) au chargement des puces : voir ＋', 'erreur');
   let depart = null;
-  try { depart = CONFIG.stockage ? JSON.parse(localStorage.getItem('frwa_circuit_courant') || 'null') : null; } catch (e) { depart = null; }
+  try { depart = CONFIG.stockage && !MODE_ETUDE ? JSON.parse(localStorage.getItem('frwa_circuit_courant') || 'null') : null; } catch (e) { depart = null; }
   const demande = (location.hash.match(/exemple=([\w-]+)/) || [])[1];      // index.html#exemple=horloge4060
   const exDemande = demande && EXEMPLES.find(e => e.id === demande);
   chargerSchema(exDemande || (depart && (depart.elements?.length || depart.fils?.length) ? depart : EXEMPLES.find(e => e.id === 'chenillard')));
+  // changement d'exemple par l'adresse (fenêtre des études : étape suivante sans recharger la page)
+  window.addEventListener('hashchange', () => {
+    const id = (location.hash.match(/exemple=([\w-]+)/) || [])[1], ex = id && EXEMPLES.find(e => e.id === id);
+    if (ex) { chargerSchema(ex); if (compil) compil.sim.t = 0; compil = null; if (!enMarche) basculerMarche(); }
+  });
 
   let dernier = performance.now(), prochainDessin = 0;
   const boucle = ts => {

@@ -1,5 +1,10 @@
 [
   {
+    "date": "2026-11-24T17:00:00Z",
+    "title": "Mise à jour du site",
+    "message": "Circuit.js : nouveau moteur et nouveau résolveur (ampli opérationnel réel sans blocage en saturation, diode stable aux fortes tensions), étiquettes de réseau placées sans chevauchement, indicateur libre sur chaque composant (son rôle, affiché sur le schéma) et fenêtre « Études » : la démodulation de tonalités à référence 6 kHz (version 2) simulée étape par étape. Nouvelle section Électronique → Coupe de France de robotique, saison 2026-2027 : le robot (schémas, explication du montage, archive du choix des composants, circuits à ouvrir dans le simulateur) et les PAMI (à venir)."
+  },
+  {
     "date": "2026-10-30T15:00:00Z",
     "title": "Mise à jour du site",
     "message": "Ajout de la série 4000 : 47 fiches de circuits CMOS CD4000 avec brochage interactif, simulateur d'entrées / sorties, schéma de câblage et oscilloscope. Ajout d'une horloge numérique (quartz 32,768 kHz, CD4060, compteurs CD4518) à afficheurs 7 segments ou 10 sorties, réglée sur l'heure du PC ou par 3 boutons de mise à l'heure.",

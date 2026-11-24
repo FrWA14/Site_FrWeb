@@ -25,9 +25,12 @@ const PARAM_REEL = (o) => [
   { cle: 'chuteBas', nom: 'Écart sortie basse / V−', unite: 'V', defaut: o.chuteBas, min: 0, max: 5 },
   { cle: 'rSortie', nom: 'Résistance de sortie', unite: 'Ω', defaut: o.rSortie ?? 50, min: 0.01, max: 1e4, echelle: 'log' },
 ];
-/** éléments communs : point milieu (diviseur 1 MΩ) et consommation */
+/** éléments communs : point milieu et consommation. Le point milieu est une source commandée ((V+ + V−) / 2) et non un
+    diviseur de 1 MΩ : quand le nœud intégrateur bute sur un rail (entrée hors de la plage de sortie, au démarrage d'un
+    suiveur de Vref par exemple), le courant de l'étage d'entrée repasse par le point milieu ; un diviseur le tirait
+    vers 0 V et l'ALI restait bloqué en saturation (corrigé le 2026-11-24, étude demod6k, bloc A). */
 const commun = (vp, vn, rConso) => [
-  { t: 'R', a: vp, b: 'mid', R: 1e6 }, { t: 'R', a: 'mid', b: vn, R: 1e6 },
+  { t: 'E', a: 'mid', b: vn, pa: vp, pb: vn, gain: 0.5 },
   { t: 'R', a: vp, b: vn, R: rConso },
 ];
 /** l'étage d'entrée sature aux rails eux-mêmes : son gain et la transconductance suivent la demi-alimentation (mesurée
@@ -96,6 +99,15 @@ aliReel({ id: 'tda2030', nom: 'TDA2030', tags: ['audio', 'son'], nAli: 1, vp: 'V
 aliReel({ id: 'tda2050', nom: 'TDA2050', tags: ['audio', 'son'], nAli: 1, vp: 'V+', vn: 'V-', GBW: 3, SR: 8, A0: 80, chuteHaut: 2.5, chuteBas: 2.5, rSortie: 0.03, rConso: 200,
   broches: ['IN1+', 'IN1-', 'V-', 'OUT1', 'V+'], cotes: COTES_ALI, categorie: 'Amplificateurs audio',
   description: 'Ampli de puissance audio 32 W (brochage du TDA2030), ±4,5 à ±25 V, 5 A crête.' });
+
+/* MC33079 : quadruple ALI bipolaire faible bruit (16 MHz, 7 V/µs), choisi pour les filtres à Q élevé à 6 kHz (gain en
+   boucle ouverte ≫ 2Q²). Boîtier complet et unité ¼ (un seul ALI, schémas plus lisibles). */
+aliReel({ id: 'mc33079', nom: 'MC33079', tags: ['audio'], nAli: 4, vp: 'VCC', vn: 'VEE', GBW: 16, SR: 7, A0: 110, chuteHaut: 1, chuteBas: 1, rSortie: 30, rConso: 1.1e3,
+  broches: ['OUT1', 'IN1-', 'IN1+', 'VCC', 'IN2+', 'IN2-', 'OUT2', 'OUT3', 'IN3-', 'IN3+', 'VEE', 'IN4+', 'IN4-', 'OUT4'],
+  description: 'Quadruple ALI bipolaire à faible bruit : GBW 16 MHz, 7 V/µs, A0 ≈ 110 dB, alimentation 5 à 36 V (ou ±2,5 à ±18 V). Filtres actifs à Q élevé jusqu\'à quelques dizaines de kHz. Alimentation simple : VEE à la masse.' });
+aliReel({ id: 'mc33079-u', nom: 'MC33079 ¼', tags: ['audio'], nAli: 1, vp: 'VCC', vn: 'VEE', GBW: 16, SR: 7, A0: 110, chuteHaut: 1, chuteBas: 1, rSortie: 30, rConso: 4.4e3,
+  broches: ['IN1+', 'IN1-', 'OUT1', 'VCC', 'VEE'], cotes: { gauche: ['IN1+', null, 'IN1-'], droite: [null, 'OUT1'], haut: ['VCC'], bas: ['VEE'] },
+  description: 'Un ALI du MC33079 (unité ¼ du boîtier) : GBW 16 MHz, 7 V/µs, A0 ≈ 110 dB. VCC / VEE : alimentation du boîtier (VEE à la masse en alimentation simple).' });
 
 /* ---------- LM386 : ampli audio basse tension, gain 20 à 200 ---------- */
 // Équivalent interne : la tension différentielle traverse 150 Ω + 1,35 kΩ (entre GAIN1 et GAIN8) ; la sortie vaut

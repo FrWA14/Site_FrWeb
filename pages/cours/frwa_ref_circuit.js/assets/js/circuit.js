@@ -75,7 +75,7 @@ class Schema {
     return {
       format: 'frwa-circuit', version: 1, titre: this.titre, dt: this.dt,
       elements: this.elements.map(e => ({ type: e.type, nom: e.nom, x: e.x, y: e.y, rot: e.rot, params: { ...e.params },
-        ...(e.sansPastille ? { sansPastille: true } : {}), ...(e.pastille ? { pastille: e.pastille } : {}), ...(e.inverse ? { inverse: true } : {}) })),
+        ...(e.sansPastille ? { sansPastille: true } : {}), ...(e.pastille ? { pastille: e.pastille } : {}), ...(e.inverse ? { inverse: true } : {}), ...(e.indicateur ? { indicateur: e.indicateur } : {}), ...(e.indicateur && e.indicateurPos ? { indicateurPos: [...e.indicateurPos] } : {}) })),
       fils: this.fils.map(f => [f.x1, f.y1, f.x2, f.y2]),
       oscillo: this.oscillo, monde: this.monde || {},
     };
@@ -91,6 +91,8 @@ class Schema {
       if (e.sansPastille) n.sansPastille = true;
       if (e.pastille) n.pastille = e.pastille;
       if (e.inverse) n.inverse = true;
+      if (e.indicateur) n.indicateur = String(e.indicateur);   // repère libre de l'utilisateur, affiché seulement
+      if (e.indicateur && Array.isArray(e.indicateurPos)) n.indicateurPos = e.indicateurPos.slice(0, 2).map(Number);   // centre relatif au composant
     }
     for (const [x1, y1, x2, y2] of o.fils || []) this.ajouterFil(x1, y1, x2, y2);
     this.normaliser();

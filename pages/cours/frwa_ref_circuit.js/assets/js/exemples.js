@@ -39,6 +39,8 @@ function plan(fn) {
         if (d) fils.push([x, y, x + dx * d, y + dy * d]);
         B.L(texte, x + dx * d, y + dy * d, r);
       },
+      /** éléments et fils déjà posés (placement automatique des étiquettes, etudes.js) */
+      donnees() { return { elements, fils }; },
       MP(nom, broche, dir = 'b', d = 0) {
         const [x, y] = B.P(nom, broche), [dx, dy] = DIR[dir];
         if (d) fils.push([x, y, x + dx * d, y + dy * d]);
@@ -706,6 +708,8 @@ G.FrWAExemples = [
 ];
 
 /* Montages réutilisés par plusieurs exemples (déclarations « hissées » : utilisables plus haut) */
+G.FrWAPlan = plan;   // constructeur de schémas, réutilisé par etudes.js
+
 function planTcrt(B, monde) {
   B.E('pile', 'V1', -60, 300, 3, { V: 5 }); B.L('+5V', -60, 260, 1); B.M(-60, 340);
   B.E('puce:tcrt5000', 'U1', 200, 300, 0, { distance: 3, surface: 'blanc', source: monde ? 'monde physique' : 'réglages' });

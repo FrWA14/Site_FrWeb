@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Robot 2026-2027 - Coupe de France de robotique - FrWA Conception</title>
+    <!-- Carte affichée dans la page de section -->
+    <meta name="description" content="Robot 2026-2027 : commande par tonalités audio (référence 6 kHz), banc de filtres, PLL, actionneurs à relais, moteurs pas à pas pilotés par l'écart de fréquence. Schémas, montage et choix des composants.">
+    <meta name="tags" content="Robotique, Électronique, CD4000, Simulation">
+    <meta name="vignette" content="assets/images/vignette.jpg">
+</head>
+<body>
+    <!-- Archive de l'étude « Démodulation de tonalités à référence 6 kHz, version 2 » (2026-11-23).
+         Schémas : captures des étapes simulées dans Circuit.js (projet frwa_flow-Circuit, static/etudes.js). -->
+    <div class="page-content">
+        <!-- Bannière -->
+        <div class="page-banner">
+            <img src="assets/images/banniere.jpg" alt="Carte de puissance des moteurs pas à pas, simulée">
+            <div class="page-banner-overlay">
+                <h1 class="page-banner-title">Robot 2026-2027</h1>
+                <span class="page-banner-subtitle">Commande par tonalités, actionneurs et moteurs pas à pas</span>
+            </div>
+        </div>
+
+        <!-- Tags -->
+        <div class="flex gap-sm" style="margin-bottom: var(--spacing-lg);">
+            <span class="badge badge-primary">Robotique</span>
+            <span class="badge badge-secondary">CD4000</span>
+            <span class="badge badge-accent">Simulation</span>
+        </div>
+
+        <p class="lead">
+            Le robot reçoit ses ordres sous forme de <strong>tonalités audio</strong> sur une entrée jack :
+            une <strong>référence à 6 kHz</strong>, une tonalité par moteur (3 kHz et 1,5 kHz) et une par
+            actionneur (750 Hz et 375 Hz). Le <strong>signe de l'écart</strong> entre la fréquence reçue et la
+            référence donne le sens de rotation d'un moteur, sa <strong>valeur</strong> donne la vitesse.
+            Tout est réalisé en logique CD4000, avec quelques amplificateurs opérationnels et comparateurs.
+        </p>
+
+        <div class="flex gap-sm" style="margin-bottom: var(--spacing-md); flex-wrap: wrap;">
+            <!-- data-src : chemin corrigé par le site (un lien vers un .html deviendrait une navigation interne) -->
+            <button class="btn btn-primary" data-src="pages/cours/frwa_ref_circuit.js/assets/etudes.html#demod6k" onclick="window.open(this.dataset.src, '_blank')">📘 Ouvrir toutes les étapes dans le simulateur</button>
+            <a class="btn btn-secondary" href="assets/fichiers/etude_demodulation_6khz_v2.md" download>⬇ Étude complète (Markdown)</a>
+            <a class="btn btn-secondary" href="assets/fichiers/circuits_demod6k.zip" download>⬇ Circuits des 10 étapes (.circuit.json)</a>
+        </div>
+
+        <div class="card-alert info">
+            <div class="card-body">
+                <strong>🔌 Accès dans le simulateur :</strong> chaque bloc ci-dessous est simulé dans
+                <a href="pages/cours/frwa_ref_circuit.js/Circuit.js.html">Circuit.js</a> sous la forme d'un circuit
+                équivalent : un générateur remplace l'étage précédent, et l'étage lui-même est câblé avec ses vraies
+                valeurs. Chaque composant porte un <strong>indicateur</strong> (pastille jaune) qui dit son rôle,
+                par exemple « Ampli du signal » ou « Transistor A1M1 ». Zoomez pour les lire. Les fichiers
+                <code>.circuit.json</code> s'ouvrent avec Fichier → Ouvrir.
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <h2>Plan de fréquences</h2>
+        <div class="data-table-wrap"><table class="data-table">
+            <thead><tr><th>Voie</th><th>Fréquence</th><th>Plage</th><th>Rôle</th></tr></thead>
+            <tbody>
+<tr><td>Référence</td><td>6 kHz</td><td>fixe</td><td>Verrouille la PLL ; base des références moteur ; présence générale</td></tr>
+<tr><td>Moteur 1</td><td>3 kHz</td><td>3 kHz ± Δfmax</td><td>Vitesse et sens du moteur 1</td></tr>
+<tr><td>Moteur 2</td><td>1,5 kHz</td><td>1,5 kHz ± Δfmax</td><td>Vitesse et sens du moteur 2</td></tr>
+<tr><td>Actionneur 1</td><td>750 Hz</td><td>fixe</td><td>Relais K1 (tout ou rien)</td></tr>
+<tr><td>Actionneur 2</td><td>375 Hz</td><td>fixe</td><td>Relais K2 (tout ou rien)</td></tr>
+            </tbody>
+        </table></div>
+        <ul>
+            <li>Toutes les voies sont des divisions par 2 de 6 kHz (6 kHz ÷ 16 = 375 Hz) : la carte moteur fabrique ses
+                références 3 kHz et 1,5 kHz en divisant la référence reçue, donc à écart nul le moteur est exactement à l'arrêt.</li>
+            <li>Source : sortie jack d'un téléphone ou d'un ordinateur, environ 0,2 V crête par tonalité quand les cinq sont présentes.</li>
+            <li>Écart maximal Δfmax réglable de ±0,2 à ±0,5 kHz (recommandé : <strong>±0,3 kHz</strong>, pour garder de la marge entre
+                le moteur 2 et l'actionneur à 750 Hz). Vitesse maximale réglable de 0,5 à 3 tr/s (moteur de 200 pas par tour).</li>
+            <li>v = vmax · |Δf| / Δfmax ; le sens suit le signe de Δf. Zone morte sous environ 20 Hz d'écart.</li>
+            <li>Alimentation : batterie au plomb 12 V (10,5 à 14,7 V) ; logique en +9 V régulé, moteurs et relais sur la batterie.</li>
+        </ul>
+
+        <h2>Architecture</h2>
+        <p>Deux cartes, à construire et régler dans cet ordre :</p>
+        <ul>
+            <li><strong>Partie 1, carte de réception</strong> (+9 V régulé, Vref = 4,5 V) : A entrée, B filtres, C mise en forme et
+                présence, D PLL 6 kHz, E validation et actionneurs, H alimentation.</li>
+            <li><strong>Partie 2, carte moteur</strong> : références 3 et 1,5 kHz, écart et sens (M1), conversion en vitesse et VCO (M2),
+                séquenceur (M3), puissance (M4).</li>
+        </ul>
+        <p>Liaison entre les cartes, une nappe de 10 fils : +BAT, +9 V, masse, F6 (référence verrouillée), SQ3 et SQ15 (tonalités
+            moteur mises en carré), PRES3 et PRES15 (présence des voies moteur), G (pilote présent, PLL verrouillée, batterie suffisante).</p>
+
+        <div class="divider"></div>
+
+        <h2>Partie 1 : carte de réception</h2>
+
+        <h3>Bloc A : entrée jack isolée, gain et Vref</h3>
+        <ul>
+            <li><strong>Isolement</strong> : T1, transformateur audio 1:1 (Triad TY-250P, 20 Hz–20 kHz, isolement 1500 V). Seul le signal
+                alternatif passe : aucun courant continu ne peut remonter vers l'appareil, même carte en panne ou batterie inversée,
+                et la boucle de masse avec un téléphone en charge disparaît.</li>
+            <li>C1 (4,7 µF film) bloque le continu de la sortie audio ; R1 (470 Ω) limite le courant : l'appareil voit environ 1,5 kΩ.</li>
+            <li>R2 (1 kΩ) et D1 (BAV99) écrêtent toute surtension avant l'ampli.</li>
+            <li>U1A (MC33079) en inverseur : gain (R4 + RV1) / (R2 + R3) = 1 à 11, réglé par <strong>RV1 (100 kΩ)</strong> pour
+                2,4 V crête par tonalité en sortie des filtres ; C2 (100 pF) coupe au-delà de 15 kHz.</li>
+            <li>Vref = 4,5 V : pont R5 / R6, C3, suiveur U1B, puis R7, C4 et C5.</li>
+        </ul>
+        <div style="margin: var(--spacing-md) 0;">
+            <div class="gallery-item">
+                <img style="height: auto; object-fit: contain; background: #000;" src="assets/images/schema_a.png" alt="Bloc A : entrée jack isolée, gain et Vref">
+                <div class="gallery-item-caption">Bloc A : entrée jack isolée, gain et Vref (capture du simulateur ; pastilles jaunes = rôle de chaque composant ; cliquer pour agrandir)</div>
+            </div>
+        </div>
+        <p><button class="btn btn-secondary btn-sm" data-src="pages/cours/frwa_ref_circuit.js/assets/etudes.html#demod6k/demod6k-a" onclick="window.open(this.dataset.src, '_blank')">▶ Simuler cette étape</button></p>
+
+
+        <h3>Bloc B : banc de cinq filtres passe-bande</h3>
+        <p>Chaque voie : deux passe-bande à contre-réaction multiple de gain 2 en cascade (gain 4, sélectivité doublée).
+            R1 = Q / (G·ω0·C), R2 = 2Q / (ω0·C), R3 = Q / ((2Q² − G)·ω0·C), avec R3 et l'entrée + reliées à Vref.</p>
+        <div class="data-table-wrap"><table class="data-table">
+            <thead><tr><th>Voie</th><th>Amplis</th><th>Q</th><th>R1</th><th>R2</th><th>R3</th><th>C (×4)</th><th>Pic simulé</th></tr></thead>
+            <tbody>
+<tr><td>6 kHz</td><td>U1C, U1D</td><td>5</td><td>14,0 kΩ</td><td>56,2 kΩ</td><td>590 Ω</td><td>4,7 nF</td><td>5,99 kHz</td></tr>
+<tr><td>3 kHz</td><td>U2A, U2B</td><td>3</td><td>8,06 kΩ</td><td>31,6 kΩ</td><td>1,00 kΩ</td><td>10 nF</td><td>3,00 kHz</td></tr>
+<tr><td>1,5 kHz</td><td>U2C, U2D</td><td>2,5</td><td>6,04 kΩ</td><td>24,3 kΩ</td><td>1,15 kΩ</td><td>22 nF</td><td>1,49 kHz</td></tr>
+<tr><td>750 Hz</td><td>U3A, U3B</td><td>5</td><td>11,3 kΩ</td><td>45,3 kΩ</td><td>475 Ω</td><td>47 nF</td><td>745 Hz</td></tr>
+<tr><td>375 Hz</td><td>U3C, U3D</td><td>5</td><td>10,7 kΩ</td><td>42,2 kΩ</td><td>442 Ω</td><td>100 nF</td><td>376 Hz</td></tr>
+            </tbody>
+        </table></div>
+        <p>Les voies moteur ont un Q faible pour laisser passer f0 ± Δfmax (bande à −6 dB : 2,54 à 3,54 kHz et 1,23 à 1,82 kHz).</p>
+        <div style="margin: var(--spacing-md) 0;">
+            <div class="gallery-item">
+                <img style="height: auto; object-fit: contain; background: #000;" src="assets/images/schema_b.png" alt="Bloc B : banc de cinq filtres, deux étages par voie">
+                <div class="gallery-item-caption">Bloc B : banc de cinq filtres, deux étages par voie (capture du simulateur ; pastilles jaunes = rôle de chaque composant ; cliquer pour agrandir)</div>
+            </div>
+        </div>
+        <p><button class="btn btn-secondary btn-sm" data-src="pages/cours/frwa_ref_circuit.js/assets/etudes.html#demod6k/demod6k-b" onclick="window.open(this.dataset.src, '_blank')">▶ Simuler cette étape</button></p>
+
+
+        <h3>Bloc C : mise en forme carrée et présence (voie 3 kHz)</h3>
+        <ul>
+            <li>Carré : comparateur LM339 à hystérésis (R40 = 47 kΩ, R41 = 4,7 MΩ, rappel R42 = 10 kΩ) → SQ6, SQ3, SQ15.</li>
+            <li>Présence : détecteur de crête D2 (BAT85), C30, R43, puis comparateur au seuil Vref + 0,48 à 0,83 V
+                (R44, R45, <strong>RV2 5 kΩ</strong>) : 0,5 V sur les voies moteur, 0,8 V sur les voies fixes.</li>
+            <li>Temporisation : R47 · C31 font apparaître PRES après environ 25 ms ; D3 + R48 le font retomber en 3 ms ;
+                R46 donne environ ±70 mV d'hystérésis ; trigger CD40106B.</li>
+        </ul>
+        <div style="margin: var(--spacing-md) 0;">
+            <div class="gallery-item">
+                <img style="height: auto; object-fit: contain; background: #000;" src="assets/images/schema_c.png" alt="Bloc C : carré et présence, voie 3 kHz">
+                <div class="gallery-item-caption">Bloc C : carré et présence, voie 3 kHz (capture du simulateur ; pastilles jaunes = rôle de chaque composant ; cliquer pour agrandir)</div>
+            </div>
+        </div>
+        <p><button class="btn btn-secondary btn-sm" data-src="pages/cours/frwa_ref_circuit.js/assets/etudes.html#demod6k/demod6k-c" onclick="window.open(this.dataset.src, '_blank')">▶ Simuler cette étape</button></p>
+
+
+        <h3>Bloc D : PLL de référence 6 kHz</h3>
+        <ul>
+            <li>CD4046B U8 : VCO (R50 = 100 kΩ, C40 = 820 pF NP0) rebouclé sur COMP IN, comparateur PC2, filtre de boucle R51, R52, C41
+                (fn ≈ 100 Hz, ζ ≈ 0,7).</li>
+            <li>Verrouillage : moyenne de PC1 (R53, C42) comparée à 2,27 V (R54, R55) par U4D, hystérésis R56, rappel R57 → LOCK.</li>
+            <li>F6, sortie du VCO, est exactement à la fréquence du pilote une fois verrouillée : elle part vers la carte moteur.</li>
+        </ul>
+        <div style="margin: var(--spacing-md) 0;">
+            <div class="gallery-item">
+                <img style="height: auto; object-fit: contain; background: #000;" src="assets/images/schema_d.png" alt="Bloc D : PLL 6 kHz et détecteur de verrouillage">
+                <div class="gallery-item-caption">Bloc D : PLL 6 kHz et détecteur de verrouillage (capture du simulateur ; pastilles jaunes = rôle de chaque composant ; cliquer pour agrandir)</div>
+            </div>
+        </div>
+        <p><button class="btn btn-secondary btn-sm" data-src="pages/cours/frwa_ref_circuit.js/assets/etudes.html#demod6k/demod6k-d" onclick="window.open(this.dataset.src, '_blank')">▶ Simuler cette étape</button></p>
+
+
+        <h3>Bloc E : validation, batterie et actionneurs</h3>
+        <ul>
+            <li>Validation (CD4081B) : G = PRES6 · LOCK · OKBAT ; ENA1 = G · PRES750 ; ENA2 = G · PRES375.</li>
+            <li>Batterie : U6B compare +BAT divisé par R60 = 15 kΩ / R61 = 10 kΩ à Vref ; avec l'hystérésis de R62 et le rappel R63,
+                OKBAT tombe à <strong>10,8 V</strong> et revient vers <strong>11,7 V</strong> (vérifié en simulation : 10,77 / 11,77 V).
+                Une première version avec R60 = 14 kΩ donnait 10,4 / 11,2 V : le courant de R62 dans le pont avait été oublié.</li>
+            <li>Actionneurs : BS170 (Q1, Q2), 100 Ω en série de grille, 100 kΩ vers la masse, roue libre 1N4148 ; relais 12 V sur +BAT
+                (bobine admettant 14,4 V). Les contacts commandent l'actionneur sans lien électrique avec la carte.</li>
+        </ul>
+        <div style="margin: var(--spacing-md) 0;">
+            <div class="gallery-item">
+                <img style="height: auto; object-fit: contain; background: #000;" src="assets/images/schema_e.png" alt="Bloc E : validation, surveillance batterie, relais K1 et K2">
+                <div class="gallery-item-caption">Bloc E : validation, surveillance batterie, relais K1 et K2 (capture du simulateur ; pastilles jaunes = rôle de chaque composant ; cliquer pour agrandir)</div>
+            </div>
+        </div>
+        <p><button class="btn btn-secondary btn-sm" data-src="pages/cours/frwa_ref_circuit.js/assets/etudes.html#demod6k/demod6k-e" onclick="window.open(this.dataset.src, '_blank')">▶ Simuler cette étape</button></p>
+
+
+        <h3>Bloc H : alimentation par batterie au plomb</h3>
+        <ul>
+            <li>F1 : fusible lame 3 A au plus près de la borne + (une batterie au plomb débite des centaines d'ampères en court-circuit).</li>
+            <li>Q3 (IRF4905, canal P) : protection contre l'inversion avec quelques millivolts de chute ; D7 (Zener 15 V) protège la grille, R70 la tire à la masse.</li>
+            <li>D8 (TVS SMBJ18A) écrête les surtensions de coupure des moteurs ; C60 (1000 µF) sert de réservoir.</li>
+            <li>U10 (LM2940CT-9.0) : régulateur à faible chute ; le +9 V reste stable de 10 V à 14,7 V. C62 ≥ 22 µF exigé par le fabricant.</li>
+            <li>Masse en étoile au pied de C60 : retours moteurs d'un côté, masse logique de l'autre.</li>
+        </ul>
+        <div style="margin: var(--spacing-md) 0;">
+            <div class="gallery-item">
+                <img style="height: auto; object-fit: contain; background: #000;" src="assets/images/schema_h.png" alt="Bloc H : alimentation batterie, protection et régulateur 9 V">
+                <div class="gallery-item-caption">Bloc H : alimentation batterie, protection et régulateur 9 V (capture du simulateur ; pastilles jaunes = rôle de chaque composant ; cliquer pour agrandir)</div>
+            </div>
+        </div>
+        <p><button class="btn btn-secondary btn-sm" data-src="pages/cours/frwa_ref_circuit.js/assets/etudes.html#demod6k/demod6k-h" onclick="window.open(this.dataset.src, '_blank')">▶ Simuler cette étape</button></p>
+
+        <div class="divider"></div>
+
+        <h2>Partie 2 : carte moteur</h2>
+        <p>Pour chaque moteur : <strong>écart</strong> (bascule D, BATT1 = |Δf|) → <strong>sens</strong> (PC2 du CD4046B) →
+            <strong>conversion</strong> (monostable + filtre, VFV = 9 V · T · |Δf|) → <strong>mise à l'échelle</strong>
+            (VCOIN = Voff + α · VFV) → <strong>horloge de pas</strong> (VCO) et séquenceur. Avec Voff au seuil du VCO :
+            <strong>v (tr/s) = K · α · 9 V · T · |Δf| / N</strong>. Seul le moteur 1 est dessiné ; le moteur 2 est identique à 1,5 kHz.</p>
+
+        <h3>M1 : références, écart et sens</h3>
+        <ul>
+            <li>U101 (CD4013B) divise F6 par 2 (F3 = 3 kHz) puis par 2 (F15 = 1,5 kHz).</li>
+            <li>U102A échantillonne SQ3 au rythme de F3 : BATT1 est un carré à |Δf|.</li>
+            <li>PC2 de U105 (CD4046B), filtré par R111 / C105 et ramené à 4,5 V par R112 / R113, attaque le trigger U109A : DIR1.
+                En simulation : 7,9 à 8,4 V au-dessus de la référence, 0,6 à 1,1 V en dessous, de ±5 Hz à ±500 Hz.
+                L'ancienne méthode en quadrature se trompait de sens dans 28 % des cas : d'où ce choix.</li>
+        </ul>
+        <div style="margin: var(--spacing-md) 0;">
+            <div class="gallery-item">
+                <img style="height: auto; object-fit: contain; background: #000;" src="assets/images/schema_m1.png" alt="M1 : références, battement et sens">
+                <div class="gallery-item-caption">M1 : références, battement et sens (capture du simulateur ; pastilles jaunes = rôle de chaque composant ; cliquer pour agrandir)</div>
+            </div>
+        </div>
+        <p><button class="btn btn-secondary btn-sm" data-src="pages/cours/frwa_ref_circuit.js/assets/etudes.html#demod6k/demod6k-m1" onclick="window.open(this.dataset.src, '_blank')">▶ Simuler cette étape</button></p>
+
+
+        <h3>M2 : conversion, réglages et VCO</h3>
+        <ul>
+            <li>Monostable U103A (CD4538B, ou CD14538B) : T = (R101 + RV101) · C101, choisi pour VFV = 4,5 V à Δfmax.</li>
+            <li>Filtre de Sallen-Key U104A (LM358, fc ≈ 5 Hz) : rampe d'accélération naturelle d'environ 90 ms.</li>
+            <li>Sommateur U104B (gain 2) : α · VFV (RV102, vitesse maximale) + Voff (R106, RV103, zone morte).</li>
+            <li>VCO de U105 (R110 = 33 kΩ, C104 = 22 nF) → CLK1. En simulation, 3 tr/s demande RV102 presque en butée :
+                si CLK1 n'atteint pas la cadence voulue, passer C104 à 18 nF.</li>
+        </ul>
+        <div class="data-table-wrap"><table class="data-table">
+            <thead><tr><th>Δfmax</th><th>T</th><th>R101 + RV101</th><th>RV101 (22 kΩ)</th></tr></thead>
+            <tbody>
+<tr><td>±0,2 kHz</td><td>2,5 ms</td><td>25 kΩ</td><td>16,8 kΩ</td></tr>
+<tr><td>±0,3 kHz (recommandé)</td><td>1,67 ms</td><td>16,7 kΩ</td><td>8,5 kΩ</td></tr>
+<tr><td>±0,4 kHz</td><td>1,25 ms</td><td>12,5 kΩ</td><td>4,3 kΩ</td></tr>
+<tr><td>±0,5 kHz</td><td>1,0 ms</td><td>10 kΩ</td><td>1,8 kΩ</td></tr>
+            </tbody>
+        </table></div><div class="data-table-wrap"><table class="data-table">
+            <thead><tr><th>Vitesse max</th><th>Pas/s</th><th>α estimé</th><th>RV102 (x)</th></tr></thead>
+            <tbody>
+<tr><td>0,5 tr/s</td><td>100</td><td>0,13</td><td>≈ 0,3 kΩ</td></tr>
+<tr><td>1 tr/s</td><td>200</td><td>0,25</td><td>≈ 1,6 kΩ</td></tr>
+<tr><td>2 tr/s</td><td>400</td><td>0,50</td><td>≈ 4,4 kΩ</td></tr>
+<tr><td>3 tr/s</td><td>600</td><td>0,75 (0,92 en simulation)</td><td>≈ 7,2 kΩ (9,1 kΩ)</td></tr>
+            </tbody>
+        </table></div>
+        <div style="margin: var(--spacing-md) 0;">
+            <div class="gallery-item">
+                <img style="height: auto; object-fit: contain; background: #000;" src="assets/images/schema_m2.png" alt="M2 : convertisseur fréquence-tension, réglages et VCO">
+                <div class="gallery-item-caption">M2 : convertisseur fréquence-tension, réglages et VCO (capture du simulateur ; pastilles jaunes = rôle de chaque composant ; cliquer pour agrandir)</div>
+            </div>
+        </div>
+        <p><button class="btn btn-secondary btn-sm" data-src="pages/cours/frwa_ref_circuit.js/assets/etudes.html#demod6k/demod6k-m2" onclick="window.open(this.dataset.src, '_blank')">▶ Simuler cette étape</button></p>
+
+
+        <h3>M3 : séquenceur réversible et validation</h3>
+        <ul>
+            <li>U106 (bascules D, horloge CLK1) et U107 (CD4070B) forment un compteur de Gray réversible :
+                DA = QB ⊕ DIR1, DB = QA ⊕ DIR1 ⊕ 1. Dans un sens (QA, QB) parcourt 00 → 10 → 11 → 01, dans l'autre l'ordre inverse :
+                seule la phase de la bobine B change de sens.</li>
+            <li>U108 (CD4081B) valide les quatre phases par EN1 = G · PRES3 ; EN1 = 0 éteint tout.</li>
+            <li>Sorties M1A, M1/A, M1B, M1/B vers la carte de puissance (simulées ici par des voyants).</li>
+        </ul>
+        <div style="margin: var(--spacing-md) 0;">
+            <div class="gallery-item">
+                <img style="height: auto; object-fit: contain; background: #000;" src="assets/images/schema_m3.png" alt="M3 : compteur de Gray réversible et validation des phases">
+                <div class="gallery-item-caption">M3 : compteur de Gray réversible et validation des phases (capture du simulateur ; pastilles jaunes = rôle de chaque composant ; cliquer pour agrandir)</div>
+            </div>
+        </div>
+        <p><button class="btn btn-secondary btn-sm" data-src="pages/cours/frwa_ref_circuit.js/assets/etudes.html#demod6k/demod6k-m3" onclick="window.open(this.dataset.src, '_blank')">▶ Simuler cette étape</button></p>
+
+
+        <h3>M4 : puissance et moteur pas à pas</h3>
+        <ul>
+            <li>Quatre IRLZ44N par moteur (Transistor A1M1, A2M1, B1M1, B2M1 : les deux moitiés des bobines A et B), 100 Ω de grille,
+                10 kΩ de tirage, roue libre 1N5819. Les prises médianes vont à +BAT.</li>
+            <li>À la coupure, chaque drain monte vers 2 × +BAT (environ 29 V) : les IRLZ44N tiennent 55 V.</li>
+            <li>Courant par phase = +BAT / R<sub>bobine</sub> (±16 % entre 10,5 et 14,4 V) : moteur 12 V, ou résistance série par prise médiane.</li>
+            <li>Variante bipolaire : double pont en H piloté par M1A à M1/B (niveaux 9 V à vérifier).</li>
+        </ul>
+        <div style="margin: var(--spacing-md) 0;">
+            <div class="gallery-item">
+                <img style="height: auto; object-fit: contain; background: #000;" src="assets/images/schema_m4.png" alt="M4 : quatre MOSFET et moteur pas à pas unipolaire">
+                <div class="gallery-item-caption">M4 : quatre MOSFET et moteur pas à pas unipolaire (capture du simulateur ; pastilles jaunes = rôle de chaque composant ; cliquer pour agrandir)</div>
+            </div>
+        </div>
+        <p><button class="btn btn-secondary btn-sm" data-src="pages/cours/frwa_ref_circuit.js/assets/etudes.html#demod6k/demod6k-m4" onclick="window.open(this.dataset.src, '_blank')">▶ Simuler cette étape</button></p>
+
+        <div class="divider"></div>
+
+        <h2>Choix des composants (archive)</h2>
+        <p>Pourquoi chaque composant clé a été retenu, et par quoi le remplacer.</p>
+        <div class="data-table-wrap"><table class="data-table">
+            <thead><tr><th>Composant</th><th>Rôle</th><th>Pourquoi ce choix</th><th>Remplacement possible</th></tr></thead>
+            <tbody>
+<tr><td>Triad TY-250P (T1)</td><td>Transfo d'isolement</td><td>1:1, 20 Hz–20 kHz ±1 dB, isolement 1500 V : protège l'appareil source, supprime la boucle de masse</td><td>Transformateur 600:600 Ω traversant (Triad TY-145P, OEP A262A7E, modèles EI14 « permalloy » 600:600) ; sans transfo : 10 kΩ en série + 100 Ω au manchon (moins sûr)</td></tr>
+<tr><td>MC33079</td><td>Ampli et filtres</td><td>Quadruple, 16 MHz : le gain en boucle ouverte doit dépasser 2Q² = 50 à 6 kHz ; un LM324 (1 MHz) ne suffit pas</td><td>TL074, OPA4134 (vérifier GBW et alimentation 9 V)</td></tr>
+<tr><td>Condensateurs film PP ou C0G 5 %</td><td>Filtres, VCO, monostable</td><td>f0 varie comme 1/C : stabilité en température et faible tolérance</td><td>—</td></tr>
+<tr><td>Résistances 1 % (E96)</td><td>Filtres, seuils</td><td>Fréquences centrales et seuils précis sans retouche</td><td>E24 avec réglage de RV2 / RV1</td></tr>
+<tr><td>LM339</td><td>Carrés, présence, verrouillage, batterie</td><td>Quatre comparateurs à collecteur ouvert, alimentation unique 9 V</td><td>LM393 (double)</td></tr>
+<tr><td>BAT85 (D2)</td><td>Détecteur de crête</td><td>Diode Schottky : faible seuil, la crête détectée suit mieux le signal</td><td>1N5817 / BAT43</td></tr>
+<tr><td>CD40106B</td><td>Triggers de Schmitt</td><td>Mise en forme franche des présences et du sens</td><td>74HC14 (à 5 V)</td></tr>
+<tr><td>CD4046B</td><td>PLL 6 kHz, sens (PC2), VCO des pas</td><td>PC2 = comparateur phase-fréquence : sens sans ambiguïté ; VCO intégré</td><td>74HC4046 (à 5 V)</td></tr>
+<tr><td>CD4013B, CD4070B, CD4081B</td><td>Diviseurs, battement, séquenceur, validation</td><td>Logique 3–15 V directement en 9 V, encore disponible</td><td>Séries 74HC à 5 V avec adaptation de niveaux</td></tr>
+<tr><td>CD4538B / CD14538B</td><td>Monostable F→V</td><td>Durée T stable fixée par RC ; le CD14538B remplace le CD4538B (non recommandé pour les nouvelles études)</td><td>—</td></tr>
+<tr><td>LM358</td><td>Filtre Sallen-Key, sommateur</td><td>Entrées et sortie proches de la masse en alimentation unique</td><td>TLV2372</td></tr>
+<tr><td>BS170 (Q1, Q2)</td><td>Commande des relais</td><td>MOSFET petit signal, commandé directement par une sortie CMOS 9 V</td><td>2N7000</td></tr>
+<tr><td>Relais 12 V, bobine ≥ 300 Ω</td><td>Actionneurs</td><td>Isolation galvanique de l'actionneur ; doit accepter 14,4 V</td><td>Relais statique</td></tr>
+<tr><td>IRLZ44N (Q101–Q108)</td><td>Phases moteur</td><td>Niveau logique (pleinement passant à 9 V), 55 V pour la surtension de coupure (≈ 29 V)</td><td>IRL540N</td></tr>
+<tr><td>1N5819 (D101–D108)</td><td>Roue libre moteur</td><td>Schottky rapide, 1 A</td><td>SB140</td></tr>
+<tr><td>IRF4905 (Q3)</td><td>Anti-inversion batterie</td><td>Canal P : quelques mV de chute au lieu de 0,7 V pour une diode série</td><td>Diode Schottky de puissance (plus de pertes)</td></tr>
+<tr><td>SMBJ18A (D8)</td><td>Anti-surtension</td><td>TVS : veille 18 V au-dessus des 14,7 V de charge</td><td>SMBJ20A</td></tr>
+<tr><td>LM2940CT-9.0 (U10)</td><td>Régulateur 9 V</td><td>Faible chute (0,5 V typ.), protégé contre l'inversion, 9 V stable de 10 à 14,7 V</td><td>LM2940 en 8 V ou LDO 9 V équivalent (vérifier la stabilité de sortie)</td></tr>
+<tr><td>Fusible lame 3 A (F1)</td><td>Protection batterie</td><td>Coupe un court-circuit au plus près de la borne +</td><td>—</td></tr>
+            </tbody>
+        </table></div>
+
+        <h3>Composants à régler</h3>
+        <ul>
+            <li><strong>RV1</strong> (potentiomètre 100 kΩ linéaire) : gain d'entrée, 2,4 V crête par tonalité en sortie des filtres.</li>
+            <li><strong>RV2</strong> (ajustable 5 kΩ multitour, ×5) : seuil de présence de chaque voie.</li>
+            <li><strong>RV101 / RV111</strong> (ajustable 22 kΩ) : écart maximal. <strong>RV102 / RV112</strong> (potentiomètre 10 kΩ) : vitesse maximale.
+                <strong>RV103 / RV113</strong> (ajustable 10 kΩ) : zone morte.</li>
+        </ul>
+
+        <h3>Nomenclature de la carte de réception</h3>
+        <div class="data-table-wrap"><table class="data-table">
+            <thead><tr><th>Bloc</th><th>Références</th><th>Valeur ou modèle</th><th>Qté</th></tr></thead>
+            <tbody>
+<tr><td>A</td><td>J1</td><td>Embase jack 3,5 mm stéréo</td><td>1</td></tr>
+<tr><td>A</td><td>T1</td><td>Transformateur audio 1:1, Triad TY-250P</td><td>1</td></tr>
+<tr><td>A</td><td>C1</td><td>4,7 µF film (polyester, 63 V)</td><td>1</td></tr>
+<tr><td>A</td><td>R1 ; R2 ; R3 ; R4</td><td>470 Ω ; 1 kΩ ; 9,1 kΩ ; 10 kΩ</td><td>1 chacune</td></tr>
+<tr><td>A</td><td><strong>RV1</strong></td><td><strong>Potentiomètre 100 kΩ linéaire</strong></td><td>1</td></tr>
+<tr><td>A</td><td>C2</td><td>100 pF C0G</td><td>1</td></tr>
+<tr><td>A</td><td>D1</td><td>BAV99</td><td>1</td></tr>
+<tr><td>A</td><td>R5, R6 ; R7</td><td>10 kΩ ; 47 Ω</td><td>2 ; 1</td></tr>
+<tr><td>A</td><td>C3, C4 ; C5</td><td>10 µF ; 100 nF</td><td>2 ; 1</td></tr>
+<tr><td>A, B</td><td>U1, U2, U3</td><td>MC33079</td><td>3</td></tr>
+<tr><td>B</td><td>R10 à R39</td><td>Valeurs du tableau du bloc B</td><td>30</td></tr>
+<tr><td>B</td><td>C10–C29</td><td>4,7 nF ; 10 nF ; 22 nF ; 47 nF ; 100 nF, film PP ou C0G 5 %</td><td>4 de chaque</td></tr>
+<tr><td>C</td><td>U4, U5, U6</td><td>LM339</td><td>3</td></tr>
+<tr><td>C</td><td>U7</td><td>CD40106B</td><td>1</td></tr>
+<tr><td>C</td><td>R40, R41, R42</td><td>47 kΩ ; 4,7 MΩ ; 10 kΩ</td><td>3 de chaque</td></tr>
+<tr><td>C</td><td>R43 à R48</td><td>47 kΩ ; 47 kΩ ; 5,6 kΩ ; 470 kΩ ; 220 kΩ ; 22 kΩ</td><td>5 de chaque</td></tr>
+<tr><td>C</td><td><strong>RV2</strong></td><td><strong>Ajustable 5 kΩ multitour</strong></td><td>5</td></tr>
+<tr><td>C</td><td>C30 ; C31</td><td>100 nF (×3), 220 nF, 330 nF ; 100 nF</td><td>5 ; 5</td></tr>
+<tr><td>C</td><td>D2 ; D3</td><td>BAT85 ; 1N4148</td><td>5 ; 5</td></tr>
+<tr><td>D</td><td>U8</td><td>CD4046B</td><td>1</td></tr>
+<tr><td>D</td><td>R50, R51, R53 ; R52 ; R54 ; R55 ; R56 ; R57</td><td>100 kΩ ; 15 kΩ ; 27 kΩ ; 9,1 kΩ ; 1 MΩ ; 10 kΩ</td><td>3 ; 1 ; 1 ; 1 ; 1 ; 1</td></tr>
+<tr><td>D</td><td>C40 ; C41 ; C42</td><td>820 pF NP0 ; 150 nF film ; 100 nF</td><td>1 chacun</td></tr>
+<tr><td>E</td><td>U9</td><td>CD4081B</td><td>1</td></tr>
+<tr><td>E</td><td>R60 ; R61 ; R62 ; R63</td><td>15 kΩ ; 10 kΩ ; 150 kΩ ; 10 kΩ</td><td>1 chacune</td></tr>
+<tr><td>E</td><td>C43</td><td>10 µF</td><td>1</td></tr>
+<tr><td>E</td><td>Q1, Q2</td><td>BS170</td><td>2</td></tr>
+<tr><td>E</td><td>R64, R66 ; R65, R67</td><td>100 Ω ; 100 kΩ</td><td>2 ; 2</td></tr>
+<tr><td>E</td><td>D4, D5</td><td>1N4148</td><td>2</td></tr>
+<tr><td>E</td><td>K1, K2</td><td>Relais 12 V, bobine ≥ 300 Ω, admettant 14,4 V</td><td>2</td></tr>
+<tr><td>H</td><td>F1</td><td>Fusible lame 3 A + porte-fusible</td><td>1</td></tr>
+<tr><td>H</td><td>S1</td><td>Interrupteur général 5 A</td><td>1</td></tr>
+<tr><td>H</td><td>Q3</td><td>IRF4905</td><td>1</td></tr>
+<tr><td>H</td><td>D7 ; D8</td><td>Zener 15 V 0,5 W ; TVS SMBJ18A</td><td>1 ; 1</td></tr>
+<tr><td>H</td><td>R70</td><td>100 kΩ</td><td>1</td></tr>
+<tr><td>H</td><td>U10</td><td>LM2940CT-9.0</td><td>1</td></tr>
+<tr><td>H</td><td>C60 ; C61 ; C62 ; C63</td><td>1000 µF 25 V ; 470 nF ; 47 µF ; 100 nF</td><td>1 chacun</td></tr>
+            </tbody>
+        </table></div>
+        <p class="text-muted" style="font-size: var(--font-size-sm);">Résistances 1 % (E96), 0,25 W ; découplage 100 nF céramique X7R par boîtier (non listé).</p>
+
+        <h3>Nomenclature de la carte moteur (deux moteurs)</h3>
+        <div class="data-table-wrap"><table class="data-table">
+            <thead><tr><th>Références</th><th>Valeur ou modèle</th><th>Qté</th></tr></thead>
+            <tbody>
+<tr><td>U101, U102, U106, U116</td><td>CD4013B</td><td>4</td></tr>
+<tr><td>U103</td><td>CD4538B (ou CD14538B)</td><td>1</td></tr>
+<tr><td>U104, U114</td><td>LM358</td><td>2</td></tr>
+<tr><td>U105, U115</td><td>CD4046B</td><td>2</td></tr>
+<tr><td>U107, U117</td><td>CD4070B</td><td>2</td></tr>
+<tr><td>U108, U118, U110</td><td>CD4081B</td><td>3</td></tr>
+<tr><td>U109</td><td>CD40106B</td><td>1</td></tr>
+<tr><td>R101 ; <strong>RV101</strong></td><td>8,2 kΩ ; <strong>ajustable 22 kΩ</strong></td><td>2 ; 2</td></tr>
+<tr><td>C101</td><td>100 nF film 5 %</td><td>2</td></tr>
+<tr><td>R102, R103, R105, R107, R108, R109, R111</td><td>100 kΩ</td><td>14</td></tr>
+<tr><td>C102 ; C103</td><td>470 nF film ; 220 nF film</td><td>2 ; 2</td></tr>
+<tr><td><strong>RV102</strong> ; R104</td><td><strong>Potentiomètre 10 kΩ linéaire</strong> ; 1,2 kΩ</td><td>2 ; 2</td></tr>
+<tr><td>R106 ; <strong>RV103</strong></td><td>22 kΩ ; <strong>ajustable 10 kΩ</strong></td><td>2 ; 2</td></tr>
+<tr><td>R110</td><td>33 kΩ</td><td>2</td></tr>
+<tr><td>C104</td><td>22 nF film ou C0G</td><td>2</td></tr>
+<tr><td>R112, R113</td><td>2,2 MΩ</td><td>4</td></tr>
+<tr><td>C105</td><td>1 µF film</td><td>2</td></tr>
+<tr><td>Q101 à Q108</td><td>IRLZ44N</td><td>8</td></tr>
+<tr><td>R120 à R123, R128 à R131</td><td>100 Ω</td><td>8</td></tr>
+<tr><td>R124 à R127, R132 à R135</td><td>10 kΩ</td><td>8</td></tr>
+<tr><td>D101 à D108</td><td>1N5819</td><td>8</td></tr>
+<tr><td>C120 ; C121</td><td>470 µF 25 V ; 100 nF</td><td>1 ; 1</td></tr>
+            </tbody>
+        </table></div>
+
+        <div class="divider"></div>
+
+        <h2>Validation par simulation</h2>
+        <ul>
+            <li>Filtres : pics à 5,99 kHz, 3,00 kHz, 1,49 kHz, 745 Hz et 376 Hz, gain de 4 par voie.</li>
+            <li>Chaîne complète avec bruit (0,2 V efficace) et ronflement 50 Hz : une voie présente est toujours détectée, une voie
+                absente jamais ; marge la plus faible pour le moteur 2 à −0,5 kHz (d'où ±0,3 kHz recommandé).</li>
+            <li>Carte moteur : au-delà de 50 Hz d'écart, la cadence suit la formule à 1 % près ; montée à 90 % en 85 à 90 ms.</li>
+            <li>Dans Circuit.js : chaque étape a ses mesures automatiques (seuils batterie 10,77 / 11,77 V, sens du séquenceur, rotor qui
+                suit les pas…).</li>
+        </ul>
+
+        <h2>Sécurité et mise au point</h2>
+        <ul>
+            <li>Ne jamais relier le manchon du jack à la masse de la carte ; ne pas brancher l'appareil tant que T1 n'est pas en place.</li>
+            <li>Quatre barrières contre les parasites : filtre, seuil, temporisation de 25 ms, porte ET (référence + verrouillage + batterie).</li>
+            <li>À la mise sous tension, les présences valent 0 pendant 25 ms ; LOCK peut passer brièvement à 1 mais retombe avant PRES6 :
+                relais et moteurs restent coupés. Chaque grille de MOSFET a un tirage à la masse.</li>
+            <li>Ordre de réglage : alimentation et Vref, seuil batterie, niveau (RV1), filtres, PLL, seuils (RV2), actionneurs ;
+                puis la carte moteur : F3 / F15, RV101, RV102, RV103, sens, coupure, moteur 2.</li>
+            <li>Tester la protection contre l'inversion avec une alimentation limitée à 100 mA, jamais avec la batterie.</li>
+        </ul>
+
+        <h2>Émetteur</h2>
+        <p>Les tonalités sont produites par logiciel (fichier audio à 48 kHz ou application) : toutes viennent de la même horloge, donc
+            à Δf = 0 le moteur est exactement à l'arrêt. Faire varier Δf progressivement (par exemple 0 à 300 Hz en 0,5 s). Le script
+            Python de génération est dans l'étude complète (Markdown) ci-dessus.</p>
+
+        <h2>Sources</h2>
+        <ul>
+            <li><a href="https://www.digikey.com/en/products/detail/triad-magnetics/TY-250P/7318267" target="_blank" rel="noopener">Triad Magnetics TY-250P (Digi-Key)</a></li>
+            <li><a href="https://www.ti.com/product/LM2940C" target="_blank" rel="noopener">Texas Instruments LM2940C</a> ·
+                <a href="https://www.ti.com/product/CD14538B" target="_blank" rel="noopener">CD14538B</a> ·
+                <a href="https://www.ti.com/lit/gpn/cd4050b" target="_blank" rel="noopener">CD4049UB / CD4050B</a></li>
+            <li>Texas Instruments, CD4046B, fiche technique et note SCHA002A ; Messerschmitt, « Frequency detectors for PLL acquisition
+                in timing and carrier recovery », IEEE Trans. Commun., 1979 ; IRIG 106 chap. 3 ; LM567 ; CEI 62054-21.</li>
+        </ul>
+
+        <div class="divider"></div>
+
+        <!-- Retour vers la page de section -->
+        <p class="text-center">
+            <a data-retour class="btn btn-primary"></a>
+        </p>
+    </div>
+</body>
+</html>

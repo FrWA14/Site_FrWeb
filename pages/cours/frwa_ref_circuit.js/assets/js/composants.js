@@ -32,7 +32,7 @@ function lireValeur(txt) {
 /* ---------- Couleurs (comme Circuit.js / PROTO) ---------- */
 const COUL = {
   fond: '#000000', grille: '#2a2a2a', neutre: [128, 128, 128], positif: [60, 255, 60], negatif: [255, 60, 60],
-  point: '#ffd400', selection: '#4ecdc4', texte: '#d7e4e2', pastilleNom: '#9b5cf6', pastilleVal: '#5ee87a',
+  point: '#ffd400', selection: '#4ecdc4', texte: '#d7e4e2', pastilleNom: '#9b5cf6', pastilleVal: '#5ee87a', pastilleInd: '#ffcc00',
   boite: '#c9c9c9', boiteFond: '#111418',
 };
 function couleurTension(v, vmax) {

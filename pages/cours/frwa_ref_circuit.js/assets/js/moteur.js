@@ -147,6 +147,7 @@ class Systeme {
 }
 
 /* ---------- Limitation de tension de jonction (pnjlim, comme SPICE) ---------- */
+const EXP80 = Math.exp(80);
 function pnjlim(vnew, vold, nvt, vcrit) {
   if (vnew > vcrit && Math.abs(vnew - vold) > 2 * nvt) {
     if (vold > 0) { const arg = 1 + (vnew - vold) / nvt; vnew = arg > 0 ? vold + nvt * Math.log(arg) : vcrit; }
@@ -245,7 +246,13 @@ Prim.D = class { // diode : anode a, cathode b ; Is, n (coefficient d'émission)
     if (o.Vf !== undefined) { const If = o.If ?? 0.02; this.Is = () => val(If) / Math.exp(val(o.Vf) / (this.N * VT)); }
     this.vd = 0; this.vdIt = 0;
   }
-  calc(vd) { const nvt = this.N * VT, Is = val(this.Is), e = Math.exp(Math.min(vd / nvt, 80)); return { id: Is * (e - 1), gd: Is / nvt * e + GMIN }; }
+  // au-delà de 80·nVT, exponentielle prolongée par sa tangente (comme limexp de SPICE) : un plafond pur rendait le
+  // courant constant, et Newton pouvait accepter un faux équilibre (nœud interne d'un ALI réel à des milliers de volts)
+  calc(vd) {
+    const nvt = this.N * VT, Is = val(this.Is), x = vd / nvt;
+    const e = x <= 80 ? Math.exp(x) : EXP80 * (1 + x - 80), de = Math.exp(Math.min(x, 80));
+    return { id: Is * (e - 1), gd: Is / nvt * de + GMIN };
+  }
   stamp(S, sim) {
     const nvt = this.N * VT, Is = val(this.Is), vcrit = nvt * Math.log(nvt / (Math.SQRT2 * Is));
     const brut = sim.v(this.n[0]) - sim.v(this.n[1]);

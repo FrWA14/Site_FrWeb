@@ -15,7 +15,7 @@
   try { if (parent !== window) { appliquer(parent.document.documentElement.getAttribute('data-theme')); parent.document.addEventListener('themeChange', e => appliquer(e.detail.theme)); } } catch (e) { /* autre origine */ }
 })();
 /* version du site : pas de serveur local, pas de pilotage, rien de gardé dans le navigateur */
-window.FrWAConfig = { stockage: false, oscilloBureau: true, sansTags: ['pilotage'], vue3d: false };
+window.FrWAConfig = { stockage: false, oscilloBureau: true, sansTags: ['pilotage'], vue3d: false, etudes: true };
 </script>
 </head>
 <body>
@@ -92,6 +92,7 @@ window.FrWAConfig = { stockage: false, oscilloBureau: true, sansTags: ['pilotage
 <script src="js/circuit.js"></script>
 <script src="js/monde.js"></script>
 <script src="js/exemples.js"></script>
+<script src="js/etudes.js"></script>
 <script src="js/spectre.js"></script>
 <script src="js/oscillo_bureau.js"></script>
 <script src="js/interface.js"></script>

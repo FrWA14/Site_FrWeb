@@ -36,6 +36,7 @@ function puce40(o) {
     id: o.id, tags: ['serie4000', 'logique', ...(o.tags || [])],
     nom: o.nom, prefixe: 'U', categorie: 'Logique CMOS 4000', version: '1.0.0', regles: 1,
     description: o.description, broches: br, typesBroches, variables: o.variables || [], modele3d: null,
+    ...(o.cotes ? { cotes: o.cotes } : {}), ...(o.parametres ? { parametres: o.parametres, principal: o.principal || o.parametres[0].cle } : {}),
     ...(o.modele ? { modele: o.modele } : {}),
     logique: { vdd: 'VDD', vss: 'VSS', entrees, sorties, rSortie: 500, vMin: 3, etat: o.etat || (() => ({})), evaluer: o.evaluer },
     ...(o.affichage ? { affichage: o.affichage } : {}),
@@ -294,6 +295,99 @@ puce40({
   },
 });
 
+/* ---------- Unité séparée : un inverseur à trigger de Schmitt du CD40106 (symbole d'une seule porte) ---------- */
+puce40({
+  id: 'cd40106-u', nom: '40106 ⅙', tags: [],
+  description: 'Un inverseur à trigger de Schmitt du CD40106 (unité ⅙ du boîtier) : Y = /A, seuils ≈ 60 % et 40 % de VDD. VDD et VSS : alimentation du boîtier.',
+  broches: ['A', 'Y', 'VDD', 'VSS'], sorties: ['Y'],
+  cotes: { gauche: ['A'], droite: ['Y'], haut: ['VDD'], bas: ['VSS'] },
+  evaluer: e => ({ Y: !e.A }),
+});
+
+/* ---------- Unités séparées : une porte ET du CD4081, un OU exclusif du CD4070, une bascule D du CD4013 ---------- */
+puce40({
+  id: 'cd4081-u', nom: '4081 ¼', description: 'Une porte ET à 2 entrées du CD4081 (unité ¼ du boîtier) : Y = A·B. VDD et VSS : alimentation du boîtier.',
+  broches: ['A', 'B', 'Y', 'VDD', 'VSS'], sorties: ['Y'], cotes: { gauche: ['A', 'B'], droite: ['Y'], haut: ['VDD'], bas: ['VSS'] },
+  evaluer: e => ({ Y: e.A && e.B }),
+});
+puce40({
+  id: 'cd4070-u', nom: '4070 ¼', description: 'Un OU exclusif à 2 entrées du CD4070 (unité ¼ du boîtier) : Y = A ⊕ B. VDD et VSS : alimentation du boîtier.',
+  broches: ['A', 'B', 'Y', 'VDD', 'VSS'], sorties: ['Y'], cotes: { gauche: ['A', 'B'], droite: ['Y'], haut: ['VDD'], bas: ['VSS'] },
+  evaluer: e => ({ Y: e.A !== e.B }),
+});
+puce40({
+  id: 'cd4013-u', nom: '4013 ½', description: 'Une bascule D du CD4013 (unité ½ du boîtier) : au front montant de CLK, Q prend la valeur de D ; S et R asynchrones actifs à 1. D relié à /Q : diviseur par 2.',
+  broches: ['D', 'CLK', 'S', 'R', 'Q', '~Q', 'VDD', 'VSS'], sorties: ['Q', '~Q'],
+  cotes: { gauche: ['D', 'CLK', 'S', 'R'], droite: ['Q', 'nQ'], haut: ['VDD'], bas: ['VSS'] },
+  etat: () => ({ q: false }),
+  evaluer(e, s) {
+    if (e.S && e.R) return { Q: true, nQ: true };
+    if (e.R) s.q = false; else if (e.S) s.q = true; else if (e.monte.CLK) s.q = e.D;
+    return { Q: s.q, nQ: !s.q };
+  },
+  affichage: s => 'Q = ' + (s.q ? 1 : 0),
+});
+
+/* ---------- CD4046B : boucle à verrouillage de phase (PLL) ----------
+   PC1 : OU exclusif de SIG et COMP. PC2 : comparateur phase-fréquence sur fronts montants, sortie à trois états
+   (1 si SIG en avance, 0 si COMP en avance, haute impédance une fois en phase) ; PCP (broche 1) = 1 quand PC2 est en
+   haute impédance. VCO : le condensateur EXTERNE C1 (entre C1A et C1B) est chargé alternativement par chaque broche,
+   l'autre étant mise à VSS, par un courant I = (VCOIN − Vt) / R1 (+ courant de R2) ; bascule quand la broche chargée
+   atteint VDD / 4, d'où f ≈ (VCOIN − Vt) / (R1 · C1 · VDD) : f ≈ 1 / (R1·C1) à VCOIN = VDD (ordre de grandeur de la
+   fiche TI, à Vt près). INH = 1 : VCO arrêté. SFOUT : suiveur de VCOIN (sortie du démodulateur). Z : zener 5,2 V. */
+puce40({
+  id: 'cd4046', nom: 'CD4046B', tags: ['temporisation', 'generateur'],
+  description: 'Boucle à verrouillage de phase (PLL) : comparateurs PC1 (OU exclusif) et PC2 (phase-fréquence, trois états), VCO à R1 / C1 externes (f ≈ (VCOIN − Vt) / (R1·C1·VDD), soit ≈ 1/(R1·C1) à VCOIN = VDD), suiveur SFOUT, zener 5,2 V. INH = 1 arrête le VCO. Modèle comportemental : seuil Vt et loi du VCO approchés (à mesurer sur le composant réel).',
+  broches: ['PCP', 'PC1', 'COMP', 'VCOUT', 'INH', 'C1A', 'C1B', 'VSS', 'VCOIN', 'SFOUT', 'R1', 'R2', 'PC2', 'SIG', 'Z', 'VDD'].map(b =>
+    ({ PCP: { nom: 'PCP', etiquette: 'PHP' }, COMP: { nom: 'COMP', etiquette: 'COMP IN' }, VCOUT: { nom: 'VCOUT', etiquette: 'VCO OUT' }, VCOIN: { nom: 'VCOIN', etiquette: 'VCO IN' },
+       SIG: { nom: 'SIG', etiquette: 'SIG IN' }, PC1: { nom: 'PC1', etiquette: 'PC1 OUT' }, PC2: { nom: 'PC2', etiquette: 'PC2 OUT' }, SFOUT: { nom: 'SFOUT', etiquette: 'SF OUT' } })[b] || b),
+  sorties: ['PC1', 'PC2', 'PCP', 'VCOUT'],
+  types: { trois_etats: ['PC2'], sortie: ['PC1', 'PCP', 'VCOUT', 'SFOUT'] },
+  passifs: ['C1A', 'C1B', 'R1', 'R2', 'Z'],
+  cotes: { gauche: ['SIG', 'COMP', null, 'VCOIN', 'INH'], droite: ['PC1', 'PC2', 'PCP', null, 'VCOUT', 'SFOUT'], haut: ['C1A', 'C1B', 'VDD'], bas: ['R1', 'R2', 'Z', 'VSS'] },
+  parametres: [{ cle: 'Vt', nom: 'Seuil du VCO (Vt)', unite: 'V', defaut: 1, min: 0, max: 3, echelle: 'lin', pas: 0.05 }],
+  variables: [{ cle: 'fvco', nom: 'Fréquence du VCO', unite: 'Hz' }, { cle: 'verrouille', nom: 'PC2 en haute impédance (en phase)', type: 'bool' }],
+  modele: {
+    elements: [
+      { t: 'V', a: 'R1', b: 'VSS', V: 0, nom: 'vr1' }, { t: 'V', a: 'R2', b: 'VSS', V: 0, nom: 'vr2' },
+      { t: 'I', a: 'VDD', b: 'C1A', I: 0, nom: 'ia' }, { t: 'I', a: 'VDD', b: 'C1B', I: 0, nom: 'ib' },
+      { t: 'S', a: 'C1A', b: 'VSS', ferme: false, Ron: 10, nom: 'sa' }, { t: 'S', a: 'C1B', b: 'VSS', ferme: true, Ron: 10, nom: 'sb' },
+      { t: 'O', a: 'SFOUT', ref: 'VSS', V: 0, R: 1e3, nom: 'sf' },
+      { t: 'D', a: 'Z', b: 'VSS', Vf: 5.2, If: 1e-3 }, { t: 'D', a: 'VSS', b: 'Z', Vf: 0.7, If: 1e-3 },
+      { t: 'R', a: 'VDD', b: 'VSS', R: 30e3 },
+    ],
+  },
+  etat: () => ({ ph: 0, up: false, dn: false, fvco: 0, tFront: -1, verrouille: false }),
+  evaluer(e, s, p, c) {
+    const vdd = e.alim, vss = c.v('VSS'), vin = c.v('VCOIN') - vss;
+    // PC2 : bascules « avance » / « retard » remises à zéro quand les deux fronts sont arrivés
+    if (e.monte.SIG) { if (s.dn) s.dn = false; else s.up = true; }
+    if (e.monte.COMP) { if (s.up) s.up = false; else s.dn = true; }
+    s.verrouille = !s.up && !s.dn;
+    // VCO
+    c.regler('vr1', Math.max(0, Math.min(vdd, vin - p.Vt)));
+    c.regler('vr2', vdd / 2);
+    c.regler('sf', Math.max(0, Math.min(vdd, vin)));
+    const I = Math.abs(c.i('vr1')) + Math.abs(c.i('vr2'));
+    if (e.INH || I < 1e-12) {
+      c.regler('ia', 0); c.regler('ib', 0); c.regler('sa', true); c.regler('sb', true); s.ph = 0;
+      if (e.INH) s.fvco = 0;
+    } else {
+      const seuil = vdd / 4;
+      if (s.ph === 0 && c.v('C1A') - vss >= seuil) s.ph = 1;
+      else if (s.ph === 1 && c.v('C1B') - vss >= seuil) {
+        s.ph = 0;
+        if (s.tFront >= 0) s.fvco = 1 / Math.max(c.dt, c.t - s.tFront);
+        s.tFront = c.t;
+      }
+      c.regler('ia', s.ph === 0 ? I : 0); c.regler('ib', s.ph === 1 ? I : 0);
+      c.regler('sa', s.ph === 1); c.regler('sb', s.ph === 0);
+    }
+    return { PC1: e.SIG !== e.COMP, PC2: s.up ? true : s.dn ? false : null, PCP: s.verrouille, VCOUT: !e.INH && s.ph === 0 };
+  },
+  affichage: s => (s.fvco ? 'VCO ' + FrWA.formater(s.fvco, 'Hz') : 'VCO arrêté'),
+});
+
 /* ---------- Monostable redéclenchable CD4538 (R et C externes, durée = R·C) ---------- */
 puce40({
   id: 'cd4538', nom: 'CD4538', tags: ['temporisation'],
@@ -301,6 +395,7 @@ puce40({
   broches: ['CX1', 'RCX1', '~CD1', 'PTR1', 'MTR1', 'Q1', '~Q1', 'VSS', '~Q2', 'Q2', 'MTR2', 'PTR2', '~CD2', 'RCX2', 'CX2', 'VDD'].map(b =>
     ({ RCX1: { nom: 'RCX1', etiquette: 'RX/CX1' }, RCX2: { nom: 'RCX2', etiquette: 'RX/CX2' }, PTR1: { nom: 'PTR1', etiquette: '+TR1' }, PTR2: { nom: 'PTR2', etiquette: '+TR2' }, MTR1: { nom: 'MTR1', etiquette: '−TR1' }, MTR2: { nom: 'MTR2', etiquette: '−TR2' } })[b] || b),
   sorties: ['Q1', '~Q1', 'Q2', '~Q2'], passifs: ['CX1', 'RCX1', 'CX2', 'RCX2'],
+  cotes: { gauche: ['PTR1', 'MTR1', 'nCD1', null, 'PTR2', 'MTR2', 'nCD2'], droite: ['Q1', 'nQ1', null, null, 'Q2', 'nQ2'], haut: ['CX1', 'RCX1', 'VDD', 'RCX2', 'CX2'], bas: ['VSS'] },
   modele: {
     elements: [1, 2].flatMap(k => [
       { t: 'R', a: 'CX' + k, b: 'VSS', R: 1 },
