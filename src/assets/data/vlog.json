@@ -1,5 +1,10 @@
 [
   {
+    "date": "2026-11-26T18:00:00Z",
+    "title": "Mise à jour du site",
+    "message": "Circuit.js : deux nouveaux exemples de sonar à ultrasons reliés par des fils, sans étiquettes. Le premier fait les salves, le 40 kHz et la bascule du temps de vol avec un seul CD40106 (inverseurs à trigger de Schmitt) et amplifie l'écho avec un LM2902. Le second ajoute un dernier niveau de détection de proximité : un potentiomètre règle la distance, une sortie DETECT passe à 1 quand un objet est plus proche et une ampoule s'allume. Nouvelles puces : LM2902 ¼ (un ampli du LM2902 dessiné seul) et ampoule."
+  },
+  {
     "date": "2026-11-24T17:00:00Z",
     "title": "Mise à jour du site",
     "message": "Circuit.js : nouveau moteur et nouveau résolveur (ampli opérationnel réel sans blocage en saturation, diode stable aux fortes tensions), étiquettes de réseau placées sans chevauchement, indicateur libre sur chaque composant (son rôle, affiché sur le schéma) et fenêtre « Études » : la démodulation de tonalités à référence 6 kHz (version 2) simulée étape par étape. Nouvelle section Électronique → Coupe de France de robotique, saison 2026-2027 : le robot (schémas, explication du montage, archive du choix des composants, circuits à ouvrir dans le simulateur) et les PAMI (à venir)."

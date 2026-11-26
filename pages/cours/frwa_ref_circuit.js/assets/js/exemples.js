@@ -705,10 +705,129 @@ G.FrWAExemples = [
       B.E('led', 'D1', 640, 420, 1, { couleur: 'vert' }); B.F(B.P('R6', 'B'), B.P('D1', 0)); B.MP('D1', 1);
     }),
   },
+  {
+    id: 'sonar-cd40106', titre: 'Sonar à ultrasons (CD40106, LM2902)',
+    description: 'Sonar 40 kHz relié par des fils (aucune étiquette), avec un CD40106 (6 inverseurs à trigger de Schmitt, dessinés un par un) et un LM2902 (amplis dessinés un par un, « LM2902 ¼ »). U1A : salves de 0,5 ms toutes les 7,4 ms (diode = salve courte). U1B : 40 kHz, bloqué par la diode D_G quand la salve est basse. U1C transforme la fin de salve en impulsion de mise à 1 ; U1D + U1E forment la bascule (bouclée par R_FB), remise à 0 par l\'écho (D_R). Réception : 2 étages ×22, détecteur de crête, comparateur bas à l\'écho. Sortie de la bascule à 1 pendant le temps de vol ; le voltmètre en donne la moyenne. Glissez la planche (1 carreau = 2 cm). Ralenti × 0,03.',
+    dt: 1e-6, vitesse: 0.03, fenetre: 0.01, monde: { echelle: 0.02 },
+    oscillo: [{ nom: 'U1A', broche: 'Y' }, { nom: 'U5B', broche: 'OUT1' }, { nom: 'U5C', broche: 'OUT1' }, { nom: 'U1E', broche: 'Y' }],
+    construire: plan(B => planSonar40106(B, false)),
+  },
+  {
+    id: 'sonar-cd40106-proximite', titre: 'Sonar : détection de proximité réglable (CD40106, LM2902, ampoule)',
+    description: 'Le sonar CD40106 + LM2902 avec un dernier niveau : la moyenne du temps de vol (R_MOY, C_MOY) est comparée par le 4e ampli du LM2902 (U5D) à la tension du potentiomètre RV1. Objet plus proche que la distance réglée → DETECT = 1 (sortie binaire pour le robot) et l\'ampoule s\'allume (U1F, 6e inverseur du 40106, commande le PNP Q1 côté +9 V). Tournez RV1 pour choisir la distance (35 % ≈ 55 cm), glissez la planche pour tester (1 carreau = 2 cm). Un 2e filtre (R_F2, C_F2) lisse la moyenne : pas de clignotement au seuil. La moyenne met environ 0,4 s (simulée) à suivre un déplacement. Ralenti × 0,03.',
+    dt: 1e-6, vitesse: 0.03, fenetre: 0.2, monde: { echelle: 0.02 },
+    oscillo: [{ nom: 'U1E', broche: 'Y' }, { nom: 'C_MOY' }, { nom: 'RV1', broche: 'W' }, { nom: 'U5D', broche: 'OUT1' }],
+    construire: plan(B => planSonar40106(B, true)),
+  },
 ];
 
 /* Montages réutilisés par plusieurs exemples (déclarations « hissées » : utilisables plus haut) */
 G.FrWAPlan = plan;   // constructeur de schémas, réutilisé par etudes.js
+
+/* Sonar à ultrasons CD40106 + LM2902, relié par des fils (rail +9 V en haut, 2e rail +9 V à y = 620 pour la bascule,
+   masses locales). Inverseur 40106 ⅙ en (gx, gy) : A (gx−60, gy−20), Y (gx+60, gy−20), VDD (gx−20, gy−80), VSS (gx−20, gy+80).
+   LM2902 ¼ en (ax, ay) : IN+ (ax−60, ay−40), IN− (ax−60, ay), OUT (ax+60, ay−20), VCC (ax−20, ay−100), GND (ax−20, ay+100).
+   Seuils des inverseurs : 60 % / 40 % de VDD ; oscillateur RC à inverseur : chaque demi-période ≈ 0,41 R C.
+   proximite : dernier niveau (comparateur U5D, potentiomètre RV1, sortie DETECT, transistor Q1 et ampoule LA1). */
+function planSonar40106(B, proximite) {
+  const RAIL = 40, R2Y = 620, EB = 1000;                         // rail +9 V, 2e rail +9 V, bus de l'écho
+  const dx = proximite ? 1000 : 360;                              // décalage des transducteurs et de la réception
+  const X = x => x + dx;
+  // pile 9 V, rail +9 V et 2e rail (bascule, et seuil de proximité)
+  B.E('pile', 'V1', -80, 200, 3, { V: 9 });
+  B.F([-80, 160], [-80, RAIL], [X(1940), RAIL]); B.MP('V1', '−', 'b', 20);
+  B.F([20, RAIL], [20, R2Y], [proximite ? 1100 : 880, R2Y]);
+  const porte = (nom, gx, gy, rail) => { B.E('puce:cd40106-u', nom, gx, gy); B.F([gx - 20, gy - 80], [gx - 20, rail]); B.MP(nom, 'VSS', 'b', 20); };
+  const V = { pastille: 'valeur' }, SANS = { sansPastille: true };
+
+  // U1A : salves. Charge rapide par D_C + R_C (sortie haute ≈ 0,47 ms), décharge par R_D (sortie basse ≈ 7 ms)
+  porte('U1A', 240, 320, RAIL);
+  B.F([180, 300], [160, 300], [160, 520]);                         // X1 : entrée et condensateur
+  B.E('condensateur', 'C1', 120, 400, 0, { C: 100e-9 }, V); B.M(80, 400);
+  B.E('resistance', 'R_C', 200, 480, 0, { R: 10e3 }, V);
+  B.E('diode', 'D_C', 280, 480, 2, { Vf: 0.72 }, SANS); B.F([320, 480], [340, 480]);
+  B.E('resistance', 'R_D', 250, 520, 0, { R: 180e3 }, V); B.F([160, 520], [210, 520]); B.F([290, 520], [340, 520]);
+  B.F([300, 300], [340, 300], [340, 720]);                         // SALVE (sortie de U1A)
+
+  // U1B : 40 kHz. Salve basse : D_G tient X2 à ≈ 0,7 V, sortie haute figée ; salve haute : D_G bloquée, ça oscille
+  porte('U1B', 520, 320, RAIL);
+  B.F([460, 300], [440, 300], [440, 520]);                         // X2
+  B.E('condensateur', 'C2', 400, 440, 0, { C: 1e-9 }, V); B.M(360, 440);
+  B.E('diode', 'D_G', 380, 380, 2, { Vf: 0.72 }, SANS); B.F([420, 380], [440, 380]);
+  B.E('resistance', 'R2', 530, 520, 0, { R: 22e3 }, V); B.F([440, 520], [490, 520]); B.F([570, 520], [620, 520], [620, 300]);
+  // émetteur entre la sortie de U1B et +9 V : 0 V au repos, ±9 V pendant la salve ; récepteur ; planche
+  B.E('puce:us-emetteur', 'U3', X(900), -100); B.E('puce:us-recepteur', 'U4', X(1020), -100);
+  B.E('monde_objet', 'PLANCHE', X(960), -500, 0, { matiere: 'bois', l: 14, h: 1 });
+  B.F([580, 300], [X(880), 300], [X(880), -40]); B.F([X(900), -40], [X(900), RAIL]);
+
+  // bascule : U1C inverse le front descendant de la salve (C_TRG, R_TRG) → impulsion haute → D_S met P à 1 ;
+  // U1D + U1E bouclés par R_FB gardent l'état ; l'écho (sortie basse du comparateur) remet P à 0 par D_R
+  B.E('condensateur', 'C_TRG', 380, 720, 0, { C: 1e-9 }, V);
+  B.E('resistance', 'R_TRG', 420, 680, 1, { R: 10e3 }, V); B.F([420, 640], [420, R2Y]);
+  porte('U1C', 500, 740, R2Y); B.F([420, 720], [440, 720]);
+  B.E('diode', 'D_S', 600, 720, 0, { Vf: 0.72 }, SANS);
+  porte('U1D', 700, 740, R2Y); porte('U1E', 880, 740, R2Y); B.F([760, 720], [820, 720]);
+  B.F([640, 720], [640, 920]);                                     // nœud P
+  B.E('resistance', 'R_FB', 680, 880, 0, { R: 100e3 }, V); B.F([720, 880], [980, 880], [980, 720], [940, 720]);
+  B.E('diode', 'D_R', 680, 920, 0, { Vf: 0.72 }, SANS);
+
+  // moyenne de la sortie (temps de vol) : 100 k / 1 µF, voltmètre
+  B.E('resistance', 'R_MOY', 1020, 760, 0, { R: 100e3 }, V);
+  B.E('condensateur', 'C_MOY', 1060, 800, 1, { C: 1e-6 }, V); B.M(1060, 840);
+  B.E('voltmetre', 'VM1', 1180, 800, 1); B.F([1060, 760], [1180, 760]); B.M(1180, 840);
+
+  // réception : demi-alimentation VREF, 2 étages ×22 (U5A, U5B), détecteur de crête, comparateur U5C (bas à l'écho)
+  const VB = 780, LM = (nom, ax, ay) => { B.E('puce:lm2902-u', nom, ax, ay); B.F([ax - 20, ay - 100], [ax - 20, RAIL]); B.MP(nom, 'GND', 'b', 20); };
+  B.E('resistance', 'RV_1', X(960), 700, 1, { R: 10e3 }, V); B.F([X(960), 660], [X(960), RAIL]);
+  B.E('resistance', 'RV_2', X(960), 820, 1, { R: 10e3 }, V); B.F([X(960), 740], [X(960), VB]); B.M(X(960), 860);
+  B.E('condensateur', 'CV', X(900), 820, 1, { C: 2.2e-6 }, V); B.F([X(900), VB], [X(960), VB]); B.M(X(900), 860);
+  B.F([X(960), VB], [X(1800), VB]);                                // VREF = 4,5 V
+  B.F([X(1000), -40], [X(1000), VB]);                              // récepteur + → VREF
+  B.F([X(1020), -40], [X(1020), 360], [X(1080), 360]);             // récepteur − → 1er étage (le signe ne compte pas à 40 kHz)
+  const etage = (nom, ax) => {                                     // non inverseur ×22 : 100 k / 4,7 k, 100 nF vers VREF
+    LM(nom, ax, 400);
+    B.F([ax - 60, 400], [ax - 80, 400], [ax - 80, 620]);
+    B.E('resistance', 'RF_' + nom, ax, 580, 0, { R: 100e3 }, V); B.F([ax - 80, 580], [ax - 40, 580]);
+    B.F([ax + 40, 580], [ax + 100, 580], [ax + 100, 380], [ax + 60, 380]);
+    B.E('resistance', 'RG_' + nom, ax - 80, 660, 1, { R: 4.7e3 }, V);
+    B.E('condensateur', 'CG_' + nom, ax - 80, 740, 1, { C: 100e-9 }, V);
+  };
+  etage('U5A', X(1140));
+  B.F([X(1240), 380], [X(1300), 380], [X(1300), 360], [X(1380), 360]);
+  etage('U5B', X(1440));
+  B.F([X(1540), 380], [X(1620), 380]);
+  B.E('diode', 'D_ENV', X(1660), 380, 0, { Vf: 0.72 }, SANS);
+  B.F([X(1700), 380], [X(1840), 380], [X(1840), 420], [X(1880), 420]);   // ENV → IN− du comparateur
+  B.E('condensateur', 'C_ENV', X(1720), 740, 1, { C: 10e-9 }, V); B.F([X(1720), 380], [X(1720), 700]);
+  B.E('resistance', 'R_ENV', X(1800), 740, 1, { R: 100e3 }, V); B.F([X(1800), 380], [X(1800), 700]);
+  LM('U5C', X(1940), 420);                                         // seuil (≈ 5,1 V) sur IN+ : sortie basse quand ENV le dépasse
+  B.E('resistance', 'RS1', X(1860), 160, 1, { R: 7.5e3 }, V); B.F([X(1860), 120], [X(1860), RAIL]);
+  B.F([X(1880), 380], [X(1860), 380], [X(1860), 200]);
+  B.E('resistance', 'RS2', X(1820), 280, 0, { R: 10e3 }, V); B.M(X(1780), 280);
+  B.F([X(2000), 400], [X(2040), 400], [X(2040), EB], [720, EB], [720, 920]);   // /ÉCHO → D_R
+
+  if (!proximite) return;
+  /* Dernier niveau : U5D compare la moyenne du temps de vol (IN−) au seuil du potentiomètre RV1 (IN+). Temps de vol plus
+     court (objet plus proche) → moyenne sous le seuil → sortie haute : DETECT = 1, l'ampoule s'allume.
+     R_F2 / C_F2 : 2e filtre de la moyenne (ondulation à 128 Hz ≈ 0,12 V → quelques mV) : pas de clignotement au seuil,
+     sans réaction positive (une hystérésis par résistance fait échouer le calcul au basculement). */
+  B.E('resistance', 'R_F2', 1220, 760, 0, { R: 100e3 }, V);        // de la moyenne (voltmètre) à IN− de U5D
+  B.E('condensateur', 'C_F2', 1260, 800, 1, { C: 1e-6 }, V); B.M(1260, 840);
+  LM('U5D', 1320, 760);
+  B.E('puce:potentiometre', 'RV1', 1180, 640, 3, { position: 35, R: 10e3 });   // 3 en haut (+9 V), 1 en bas (masse)
+  B.M(1160, 720); B.F([1160, 560], [1100, 560], [1100, R2Y]);
+  B.F([1240, 680], [1260, 680], [1260, 720]);                      // curseur → IN+ de U5D
+  B.F([1300, 660], [1300, 500], [1100, 500], [1100, 560]);         // VCC de U5D (et +9 V de U1F, Q1)
+  B.F([1380, 740], [1420, 740], [1420, 800]); B.L('DETECT', 1420, 800, 3);   // sortie binaire : 1 = objet proche
+  /* Ampoule : U1F (6e inverseur du 40106) sépare la sortie du comparateur du transistor (pas de transistor dans la boucle
+     d'hystérésis) et commande Q1, un PNP monté côté +9 V : U1F bas (objet proche) → Q1 conduit → l'ampoule s'allume. */
+  porte('U1F', 1500, 760, 500); B.F([1420, 740], [1440, 740]);
+  B.E('resistance', 'R_B', 1600, 740, 0, { R: 4.7e3 }, V);
+  B.E('pnp', 'Q1', 1680, 740, 0, { beta: 100 });                   // B (1640, 740), C (1700, 700), E (1700, 780)
+  B.F([1700, 780], [1700, 820], [1780, 820], [1780, 500], [1300, 500]);   // émetteur → +9 V
+  B.E('puce:ampoule', 'LA1', 1700, 580, 0, { vNom: 9, pNom: 0.5 }); B.F([1700, 640], [1700, 700]);
+  B.F([1700, 520], [1660, 520]); B.M(1660, 520);
+}
 
 function planTcrt(B, monde) {
   B.E('pile', 'V1', -60, 300, 3, { V: 5 }); B.L('+5V', -60, 260, 1); B.M(-60, 340);

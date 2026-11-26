@@ -32,4 +32,28 @@ FrWA.puce({
     ],
   },
 });
+
+/* Unité séparée (comme une « unité » KiCad) : UN des quatre ampli-op du LM2902, avec ses broches d'alimentation.
+   Même modèle que le boîtier (gain 100 000, sortie 40 Ω, de ≈ 0 V à VCC − 1,5 V) ; quatre unités = un boîtier
+   (consommation répartie : 4 × 28 kΩ = 7 kΩ). Schémas plus lisibles : chaque ampli se dessine là où il sert. */
+FrWA.puce({
+  id: 'lm2902-u', tags: ['ali', 'analogique'],
+  version: '1.0.0', regles: 1,
+  typesBroches: { entree: ['IN1+', 'IN1-'], sortie: ['OUT1'], alim_entree: ['VCC', 'GND'] },
+  variables: [],
+  modele3d: null,   // pas encore de fichier STEP (R9)
+  nom: 'LM2902 ¼',
+  prefixe: 'U',
+  categorie: 'Amplificateurs',
+  description: 'Un ampli-op du LM2902 (unité ¼ du boîtier) : alimentation simple 3 à 26 V, entrées jusqu\'à 0 V, sortie haute ≈ VCC − 1,5 V. En comparateur : sortie haute quand IN+ > IN−. VCC et GND : alimentation du boîtier.',
+  broches: ['IN1+', 'IN1-', 'OUT1', 'VCC', 'GND'],
+  cotes: { gauche: ['IN1+', null, 'IN1-'], droite: [null, 'OUT1'], haut: ['VCC'], bas: ['GND'] },
+  modele: {
+    elements: [
+      { t: 'OA', p: 'IN1+', n: 'IN1-', s: 's1', vp: 'VCC', vn: 'GND', A: 1e5, chuteHaut: 1.5, chuteBas: 0.02 },
+      { t: 'R', a: 's1', b: 'OUT1', R: 40 },
+      { t: 'R', a: 'VCC', b: 'GND', R: 28000 },
+    ],
+  },
+});
 })();
